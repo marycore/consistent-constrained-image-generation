@@ -1,0 +1,46 @@
+defaults:
+  seed: 42
+  output_root: "outputs"
+  mode: "general"  # or "general_specific"
+
+latent_diffusion_open:
+  sd15:
+    model_id: "sd15"
+    steps: 30
+    guidance_scale: 7.5
+    resolution: [512, 512]
+  sdxl_base:
+    model_id: "sdxl_base"
+    steps: 30
+    guidance_scale: 7.0
+    resolution: [1024, 1024]
+  pixart_sigma:
+    model_id: "pixart_sigma"
+    steps: 40
+    guidance_scale: 4.5
+    resolution: [1024, 1024]
+
+rectified_flow_open:
+  flux_1_dev:
+    model_id: "flux_1_dev"
+    steps: 28
+    guidance_scale: 4.5
+    resolution: [1024, 1024]
+  flux_1_schnell:
+    model_id: "flux_1_schnell"
+    steps: 4
+    guidance_scale: 1.0
+    resolution: [1024, 1024]
+
+autoregressive_open:
+  vqgan_transformer:
+    model_id: "vqgan_transformer"
+    resolution: [256, 256]
+
+latent_diffusion_accelerated_distilled:
+  z_image_turbo:
+    model_id: "z_image_turbo"
+    steps: 9          # recommended in HF card (8 effective DiT forwards)
+    guidance_scale: 0.0
+    resolution: [1024, 1024]
+
