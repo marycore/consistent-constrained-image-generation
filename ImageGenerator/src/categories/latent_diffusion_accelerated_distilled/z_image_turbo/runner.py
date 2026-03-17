@@ -7,7 +7,7 @@ import torch
 from diffusers import ZImagePipeline
 from PIL import Image
 
-from ....common import io, prompts
+from ....common import io, prompts as prompt_utils
 from ....common.registry import register
 from ....common.types import (
     Runner,
@@ -108,7 +108,7 @@ class ZImageTurboRunner(Runner):
         height, width = 1024, 1024
 
         for record in prompts:
-            full_prompt = prompts.build_full_prompt(record, mode)
+            full_prompt = prompt_utils.build_full_prompt(record, mode)
             image, metadata = self._generate_image(
                 full_prompt=full_prompt,
                 seed=seed,

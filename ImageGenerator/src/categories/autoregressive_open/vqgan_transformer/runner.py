@@ -13,7 +13,7 @@ from PIL import Image
 from torch.utils.data import DataLoader
 from tqdm import tqdm
 
-from ....common import io, prompts
+from ....common import io, prompts, seeds
 from ....common.dataset import get_train_val_datasets
 from ....common.registry import register
 from ....common.types import (
@@ -131,7 +131,6 @@ class VQGANTransformerRunner(Runner):
         out_dir: str,
         config: FinetuneConfig,
     ) -> None:
-        seeds = __import__("....common.seeds", fromlist=["set_seed"])
         seeds.set_seed(config.seed)
 
         resolution = config.resolution or 256

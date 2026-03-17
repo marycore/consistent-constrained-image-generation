@@ -14,7 +14,7 @@ from PIL import Image
 from torch.utils.data import DataLoader
 from tqdm import tqdm
 
-from ....common import io, prompts
+from ....common import io, prompts as prompt_utils, seeds
 from ....common.dataset import get_train_val_datasets
 from ....common.registry import register
 from ....common.types import (
@@ -144,7 +144,7 @@ class SD15Runner(Runner):
         guidance_scale = 7.5
 
         for record in prompts:
-            full_prompt = prompts.build_full_prompt(record, mode)
+            full_prompt = prompt_utils.build_full_prompt(record, mode)
             image, metadata = self._generate_image(
                 full_prompt=full_prompt,
                 seed=seed,
@@ -171,7 +171,6 @@ class SD15Runner(Runner):
     ) -> None:
         from peft import LoraConfig, get_peft_model
 
-        seeds = __import__("....common.seeds", fromlist=["set_seed"])
         seeds.set_seed(config.seed)
 
         resolution = config.resolution or 512
@@ -276,6 +275,9 @@ class SD15Runner(Runner):
                         1,
                         do_classifier_free_guidance=False,
                     )
+                    # Some pipeline versions return (positive_embeds, negative_embeds); UNet needs a single tensor
+                    if isinstance(prompt_embeds, tuple):
+                        prompt_embeds = prompt_embeds[0]
                 pred = unet(noisy_latents, timesteps, prompt_embeds).sample
                 loss = torch.nn.functional.mse_loss(pred.float(), noise.float())
                 (loss / config.grad_accum).backward()
@@ -318,7 +320,7 @@ class SD15Runner(Runner):
         steps = 30
         guidance_scale = 7.5
         for record in prompts:
-            full_prompt = prompts.build_full_prompt(record, mode)
+            full_prompt = prompt_utils.build_full_prompt(record, mode)
             image, metadata = self._generate_image(
                 full_prompt=full_prompt,
                 seed=seed,

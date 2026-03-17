@@ -7,7 +7,7 @@ from io import BytesIO
 
 from PIL import Image
 
-from ....common import io as common_io, prompts
+from ....common import io as common_io, prompts as prompt_utils
 from ....common.registry import register
 from ....common.types import (
     Runner,
@@ -42,7 +42,7 @@ class GPTImage1Runner(Runner):
         client = OpenAI(api_key=api_key)
 
         for record in prompts:
-            full_prompt = prompts.build_full_prompt(record, mode)
+            full_prompt = prompt_utils.build_full_prompt(record, mode)
 
             # As with most hosted image APIs, deterministic seeding is not guaranteed.
             resp = client.images.generate(

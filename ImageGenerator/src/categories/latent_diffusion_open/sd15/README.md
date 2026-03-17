@@ -45,7 +45,7 @@ python -m src.common.cli finetune \
 python -m src.common.cli run_finetuned \
   --model sd15 \
   --ckpt ckpts/sd15_lora \
-  --prompt_file configs/prompts_general_specific.jsonl \
+  --prompt_file configs/prompts_finetuned_test.jsonl \
   --mode general_specific \
   --seed 42
 ```
