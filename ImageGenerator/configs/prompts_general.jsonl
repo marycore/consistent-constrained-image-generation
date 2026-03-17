@@ -1,3 +1,0 @@
-{"id": "example_1", "prompt": "a photo of an astronaut riding a horse on mars", "constraints_general": "photorealistic, high detail, sharp focus", "constraints_specific": "camera: 35mm lens, golden hour lighting"}
-{"id": "example_2", "prompt": "a cozy cabin in a snowy forest at night", "constraints_general": "cinematic lighting, high dynamic range", "constraints_specific": "warm interior light visible from windows, snowflakes in foreground bokeh"}
-

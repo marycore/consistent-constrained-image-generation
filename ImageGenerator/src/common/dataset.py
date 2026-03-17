@@ -12,6 +12,19 @@ import torch
 from torch.utils.data import Dataset
 
 
+def _project_root() -> Path:
+    """Return the ImageGenerator project root (directory containing src/)."""
+    return Path(__file__).resolve().parent.parent.parent
+
+
+def _resolve_path(path: str | Path) -> Path:
+    """If path is relative, resolve it against the project root so it works regardless of cwd."""
+    p = Path(path)
+    if not p.is_absolute():
+        p = _project_root() / p
+    return p
+
+
 def load_dataset_json(path: str | Path) -> List[dict]:
     """
     Load dataset from a single JSON file.
@@ -21,7 +34,7 @@ def load_dataset_json(path: str | Path) -> List[dict]:
 
     Returns list of dicts (unchanged). Caller must resolve image paths with images_root.
     """
-    p = Path(path)
+    p = _resolve_path(path)
     if not p.exists():
         raise FileNotFoundError(f"Dataset file not found: {path}")
     with p.open("r", encoding="utf-8") as f:
@@ -37,16 +50,20 @@ def load_dataset_json(path: str | Path) -> List[dict]:
 
 
 def resolve_image_paths(records: List[dict], images_root: str | Path) -> List[dict]:
-    """Resolve relative image paths in records against images_root. Mutates records."""
-    root = Path(images_root)
+    """Resolve relative image paths in records against images_root. Relative paths are resolved from project root."""
+    root = _resolve_path(images_root)
     if not root.exists():
-        raise FileNotFoundError(f"Images root not found: {images_root}")
+        raise FileNotFoundError(f"Images root not found: {images_root} (resolved to {root})")
     out = []
     for rec in records:
         rel = rec["image"]
         full = root / rel
         if not full.exists():
-            raise FileNotFoundError(f"Image file not found: {full} (record id={rec.get('id', '?')})")
+            raise FileNotFoundError(
+                f"Image file not found: {full} (record id={rec.get('id', '?')}). "
+                f"Check that --images_root is the directory that contains the image files. "
+                f"If your PNGs are in a subfolder (e.g. images/), use --images_root <path_to_that_folder> (e.g. {root}/images)."
+            )
         out.append({**rec, "image": str(full)})
     return out
 
@@ -100,6 +117,7 @@ def get_train_val_datasets(
 ) -> Tuple[ImageTextDataset, ImageTextDataset]:
     """
     Load JSON dataset, resolve paths, split train/val, return two ImageTextDatasets.
+    Relative dataset_path and images_root are resolved from the project root (ImageGenerator/).
     """
     records = load_dataset_json(dataset_path)
     records = resolve_image_paths(records, images_root)

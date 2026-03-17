@@ -7,7 +7,7 @@ from io import BytesIO
 
 from PIL import Image
 
-from ....common import io as common_io, prompts
+from ....common import io as common_io, prompts as prompt_utils
 from ....common.registry import register
 from ....common.types import (
     Runner,
@@ -47,7 +47,7 @@ class GeminiImageRunner(Runner):
         model = genai.GenerativeModel(model_name)
 
         for record in prompts:
-            full_prompt = prompts.build_full_prompt(record, mode)
+            full_prompt = prompt_utils.build_full_prompt(record, mode)
 
             # Deterministic seeding is generally not guaranteed for hosted APIs.
             # We record the requested seed in metadata for benchmark reproducibility.

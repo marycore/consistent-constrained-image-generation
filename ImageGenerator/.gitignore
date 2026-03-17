@@ -1,0 +1,54 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyd
+*.so
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+coverage.xml
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+env/
+
+# Jupyter (not used, but common)
+.ipynb_checkpoints/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Project outputs (generated)
+outputs/
+ckpts/
+
+# Logs
+*.log
+logs/
+wandb/
+
+# Model / training artifacts
+*.pt
+*.pth
+*.ckpt
+*.bin
+*.safetensors
+*.onnx
+
+# Hugging Face / Diffusers caches (when running inside ImageGenerator/)
+.cache/
+huggingface/
+hf_cache/
+
+# Local configs / secrets
+.env
+*.env
+
+# Optional: dataset images can be large
+configs/finetune_dataset/images/
