@@ -24,7 +24,10 @@ python -m src.common.cli finetune \
   --model sd15 \
   --data /path/to/dataset.json \
   --images_root /path/to/images \
+<<<<<<< HEAD
   --caption_key pred \
+=======
+>>>>>>> 944ef832ccc5c8e13f4cb8c0be1cb6304a2ad873
   --out ckpts/sd15_lora \
   --max_steps 500 \
   --lr 1e-4 \

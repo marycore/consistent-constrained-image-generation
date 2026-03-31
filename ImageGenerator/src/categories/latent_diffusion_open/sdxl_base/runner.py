@@ -184,7 +184,10 @@ class SDXLBaseRunner(Runner):
                 dataset_path, images_root,
                 val_ratio=config.val_ratio,
                 seed=config.seed,
+<<<<<<< HEAD
                 caption_key=config.caption_key,
+=======
+>>>>>>> 944ef832ccc5c8e13f4cb8c0be1cb6304a2ad873
             )
         except FileNotFoundError as e:
             raise FileNotFoundError(
