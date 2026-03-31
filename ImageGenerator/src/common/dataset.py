@@ -1,4 +1,4 @@
-"""Dataset loader for fine-tuning: single JSON file with (image path, text) records."""
+"""Dataset loader for fine-tuning: single JSON file with (image path, caption) records."""
 
 from __future__ import annotations
 
@@ -25,14 +25,16 @@ def _resolve_path(path: str | Path) -> Path:
     return p
 
 
-def load_dataset_json(path: str | Path) -> List[dict]:
+def load_dataset_json(path: str | Path, caption_key: str = "text") -> List[dict]:
     """
     Load dataset from a single JSON file.
 
-    Expected format: array of objects with "id", "image", "text":
-    [{"id": "000001", "image": "images/000001.png", "text": "caption with constraints"}, ...]
+    Expected format: array of objects with "id", "image", and caption_key:
+    [{"id": "000001", "image": "images/000001.png", "text": "caption"}, ...]
+    or [{"id": "000001", "image": "images/000001.png", "pred": "caption"}, ...]
 
-    Returns list of dicts (unchanged). Caller must resolve image paths with images_root.
+    Returns list of normalized dicts with keys: id, image, text.
+    Caller must resolve image paths with images_root.
     """
     p = _resolve_path(path)
     if not p.exists():
@@ -42,11 +44,17 @@ def load_dataset_json(path: str | Path) -> List[dict]:
     if not isinstance(data, list):
         raise ValueError(f"Dataset JSON must be a list of records, got {type(data)}")
     for i, rec in enumerate(data):
-        if not isinstance(rec, dict) or "image" not in rec or "text" not in rec:
+        if not isinstance(rec, dict) or "image" not in rec or caption_key not in rec:
             raise ValueError(
-                f"Record at index {i} must be a dict with 'image' and 'text' keys, got {type(rec)}"
+                f"Record at index {i} must contain 'image' and '{caption_key}' keys, got {type(rec)}"
             )
-    return data
+    normalized = []
+    for rec in data:
+        normalized.append({
+            **rec,
+            "text": rec[caption_key],
+        })
+    return normalized
 
 
 def resolve_image_paths(records: List[dict], images_root: str | Path) -> List[dict]:
@@ -114,12 +122,13 @@ def get_train_val_datasets(
     images_root: str | Path,
     val_ratio: float = 0.05,
     seed: int = 42,
+    caption_key: str = "text",
 ) -> Tuple[ImageTextDataset, ImageTextDataset]:
     """
     Load JSON dataset, resolve paths, split train/val, return two ImageTextDatasets.
     Relative dataset_path and images_root are resolved from the project root (ImageGenerator/).
     """
-    records = load_dataset_json(dataset_path)
+    records = load_dataset_json(dataset_path, caption_key=caption_key)
     records = resolve_image_paths(records, images_root)
     if not records:
         raise ValueError("Dataset is empty after loading.")

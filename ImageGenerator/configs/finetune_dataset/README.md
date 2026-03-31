@@ -9,7 +9,7 @@ Each record must have:
 
 - `id` – record identifier (string or number).
 - `image` – path relative to `--images_root` (e.g. `images/000001.png` or `CLEVR_train_000000.png`).
-- `text` – caption / prompt for the image (with constraints if desired).
+- caption field – by default this is `text`, but you can use another key (e.g. `pred`) via `--caption_key`.
 
 Example `dataset.json`:
 
@@ -17,6 +17,14 @@ Example `dataset.json`:
 [
   {"id": "000001", "image": "images/000001.png", "text": "a photo of a cat on a sofa, photorealistic"},
   {"id": "000002", "image": "images/000002.png", "text": "a watercolor landscape with mountains and a lake"}
+]
+```
+
+Alternative schema example (using `pred` instead of `text`):
+
+```json
+[
+  {"id": "000001", "image": "images/000001.png", "pred": "a photo of a cat on a sofa, photorealistic"}
 ]
 ```
 
@@ -28,8 +36,10 @@ Example layout (if images live in a subfolder):
 Example command (run from **ImageGenerator** project root). Use **one line** or put `\` at the end of each line so the shell does not treat each line as a separate command:
 
 ```bash
-python -m src.common.cli finetune --model sd15 --data configs/finetune_dataset/dataset_clip77.json --images_root configs/finetune_dataset/images --out ckpts/sd15_lora --max_steps 50 --batch_size 1 --grad_accum 1 --seed 42
+python -m src.common.cli finetune --model sd15 --data configs/finetune_dataset/dataset_clip77.json --images_root configs/finetune_dataset/images --caption_key text --out ckpts/sd15_lora --max_steps 50 --batch_size 1 --grad_accum 1 --seed 42
 ```
+
+If your dataset uses `pred`, set `--caption_key pred`.
 
 Train/val split is done inside the loader using `--val_ratio` (default 0.05).
 

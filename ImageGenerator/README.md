@@ -45,11 +45,13 @@ python -m src.common.cli run \
   --seed 42
 
 # Fine‑tune (supported open models: sd15, sdxl_base, pixart_sigma, flux_1_dev, vqgan_transformer)
-# Dataset: single JSON array of { "id", "image", "text" }; --images_root resolves image paths.
+# Dataset: single JSON array with { "id", "image", <caption_field> }.
+# Use --caption_key to select caption field (default: text, e.g. pred).
 python -m src.common.cli finetune \
   --model sd15 \
   --data /path/to/dataset.json \
   --images_root /path/to/images \
+  --caption_key text \
   --out ckpts/sd15_lora \
   --max_steps 500 \
   --lr 1e-4 \

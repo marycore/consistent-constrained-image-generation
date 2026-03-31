@@ -51,7 +51,7 @@ def _parse_args() -> argparse.Namespace:
     # finetune
     ft_p = subparsers.add_parser("finetune", help="Fine-tune a supported open model.")
     ft_p.add_argument("--model", required=True, help="Model identifier.")
-    ft_p.add_argument("--data", required=True, help="Path to dataset JSON file (array of {id, image, text}).")
+    ft_p.add_argument("--data", required=True, help="Path to dataset JSON file (array of records with id, image, and caption field).")
     ft_p.add_argument("--images_root", required=True, help="Root path to resolve image paths in the dataset JSON.")
     ft_p.add_argument("--out", required=True, help="Output checkpoint directory (adapters + train_config.json + train_log.jsonl).")
     ft_p.add_argument("--max_steps", type=int, default=500, help="Max training steps (default: 500).")
@@ -61,6 +61,7 @@ def _parse_args() -> argparse.Namespace:
     ft_p.add_argument("--seed", type=int, required=True, help="Random seed.")
     ft_p.add_argument("--val_ratio", type=float, default=0.05, help="Validation split ratio 0–1 (default: 0.05).")
     ft_p.add_argument("--resolution", type=int, default=None, help="Optional resolution override (e.g. 512 to reduce VRAM).")
+    ft_p.add_argument("--caption_key", default="text", help="Dataset field used as caption for training (default: text, e.g. pred).")
 
     # run_finetuned
     rft_p = subparsers.add_parser("run_finetuned", help="Run inference with a fine-tuned checkpoint.")
@@ -103,6 +104,7 @@ def main() -> None:
             seed=args.seed,
             val_ratio=args.val_ratio,
             resolution=args.resolution,
+            caption_key=args.caption_key,
         )
         runner.finetune(
             dataset_path=args.data,
