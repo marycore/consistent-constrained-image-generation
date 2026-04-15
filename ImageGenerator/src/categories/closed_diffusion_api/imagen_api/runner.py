@@ -32,6 +32,7 @@ class ImagenAPIRunner(Runner):
         images_root: str,
         out_dir: str,
         config: FinetuneConfig,
+        init_ckpt_dir: str | None = None,
     ) -> None:
         raise NotImplementedError("Fine-tuning is not supported for imagen_api (closed API).")
 

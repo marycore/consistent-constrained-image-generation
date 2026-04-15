@@ -64,7 +64,11 @@ class SDXLBaseRunner(Runner):
         try:
             pipe.enable_xformers_memory_efficient_attention()
         except Exception:
-            pipe.enable_model_cpu_offload()
+            # CPU-safe fallback when xformers is unavailable.
+            try:
+                pipe.enable_attention_slicing()
+            except Exception:
+                pass
 
         self._pipe = pipe
         return pipe
@@ -89,7 +93,11 @@ class SDXLBaseRunner(Runner):
         try:
             pipe.enable_xformers_memory_efficient_attention()
         except Exception:
-            pipe.enable_model_cpu_offload()
+            # CPU-safe fallback when xformers is unavailable.
+            try:
+                pipe.enable_attention_slicing()
+            except Exception:
+                pass
         return pipe
 
     def _generate_image(
@@ -173,8 +181,9 @@ class SDXLBaseRunner(Runner):
         images_root: str,
         out_dir: str,
         config: FinetuneConfig,
+        init_ckpt_dir: str | None = None,
     ) -> None:
-        from peft import LoraConfig, get_peft_model
+        from peft import LoraConfig, PeftModel, get_peft_model
 
         seeds.set_seed(config.seed)
 
@@ -184,10 +193,8 @@ class SDXLBaseRunner(Runner):
                 dataset_path, images_root,
                 val_ratio=config.val_ratio,
                 seed=config.seed,
-<<<<<<< HEAD
                 caption_key=config.caption_key,
-=======
->>>>>>> 944ef832ccc5c8e13f4cb8c0be1cb6304a2ad873
+
             )
         except FileNotFoundError as e:
             raise FileNotFoundError(
@@ -214,15 +221,28 @@ class SDXLBaseRunner(Runner):
         try:
             pipe.enable_xformers_memory_efficient_attention()
         except Exception:
-            pipe.enable_model_cpu_offload()
+            # CPU-safe fallback when xformers is unavailable.
+            try:
+                pipe.enable_attention_slicing()
+            except Exception:
+                pass
 
-        lora_config = LoraConfig(
-            r=16,
-            lora_alpha=32,
-            init_lora_weights="gaussian",
-            target_modules=["to_k", "to_q", "to_v", "to_out.0"],
-        )
-        unet = get_peft_model(pipe.unet, lora_config)
+        if init_ckpt_dir:
+            adapters_path = Path(init_ckpt_dir) / "adapters"
+            if not adapters_path.exists():
+                raise FileNotFoundError(
+                    f"init_ckpt adapters not found at {adapters_path}. "
+                    "Point --init_ckpt to a previous checkpoint directory containing adapters/."
+                )
+            unet = PeftModel.from_pretrained(pipe.unet, str(adapters_path), is_trainable=True)
+        else:
+            lora_config = LoraConfig(
+                r=16,
+                lora_alpha=32,
+                init_lora_weights="gaussian",
+                target_modules=["to_k", "to_q", "to_v", "to_out.0"],
+            )
+            unet = get_peft_model(pipe.unet, lora_config)
         pipe.unet = unet
         unet.train()
         pipe.vae.eval()
@@ -247,6 +267,7 @@ class SDXLBaseRunner(Runner):
             "model_id": self.model_id,
             "dataset_path": dataset_path,
             "images_root": images_root,
+            "init_ckpt_dir": init_ckpt_dir,
             **config.to_dict(),
             "resolution": resolution,
         }

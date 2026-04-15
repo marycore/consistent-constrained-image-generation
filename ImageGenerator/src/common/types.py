@@ -57,10 +57,7 @@ class FinetuneConfig:
     seed: int
     val_ratio: float = 0.05
     resolution: int | None = None  # optional override (e.g. 512 for SDXL when OOM)
-<<<<<<< HEAD
     caption_key: str = "text"  # dataset caption field to train on (e.g. text or pred)
-=======
->>>>>>> 944ef832ccc5c8e13f4cb8c0be1cb6304a2ad873
 
     def to_dict(self) -> Dict[str, Any]:
         return asdict(self)
@@ -89,6 +86,7 @@ class Runner:
         images_root: str,
         out_dir: str,
         config: FinetuneConfig,
+        init_ckpt_dir: str | None = None,
     ) -> None:  # pragma: no cover
         raise NotImplementedError
 

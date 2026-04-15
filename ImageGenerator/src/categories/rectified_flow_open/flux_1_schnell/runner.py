@@ -127,6 +127,7 @@ class Flux1SchnellRunner(Runner):
         images_root: str,
         out_dir: str,
         config: FinetuneConfig,
+        init_ckpt_dir: str | None = None,
     ) -> None:
         raise NotImplementedError(
             "Fine-tuning is not supported for flux_1_schnell (inference-only). "

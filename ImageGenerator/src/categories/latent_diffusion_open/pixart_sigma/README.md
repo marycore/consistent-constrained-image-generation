@@ -22,13 +22,41 @@ python -m src.common.cli finetune \
   --model pixart_sigma \
   --data /path/to/dataset.json \
   --images_root /path/to/images \
-<<<<<<< HEAD
   --caption_key pred \
-=======
->>>>>>> 944ef832ccc5c8e13f4cb8c0be1cb6304a2ad873
   --out ckpts/pixart_lora \
   --max_steps 500 \
   --lr 1e-4 \
+  --batch_size 1 \
+  --grad_accum 4 \
+  --seed 42
+```
+
+### Two-stage fine-tuning
+
+```bash
+# Stage 1
+python -m src.common.cli finetune \
+  --model pixart_sigma \
+  --data /path/to/dataset_stage1.json \
+  --images_root /path/to/images \
+  --caption_key pred \
+  --out ckpts/pixart_stage1 \
+  --max_steps 500 \
+  --lr 1e-4 \
+  --batch_size 1 \
+  --grad_accum 4 \
+  --seed 42
+
+# Stage 2 (continue from stage 1)
+python -m src.common.cli finetune \
+  --model pixart_sigma \
+  --data /path/to/dataset_stage2.json \
+  --images_root /path/to/images \
+  --caption_key pred \
+  --out ckpts/pixart_stage2 \
+  --init_ckpt ckpts/pixart_stage1 \
+  --max_steps 300 \
+  --lr 5e-5 \
   --batch_size 1 \
   --grad_accum 4 \
   --seed 42

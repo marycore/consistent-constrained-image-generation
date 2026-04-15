@@ -130,6 +130,7 @@ class VQGANTransformerRunner(Runner):
         images_root: str,
         out_dir: str,
         config: FinetuneConfig,
+        init_ckpt_dir: str | None = None,
     ) -> None:
         seeds.set_seed(config.seed)
 
@@ -139,10 +140,8 @@ class VQGANTransformerRunner(Runner):
                 dataset_path, images_root,
                 val_ratio=config.val_ratio,
                 seed=config.seed,
-<<<<<<< HEAD
                 caption_key=config.caption_key,
-=======
->>>>>>> 944ef832ccc5c8e13f4cb8c0be1cb6304a2ad873
+
             )
         except FileNotFoundError as e:
             raise FileNotFoundError(
@@ -159,6 +158,15 @@ class VQGANTransformerRunner(Runner):
 
         device = "cuda" if torch.cuda.is_available() else "cpu"
         prior = _MinimalTransformerPrior().to(device)
+        if init_ckpt_dir:
+            init_ckpt_path = Path(init_ckpt_dir) / "transformer.pt"
+            if not init_ckpt_path.exists():
+                raise FileNotFoundError(
+                    f"init_ckpt transformer checkpoint not found at {init_ckpt_path}. "
+                    "Point --init_ckpt to a previous checkpoint directory containing transformer.pt."
+                )
+            state = torch.load(init_ckpt_path, map_location=device)
+            prior.load_state_dict(state["model_state_dict"])
         optimizer = torch.optim.AdamW(prior.parameters(), lr=config.lr)
         lr_scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(
             optimizer, T_max=config.max_steps
@@ -168,6 +176,7 @@ class VQGANTransformerRunner(Runner):
             "model_id": self.model_id,
             "dataset_path": dataset_path,
             "images_root": images_root,
+            "init_ckpt_dir": init_ckpt_dir,
             **config.to_dict(),
             "resolution": resolution,
             "vocab_size": VOCAB_SIZE,

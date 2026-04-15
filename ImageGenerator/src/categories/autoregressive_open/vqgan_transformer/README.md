@@ -24,6 +24,35 @@ python -m src.common.cli finetune \
   --seed 42
 ```
 
+### Two-stage fine-tuning
+
+```bash
+# Stage 1
+python -m src.common.cli finetune \
+  --model vqgan_transformer \
+  --data /path/to/dataset_stage1.json \
+  --images_root /path/to/images \
+  --out ckpts/vqgan_stage1 \
+  --max_steps 500 \
+  --lr 1e-4 \
+  --batch_size 2 \
+  --grad_accum 4 \
+  --seed 42
+
+# Stage 2 (continue from stage 1)
+python -m src.common.cli finetune \
+  --model vqgan_transformer \
+  --data /path/to/dataset_stage2.json \
+  --images_root /path/to/images \
+  --out ckpts/vqgan_stage2 \
+  --init_ckpt ckpts/vqgan_stage1 \
+  --max_steps 300 \
+  --lr 5e-5 \
+  --batch_size 2 \
+  --grad_accum 4 \
+  --seed 42
+```
+
 **Outputs**:
 - `ckpts/vqgan_transformer/transformer.pt` – transformer prior state_dict + config
 - `ckpts/vqgan_transformer/train_config.json`

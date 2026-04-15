@@ -91,6 +91,7 @@ class Dalle3Runner(Runner):
         images_root: str,
         out_dir: str,
         config: FinetuneConfig,
+        init_ckpt_dir: str | None = None,
     ) -> None:
         raise NotImplementedError("Fine-tuning is not supported for dalle3 (closed API).")
 

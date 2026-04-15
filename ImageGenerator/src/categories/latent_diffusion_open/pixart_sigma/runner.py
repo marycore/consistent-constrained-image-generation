@@ -171,8 +171,9 @@ class PixArtSigmaRunner(Runner):
         images_root: str,
         out_dir: str,
         config: FinetuneConfig,
+        init_ckpt_dir: str | None = None,
     ) -> None:
-        from peft import LoraConfig, get_peft_model
+        from peft import LoraConfig, PeftModel, get_peft_model
 
         seeds.set_seed(config.seed)
 
@@ -182,10 +183,8 @@ class PixArtSigmaRunner(Runner):
                 dataset_path, images_root,
                 val_ratio=config.val_ratio,
                 seed=config.seed,
-<<<<<<< HEAD
+
                 caption_key=config.caption_key,
-=======
->>>>>>> 944ef832ccc5c8e13f4cb8c0be1cb6304a2ad873
             )
         except FileNotFoundError as e:
             raise FileNotFoundError(
@@ -213,13 +212,26 @@ class PixArtSigmaRunner(Runner):
         except Exception:
             pipe.enable_model_cpu_offload()
 
-        lora_config = LoraConfig(
-            r=16,
-            lora_alpha=32,
-            init_lora_weights="gaussian",
-            target_modules=["to_k", "to_q", "to_v", "to_out.0"],
-        )
-        transformer = get_peft_model(pipe.transformer, lora_config)
+        if init_ckpt_dir:
+            adapters_path = Path(init_ckpt_dir) / "adapters"
+            if not adapters_path.exists():
+                raise FileNotFoundError(
+                    f"init_ckpt adapters not found at {adapters_path}. "
+                    "Point --init_ckpt to a previous checkpoint directory containing adapters/."
+                )
+            transformer = PeftModel.from_pretrained(
+                pipe.transformer,
+                str(adapters_path),
+                is_trainable=True,
+            )
+        else:
+            lora_config = LoraConfig(
+                r=16,
+                lora_alpha=32,
+                init_lora_weights="gaussian",
+                target_modules=["to_k", "to_q", "to_v", "to_out.0"],
+            )
+            transformer = get_peft_model(pipe.transformer, lora_config)
         pipe.transformer = transformer
         transformer.train()
         pipe.vae.eval()
@@ -243,6 +255,7 @@ class PixArtSigmaRunner(Runner):
             "model_id": self.model_id,
             "dataset_path": dataset_path,
             "images_root": images_root,
+            "init_ckpt_dir": init_ckpt_dir,
             **config.to_dict(),
             "resolution": resolution,
         }
