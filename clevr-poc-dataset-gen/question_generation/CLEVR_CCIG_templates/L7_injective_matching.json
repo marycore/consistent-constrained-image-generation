@@ -1,0 +1,28 @@
+[
+  {
+    "text": [
+      "What color is the unique <Z2> <C2> <M2> <S2> [that is] <R> the <Z> <C> <M> <S>?",
+      "Assuming uniqueness, what is the queried attribute of the matched witness object?"
+    ],
+    "nodes": [
+      { "inputs": [], "type": "scene" },
+      { "side_inputs": ["<Z>", "<C>", "<M>", "<S>"], "inputs": [0], "type": "filter_unique" },
+      { "side_inputs": ["<R>", "<Z2>", "<C2>", "<M2>", "<S2>"], "inputs": [1], "type": "relate_filter_unique" },
+      { "inputs": [2], "type": "query_color" }
+    ],
+    "params": [
+      { "type": "Size", "name": "<Z>" },
+      { "type": "Color", "name": "<C>" },
+      { "type": "Material", "name": "<M>" },
+      { "type": "Shape", "name": "<S>" },
+      { "type": "Relation", "name": "<R>" },
+      { "type": "Size", "name": "<Z2>" },
+      { "type": "Color", "name": "<C2>" },
+      { "type": "Material", "name": "<M2>" },
+      { "type": "Shape", "name": "<S2>" }
+    ],
+    "constraints": [
+      { "params": ["<C2>"], "type": "NULL" }
+    ]
+  }
+]

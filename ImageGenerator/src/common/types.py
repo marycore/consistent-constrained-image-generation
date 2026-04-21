@@ -58,6 +58,7 @@ class FinetuneConfig:
     val_ratio: float = 0.05
     resolution: int | None = None  # optional override (e.g. 512 for SDXL when OOM)
     caption_key: str = "text"  # dataset caption field to train on (e.g. text or pred)
+    max_sequence_length: int | None = None  # optional text token limit override for supported models (e.g. PixArt/FLUX)
 
     def to_dict(self) -> Dict[str, Any]:
         return asdict(self)

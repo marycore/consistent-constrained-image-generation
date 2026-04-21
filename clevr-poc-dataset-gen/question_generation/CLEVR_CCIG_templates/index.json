@@ -1,0 +1,59 @@
+{
+  "source": "constraint_image_generation.pdf Section 5 (Table 1)",
+  "complexity_levels": [
+    {
+      "level": "L0",
+      "file": "L0_unary_attribute.json",
+      "family": "F1",
+      "name": "Unary Attribute Constraints"
+    },
+    {
+      "level": "L1",
+      "file": "L1_single_relational.json",
+      "family": "F2",
+      "name": "Single Relational Constraint"
+    },
+    {
+      "level": "L2",
+      "file": "L2_relational_composition.json",
+      "family": "F3",
+      "name": "Relational Composition"
+    },
+    {
+      "level": "L3",
+      "file": "L3_conjunctive_relational_binding.json",
+      "family": "F3",
+      "name": "Conjunctive Relational Binding"
+    },
+    {
+      "level": "L4",
+      "file": "L4_implication_negation_rules.json",
+      "family": "F4",
+      "name": "Implication / Negation Rules"
+    },
+    {
+      "level": "L5",
+      "file": "L5_universal_dependency.json",
+      "family": "F5",
+      "name": "Universal Dependency"
+    },
+    {
+      "level": "L6",
+      "file": "L6_relational_aggregates.json",
+      "family": "F6",
+      "name": "Relational Aggregates"
+    },
+    {
+      "level": "L7",
+      "file": "L7_injective_matching.json",
+      "family": "F7",
+      "name": "Injective Matching"
+    },
+    {
+      "level": "L8",
+      "file": "L8_global_coupling.json",
+      "family": "F8",
+      "name": "Global Coupling"
+    }
+  ]
+}

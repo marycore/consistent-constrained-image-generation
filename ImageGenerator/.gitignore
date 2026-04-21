@@ -49,6 +49,7 @@ hf_cache/
 # Local configs / secrets
 .env
 *.env
+scripts/runpod/runpod.env
 
 # Optional: dataset images can be large
 configs/finetune_dataset/images/

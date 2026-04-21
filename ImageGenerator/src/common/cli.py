@@ -12,6 +12,8 @@ from .types import Mode, FinetuneConfig
 from ..categories.latent_diffusion_open.sd15 import runner as _sd15_runner  # noqa: F401
 from ..categories.latent_diffusion_open.sdxl_base import runner as _sdxl_runner  # noqa: F401
 from ..categories.latent_diffusion_open.pixart_sigma import runner as _pixart_runner  # noqa: F401
+from ..categories.latent_diffusion_open.sd3_5 import runner as _sd35_runner  # noqa: F401
+from ..categories.latent_diffusion_open.deepfloyd_if import runner as _deepfloyd_if_runner  # noqa: F401
 
 # Latent diffusion, accelerated/distilled
 from ..categories.latent_diffusion_accelerated_distilled.z_image_turbo import (  # noqa: F401
@@ -67,6 +69,12 @@ def _parse_args() -> argparse.Namespace:
     ft_p.add_argument("--resolution", type=int, default=None, help="Optional resolution override (e.g. 512 to reduce VRAM).")
     ft_p.add_argument("--caption_key", default="text", help="Dataset field used as caption for training (default: text, e.g. pred).")
     ft_p.add_argument(
+        "--max_sequence_length",
+        type=int,
+        default=None,
+        help="Optional text token length override for supported models (e.g. PixArt/FLUX).",
+    )
+    ft_p.add_argument(
         "--init_ckpt",
         default=None,
         help="Optional previous fine-tuned checkpoint directory used to initialize another fine-tuning run.",
@@ -114,6 +122,7 @@ def main() -> None:
             val_ratio=args.val_ratio,
             resolution=args.resolution,
             caption_key=args.caption_key,
+            max_sequence_length=args.max_sequence_length,
         )
         runner.finetune(
             dataset_path=args.data,

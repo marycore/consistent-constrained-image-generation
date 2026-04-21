@@ -178,6 +178,7 @@ class Flux1DevRunner(Runner):
         seeds.set_seed(config.seed)
 
         resolution = config.resolution or 1024
+        max_sequence_length = config.max_sequence_length
         try:
             train_ds, val_ds = get_train_val_datasets(
                 dataset_path, images_root,
@@ -324,6 +325,7 @@ class Flux1DevRunner(Runner):
                         device=device,
                         num_images_per_prompt=1,
                         do_classifier_free_guidance=False,
+                        max_sequence_length=max_sequence_length or 512,
                     )
                 pred = transformer(
                     noisy_latents,

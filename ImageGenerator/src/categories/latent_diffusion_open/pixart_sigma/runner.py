@@ -63,7 +63,7 @@ class PixArtSigmaRunner(Runner):
         try:
             pipe.enable_xformers_memory_efficient_attention()
         except Exception:
-            pipe.enable_model_cpu_offload()
+            pipe.enable_attention_slicing()
 
         self._pipe = pipe
         return pipe
@@ -87,7 +87,7 @@ class PixArtSigmaRunner(Runner):
         try:
             pipe.enable_xformers_memory_efficient_attention()
         except Exception:
-            pipe.enable_model_cpu_offload()
+            pipe.enable_attention_slicing()
         return pipe
 
     def _generate_image(
@@ -178,6 +178,7 @@ class PixArtSigmaRunner(Runner):
         seeds.set_seed(config.seed)
 
         resolution = config.resolution or 1024
+        max_sequence_length = config.max_sequence_length
         try:
             train_ds, val_ds = get_train_val_datasets(
                 dataset_path, images_root,
@@ -210,7 +211,7 @@ class PixArtSigmaRunner(Runner):
         try:
             pipe.enable_xformers_memory_efficient_attention()
         except Exception:
-            pipe.enable_model_cpu_offload()
+            pipe.enable_attention_slicing()
 
         if init_ckpt_dir:
             adapters_path = Path(init_ckpt_dir) / "adapters"
@@ -286,17 +287,35 @@ class PixArtSigmaRunner(Runner):
                         device=device,
                     )
                     noisy_latents = noise_scheduler.add_noise(latents, noise, timesteps)
-                    prompt_embeds, _, _, _ = pipe.encode_prompt(
+                    prompt_embeds, prompt_attention_mask, _, _ = pipe.encode_prompt(
                         texts,
                         device=device,
                         num_images_per_prompt=1,
                         do_classifier_free_guidance=False,
+                        max_sequence_length=max_sequence_length or 120,
                     )
+                    # PixArt adaln_single expects micro-conditions during training too.
+                    resolution_cond = torch.tensor(
+                        [resolution, resolution], device=device, dtype=prompt_embeds.dtype
+                    ).repeat(bsz, 1)
+                    aspect_ratio_cond = torch.tensor(
+                        [1.0], device=device, dtype=prompt_embeds.dtype
+                    ).repeat(bsz, 1)
+                    added_cond_kwargs = {
+                        "resolution": resolution_cond,
+                        "aspect_ratio": aspect_ratio_cond,
+                    }
+                # Positional hidden_states matches PixArtAlphaPipeline (PEFT forward is *args/**kwargs only).
                 pred = transformer(
                     noisy_latents,
-                    timesteps,
                     encoder_hidden_states=prompt_embeds,
+                    encoder_attention_mask=prompt_attention_mask,
+                    timestep=timesteps,
+                    added_cond_kwargs=added_cond_kwargs,
+                    return_dict=True,
                 ).sample
+                if pipe.transformer.config.out_channels // 2 == latents.shape[1]:
+                    pred = pred.chunk(2, dim=1)[0]
                 loss = torch.nn.functional.mse_loss(pred.float(), noise.float())
                 (loss / config.grad_accum).backward()
                 accum_loss += loss.item()

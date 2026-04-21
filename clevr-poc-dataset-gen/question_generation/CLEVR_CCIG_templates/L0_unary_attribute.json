@@ -1,0 +1,19 @@
+[
+  {
+    "text": [
+      "Are there any <Z> <C> <M> <S> objects?",
+      "Does the scene contain a <Z> <C> <M> <S>?"
+    ],
+    "nodes": [
+      { "inputs": [], "type": "scene" },
+      { "side_inputs": ["<Z>", "<C>", "<M>", "<S>"], "inputs": [0], "type": "filter_exist" }
+    ],
+    "params": [
+      { "type": "Size", "name": "<Z>" },
+      { "type": "Color", "name": "<C>" },
+      { "type": "Material", "name": "<M>" },
+      { "type": "Shape", "name": "<S>" }
+    ],
+    "constraints": []
+  }
+]
