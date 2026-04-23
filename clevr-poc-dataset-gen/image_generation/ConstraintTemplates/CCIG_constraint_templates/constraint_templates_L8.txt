@@ -1,0 +1,4 @@
+% This enforces global coupling by requiring equal cardinality between two filtered subsets.
+:- #count{X: object(X), at(X, R1'), hasProperty(X, P1', V1')} != #count{Y: object(Y), at(Y, R2'), hasProperty(Y, P2', V2')}.
+% This enforces all-different on property P1 inside region R1 (no two distinct objects share value V1).
+:- object(X1), object(X2), X1 != X2, at(X1, R1'), at(X2, R1'), hasProperty(X1, P1', V1'), hasProperty(X2, P1', V1').

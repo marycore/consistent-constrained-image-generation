@@ -1,0 +1,4 @@
+% This enforces that at least one object in region R1 has property P1=V1.
+:- not object(X), at(X, R1'), hasProperty(X, P1', V1').
+% This forbids any object in region R1 from having property P1=V1.
+:- object(X), at(X, R1'), hasProperty(X, P1', V1').

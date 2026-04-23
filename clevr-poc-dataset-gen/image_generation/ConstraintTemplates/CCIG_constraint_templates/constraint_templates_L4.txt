@@ -1,0 +1,4 @@
+% This encodes an implication: every object matching (R1,P1=V1) must relate by D1 to some other object.
+:- object(X), at(X, R1'), hasProperty(X, P1', V1'), not object(Y), X != Y, hasRelationship(X, Y, D1').
+% This forbids relation D1 between any X and Y that simultaneously satisfy the antecedent filters.
+:- object(X), object(Y), X != Y, at(X, R1'), at(Y, R2'), hasProperty(X, P1', V1'), hasProperty(Y, P2', V2'), hasRelationship(X, Y, D1').

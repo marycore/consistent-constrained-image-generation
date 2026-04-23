@@ -1,0 +1,4 @@
+% This enforces existence: each source object must have at least one witness object satisfying the relation/filter.
+:- object(X), at(X, R1'), hasProperty(X, P1', V1'), not 1{Y: object(Y), X != Y, at(Y, R2'), hasProperty(Y, P2', V2'), hasRelationship(Y, X, D1')}.
+% This enforces uniqueness: each source object can have at most one such witness object.
+:- object(X), at(X, R1'), hasProperty(X, P1', V1'), 2{Y: object(Y), X != Y, at(Y, R2'), hasProperty(Y, P2', V2'), hasRelationship(Y, X, D1')}.
