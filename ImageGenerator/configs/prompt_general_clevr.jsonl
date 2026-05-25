@@ -1,0 +1,2 @@
+{"id": "smoke_clevr", "prompt": "Generate a CLEVR style image with 4 regions and 9 geometric shapes.", "constraints_general": "", "constraints_specific": ""}
+{"id": "smoke_clevr", "prompt": "Generate a CLEVR style image with 4 regions and 4 geometric shapes.", "constraints_general": "", "constraints_specific": ""}

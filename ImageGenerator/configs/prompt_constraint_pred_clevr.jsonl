@@ -1,0 +1,1 @@
+{"id": "test_1", "prompt": "Generate a CLEVR style image with 4 regions and 6 shapes. 0: bl L rb cube r1 1: gr L met cyl r0 2: cy S rb cube r3 3: br L met cyl r0 4: gy S rb cube r2 5: br L met sph r1 R0:2,5 F0:1,2,3,4,5 R1:0,2,3,4,5 F1:2,3,4 R2:5 F2:3,4 R3:0,2,4,5 F3:4 R4:0,2,5 F5:1,2,3,4.", "constraints_general": "", "constraints_specific": ""}
