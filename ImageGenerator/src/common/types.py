@@ -59,6 +59,8 @@ class FinetuneConfig:
     resolution: int | None = None  # optional override (e.g. 512 for SDXL when OOM)
     caption_key: str = "text"  # dataset caption field to train on (e.g. text or pred)
     max_sequence_length: int | None = None  # optional text token limit override for supported models (e.g. PixArt/FLUX)
+    # FIXED: added to allow periodic checkpointing; 0 = save only at end of training
+    save_every_n_steps: int = 0  # overwrite adapters/ every N global steps so --init_ckpt can resume after a crash
 
     def to_dict(self) -> Dict[str, Any]:
         return asdict(self)

@@ -79,6 +79,13 @@ def _parse_args() -> argparse.Namespace:
         default=None,
         help="Optional previous fine-tuned checkpoint directory used to initialize another fine-tuning run.",
     )
+    # FIXED: expose periodic checkpointing so long runs survive pod termination
+    ft_p.add_argument(
+        "--save_every_n_steps",
+        type=int,
+        default=0,
+        help="Overwrite adapters/ every N global steps (0 = only at end). Lets --init_ckpt resume a crashed run.",
+    )
 
     # run_finetuned
     rft_p = subparsers.add_parser("run_finetuned", help="Run inference with a fine-tuned checkpoint.")
@@ -123,6 +130,7 @@ def main() -> None:
             resolution=args.resolution,
             caption_key=args.caption_key,
             max_sequence_length=args.max_sequence_length,
+            save_every_n_steps=args.save_every_n_steps,
         )
         runner.finetune(
             dataset_path=args.data,

@@ -61,6 +61,10 @@ class SDXLBaseRunner(Runner):
             variant="fp16" if dtype == torch.float16 else None,
         )
         pipe = pipe.to(device)
+        # FIXED: SDXL VAE is numerically unstable in float16; upcast_vae is deprecated in
+        # diffusers and causes NaN pixels. Explicit float32 cast is the recommended replacement.
+        if device == "cuda":
+            pipe.vae.to(torch.float32)
         try:
             pipe.enable_xformers_memory_efficient_attention()
         except Exception:
@@ -77,10 +81,12 @@ class SDXLBaseRunner(Runner):
         """Load base pipeline and apply LoRA from <ckpt_dir>/adapters/ (PEFT format)."""
         from peft import PeftModel
 
+        _is_cuda = torch.cuda.is_available()
+        # FIXED: variant="fp16" was hardcoded even on CPU where that variant doesn't exist
         pipe = StableDiffusionXLPipeline.from_pretrained(
             "stabilityai/stable-diffusion-xl-base-1.0",
-            torch_dtype=torch.float16 if torch.cuda.is_available() else torch.float32,
-            variant="fp16",
+            torch_dtype=torch.float16 if _is_cuda else torch.float32,
+            variant="fp16" if _is_cuda else None,
         )
         adapters_path = Path(ckpt_dir) / "adapters"
         if not adapters_path.exists():
@@ -90,6 +96,10 @@ class SDXLBaseRunner(Runner):
         pipe.unet = PeftModel.from_pretrained(pipe.unet, str(adapters_path))
         device = "cuda" if torch.cuda.is_available() else "cpu"
         pipe = pipe.to(device)
+        # FIXED: SDXL VAE is numerically unstable in float16; upcast_vae is deprecated in
+        # diffusers and causes NaN pixels. Explicit float32 cast is the recommended replacement.
+        if device == "cuda":
+            pipe.vae.to(torch.float32)
         try:
             pipe.enable_xformers_memory_efficient_attention()
         except Exception:
@@ -338,6 +348,11 @@ class SDXLBaseRunner(Runner):
                         "lr": lr_scheduler.get_last_lr()[0],
                     })
                     accum_loss = 0.0
+                    # FIXED: periodic in-place checkpoint so a crashed/terminated pod loses at most N steps
+                    if config.save_every_n_steps > 0 and (global_step + 1) % config.save_every_n_steps == 0:
+                        _ckpt = io.adapters_dir(out_dir)
+                        pipe.unet.save_pretrained(str(_ckpt))
+                        print(f"[step {global_step + 1}] Saved intermediate checkpoint to {_ckpt}")
 
                 global_step += 1
                 pbar.update(1)

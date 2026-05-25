@@ -8,7 +8,7 @@ from typing import Optional
 
 import numpy as np
 import torch
-from diffusers import DDPMScheduler, FluxPipeline
+from diffusers import FluxPipeline
 from diffusers.optimization import get_scheduler
 from PIL import Image
 from torch.utils.data import DataLoader
@@ -26,6 +26,33 @@ from ....common.types import (
     FinetuneConfig,
     now_timestamp,
 )
+
+
+# FIXED: FLUX uses a packed-patch latent format; these helpers convert between
+# the standard (B, C, H, W) VAE latent space and FLUX's (B, H//2*W//2, C*4) packed form.
+def _flux_pack_latents(latents: torch.Tensor) -> torch.Tensor:
+    """(B, C, H, W) -> (B, H//2 * W//2, C*4) – 2×2 spatial patch packing for FLUX."""
+    B, C, H, W = latents.shape
+    latents = latents.view(B, C, H // 2, 2, W // 2, 2)
+    latents = latents.permute(0, 2, 4, 1, 3, 5).reshape(B, (H // 2) * (W // 2), C * 4)
+    return latents
+
+
+def _flux_unpack_latents(packed: torch.Tensor, H: int, W: int, C: int) -> torch.Tensor:
+    """(B, H//2*W//2, C*4) -> (B, C, H, W)."""
+    B = packed.shape[0]
+    packed = packed.reshape(B, H // 2, W // 2, C, 2, 2)
+    packed = packed.permute(0, 3, 1, 4, 2, 5).reshape(B, C, H, W)
+    return packed
+
+
+def _flux_prepare_img_ids(bsz: int, latent_h: int, latent_w: int, device) -> torch.Tensor:
+    """Build spatial position IDs for FLUX RoPE: (B, H//2*W//2, 3)."""
+    h_p, w_p = latent_h // 2, latent_w // 2
+    img_ids = torch.zeros(h_p, w_p, 3, device=device)
+    img_ids[..., 1] = torch.arange(h_p, device=device).float()[:, None]
+    img_ids[..., 2] = torch.arange(w_p, device=device).float()[None, :]
+    return img_ids.reshape(h_p * w_p, 3).unsqueeze(0).expand(bsz, -1, -1)
 
 
 def _collate_flux(batch: list[tuple[Image.Image, str]], resolution: int = 1024):
@@ -268,14 +295,16 @@ class Flux1DevRunner(Runner):
         pipe.transformer = transformer
         transformer.train()
         pipe.vae.eval()
-        pipe.text_encoder.eval()
+        if getattr(pipe, "text_encoder", None) is not None:
+            pipe.text_encoder.eval()
+        # FIXED: FLUX has both CLIP (text_encoder) and T5 (text_encoder_2); both must be frozen
+        if getattr(pipe, "text_encoder_2", None) is not None:
+            pipe.text_encoder_2.eval()
         if device == "cuda":
             transformer.enable_gradient_checkpointing()
 
-        noise_scheduler = DDPMScheduler.from_pretrained(
-            "black-forest-labs/FLUX.1-dev",
-            subfolder="scheduler",
-        )
+        # FIXED: FLUX uses FlowMatchEulerDiscreteScheduler, not DDPM; use pipe.scheduler directly
+        noise_scheduler = pipe.scheduler
         optimizer = torch.optim.AdamW(transformer.parameters(), lr=config.lr)
         lr_scheduler = get_scheduler(
             "constant",
@@ -313,26 +342,57 @@ class Flux1DevRunner(Runner):
                 with torch.no_grad():
                     latents = pipe.vae.encode(pixel_values).latent_dist.sample()
                     latents = latents * pipe.vae.config.scaling_factor
+                    _lat_C, _lat_H, _lat_W = latents.shape[1], latents.shape[2], latents.shape[3]
+
+                    # FIXED: FLUX requires packing latents from (B,C,H,W) to (B,H//2*W//2,C*4) patches
+                    packed_latents = _flux_pack_latents(latents)
                     noise = torch.randn_like(latents, device=device, dtype=dtype)
+                    packed_noise = _flux_pack_latents(noise)
+
                     bsz = latents.shape[0]
                     timesteps = torch.randint(
                         0, noise_scheduler.config.num_train_timesteps, (bsz,),
                         device=device,
                     )
-                    noisy_latents = noise_scheduler.add_noise(latents, noise, timesteps)
-                    prompt_embeds = pipe.encode_prompt(
+                    # FIXED: flow-matching noisy = sigma*noise + (1-sigma)*latents (on packed tensors)
+                    sigma = (timesteps.float() / noise_scheduler.config.num_train_timesteps).view(
+                        -1, 1, 1
+                    ).to(device=device, dtype=dtype)
+                    noisy_packed = sigma * packed_noise + (1.0 - sigma) * packed_latents
+
+                    # FIXED: encode_prompt returns (prompt_embeds, pooled_prompt_embeds, text_ids)
+                    _enc = pipe.encode_prompt(
                         texts,
                         device=device,
                         num_images_per_prompt=1,
-                        do_classifier_free_guidance=False,
                         max_sequence_length=max_sequence_length or 512,
                     )
-                pred = transformer(
-                    noisy_latents,
-                    timesteps,
+                    if isinstance(_enc, (tuple, list)) and len(_enc) >= 3:
+                        prompt_embeds, pooled_prompt_embeds, text_ids = _enc[0], _enc[1], _enc[2]
+                    elif isinstance(_enc, (tuple, list)) and len(_enc) == 2:
+                        prompt_embeds, pooled_prompt_embeds = _enc[0], _enc[1]
+                        text_ids = torch.zeros(bsz, prompt_embeds.shape[1], 3, device=device)
+                    else:
+                        raise RuntimeError("Unexpected return shape from FluxPipeline.encode_prompt()")
+
+                    # FIXED: generate image positional IDs required by FLUX RoPE
+                    img_ids = _flux_prepare_img_ids(bsz, _lat_H, _lat_W, device)
+
+                # FIXED: transformer requires packed latents + explicit positional IDs + pooled projections
+                # NOTE: target_modules ["to_k","to_q","to_v","to_out.0"] may miss FLUX double-stream
+                #       text projections (add_q_proj etc.); flag for review if convergence is slow
+                pred_packed = transformer(
+                    hidden_states=noisy_packed,
                     encoder_hidden_states=prompt_embeds,
+                    pooled_projections=pooled_prompt_embeds,
+                    timestep=timesteps,
+                    img_ids=img_ids,
+                    txt_ids=text_ids,
+                    return_dict=True,
                 ).sample
-                loss = torch.nn.functional.mse_loss(pred.float(), noise.float())
+                # FIXED: flow-matching target is the velocity field (noise - latents) in packed form
+                flow_target = packed_noise - packed_latents
+                loss = torch.nn.functional.mse_loss(pred_packed.float(), flow_target.float())
                 (loss / config.grad_accum).backward()
                 accum_loss += loss.item()
 
@@ -346,6 +406,11 @@ class Flux1DevRunner(Runner):
                         "lr": lr_scheduler.get_last_lr()[0],
                     })
                     accum_loss = 0.0
+                    # FIXED: periodic in-place checkpoint so a crashed/terminated pod loses at most N steps
+                    if config.save_every_n_steps > 0 and (global_step + 1) % config.save_every_n_steps == 0:
+                        _ckpt = io.adapters_dir(out_dir)
+                        pipe.transformer.save_pretrained(str(_ckpt))
+                        print(f"[step {global_step + 1}] Saved intermediate checkpoint to {_ckpt}")
 
                 global_step += 1
                 pbar.update(1)

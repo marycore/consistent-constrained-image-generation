@@ -305,6 +305,11 @@ class SD15Runner(Runner):
                         "lr": lr_scheduler.get_last_lr()[0],
                     })
                     accum_loss = 0.0
+                    # FIXED: periodic in-place checkpoint so a crashed/terminated pod loses at most N steps
+                    if config.save_every_n_steps > 0 and (global_step + 1) % config.save_every_n_steps == 0:
+                        _ckpt = io.adapters_dir(out_dir)
+                        pipe.unet.save_pretrained(str(_ckpt))
+                        print(f"[step {global_step + 1}] Saved intermediate checkpoint to {_ckpt}")
 
                 global_step += 1
                 pbar.update(1)

@@ -270,7 +270,11 @@ def _sd35_finetune_impl(
     try:
         pipe.enable_xformers_memory_efficient_attention()
     except Exception:
-        pipe.enable_attention_slicing()
+        # FIXED: SD3.5 may not support attention_slicing (no UNet); ignore silently
+        try:
+            pipe.enable_attention_slicing()
+        except Exception:
+            pass
 
     if init_ckpt_dir:
         adapters_path = Path(init_ckpt_dir) / "adapters"
@@ -347,7 +351,13 @@ def _sd35_finetune_impl(
                 timesteps = torch.randint(
                     0, noise_scheduler.config.num_train_timesteps, (bsz,), device=device
                 )
-                noisy_latents = noise_scheduler.add_noise(latents, noise, timesteps)
+                # FIXED: FlowMatchEulerDiscreteScheduler (SD3.5's scheduler) has no add_noise().
+                # Use the flow-matching forward process: x_t = sigma*noise + (1-sigma)*x_0
+                # where sigma = t / num_train_timesteps linearly normalises the timestep.
+                sigma = (timesteps.float() / noise_scheduler.config.num_train_timesteps).view(
+                    -1, 1, 1, 1
+                ).to(device=device, dtype=dtype)
+                noisy_latents = sigma * noise + (1.0 - sigma) * latents
 
                 prompt_embeds, pooled_prompt_embeds = _encode_sd35_prompt(
                     pipe, texts, device
@@ -365,7 +375,9 @@ def _sd35_finetune_impl(
                 pooled_projections=pooled_prompt_embeds,
                 return_dict=True,
             ).sample
-            loss = torch.nn.functional.mse_loss(model_pred.float(), noise.float())
+            # FIXED: flow-matching target is the velocity field (noise - x_0), not noise alone.
+            flow_target = noise - latents
+            loss = torch.nn.functional.mse_loss(model_pred.float(), flow_target.float())
             (loss / config.grad_accum).backward()
             accum_loss += loss.item()
 
@@ -382,6 +394,11 @@ def _sd35_finetune_impl(
                     },
                 )
                 accum_loss = 0.0
+                # FIXED: periodic in-place checkpoint so a crashed/terminated pod loses at most N steps
+                if config.save_every_n_steps > 0 and (global_step + 1) % config.save_every_n_steps == 0:
+                    _ckpt = io.adapters_dir(out_dir)
+                    pipe.transformer.save_pretrained(str(_ckpt))
+                    print(f"[step {global_step + 1}] Saved intermediate checkpoint to {_ckpt}")
 
             global_step += 1
             pbar.update(1)
