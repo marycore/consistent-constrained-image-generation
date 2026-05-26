@@ -59,6 +59,8 @@ class SD15Runner(Runner):
         pipe = StableDiffusionPipeline.from_pretrained(
             "runwayml/stable-diffusion-v1-5",
             torch_dtype=dtype,
+            safety_checker=None,
+            requires_safety_checker=False,
         )
         pipe = pipe.to(device)
         try:
@@ -76,6 +78,8 @@ class SD15Runner(Runner):
         pipe = StableDiffusionPipeline.from_pretrained(
             "runwayml/stable-diffusion-v1-5",
             torch_dtype=torch.float16 if torch.cuda.is_available() else torch.float32,
+            safety_checker=None,
+            requires_safety_checker=False,
         )
         adapters_path = Path(ckpt_dir) / "adapters"
         if not adapters_path.exists():
