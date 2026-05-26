@@ -255,7 +255,8 @@ def _sd35_finetune_impl(
         train_ds,
         batch_size=config.batch_size,
         shuffle=True,
-        num_workers=0,
+        num_workers=4,
+        pin_memory=True,
         collate_fn=lambda b: _collate_sd35(b, resolution=resolution),
     )
 
