@@ -1,22 +1,14 @@
 from __future__ import annotations
 
-import base64
-import os
 from dataclasses import dataclass
-from io import BytesIO
-
-from PIL import Image
-
-from ....common import io as common_io, prompts as prompt_utils
+from ....common.closed_bridge import run_closed_via_registry
 from ....common.registry import register
 from ....common.types import (
     Runner,
     Category,
     PromptRecord,
     Mode,
-    GenerationMetadata,
     FinetuneConfig,
-    now_timestamp,
 )
 
 
@@ -33,56 +25,15 @@ class Dalle3Runner(Runner):
         seed: int,
         output_root: str,
     ) -> None:
-        api_key = os.getenv("OPENAI_API_KEY")
-        if not api_key:
-            raise RuntimeError("OPENAI_API_KEY is not set. Required for dalle3 inference.")
-
-        # Lazy import so users without the dependency/key can still use open models.
-        from openai import OpenAI  # type: ignore
-
-        client = OpenAI(api_key=api_key)
-
-        for record in prompts:
-            full_prompt = prompt_utils.build_full_prompt(record, mode)
-
-            # DALL·E 3 does not support user-controlled deterministic seeds via the public API.
-            # We still record the provided seed in metadata for benchmarking consistency.
-            resp = client.images.generate(
-                model="dall-e-3",
-                prompt=full_prompt,
-                size="1024x1024",
-                quality="standard",
-                n=1,
-                response_format="b64_json",
-            )
-
-            b64 = resp.data[0].b64_json
-            img_bytes = base64.b64decode(b64)
-            image = Image.open(BytesIO(img_bytes)).convert("RGB")
-
-            metadata = GenerationMetadata(
-                model_id=self.model_id,
-                category=self.category,
-                mode=mode,
-                full_prompt=full_prompt,
-                seed=seed,
-                steps=None,
-                guidance_scale=None,
-                resolution=(1024, 1024),
-                dtype="api",
-                device="api",
-                scheduler=None,
-                timestamp=now_timestamp(),
-            )
-
-            common_io.save_image_and_metadata(
-                image=image,
-                metadata=metadata,
-                output_root=output_root,
-                category=self.category,
-                model_id=self.model_id,
-                mode=mode,
-            )
+        run_closed_via_registry(
+            legacy_model_id=self.model_id,
+            provider_model_id="openai_dalle_3",
+            category=self.category,
+            prompts=prompts,
+            mode=mode,
+            seed=seed,
+            output_root=output_root,
+        )
 
     def finetune(
         self,

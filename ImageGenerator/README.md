@@ -100,6 +100,58 @@ Each run writes:
 - `outputs/<category>/<model_id>/<mode>/<prompt_hash>__seed<seed>.png`  
 - Matching `...json` with metadata (model, category, mode, full prompt, seed, steps, guidance_scale, resolution, dtype, device, scheduler, timestamp).
 
+### Closed API models (1000-prompt runs)
+
+Set API keys in your shell:
+
+```bash
+export OPENAI_API_KEY="your_openai_key"
+export GEMINI_API_KEY="your_gemini_key"
+# Optional for Gemini model selection:
+export GEMINI_IMAGE_MODEL="gemini-2.0-flash-exp"
+```
+
+Run one of the closed models with a JSONL prompt file (e.g. 1000 lines):
+
+```bash
+python -m src.common.cli run --model dalle3 --prompt_file configs/prompts_general.jsonl --mode general --seed 42
+python -m src.common.cli run --model gpt_image_1 --prompt_file configs/prompts_general.jsonl --mode general --seed 42
+python -m src.common.cli run --model gemini_image --prompt_file configs/prompts_general.jsonl --mode general --seed 42
+```
+
+For long runs, the closed-model runners now support retry/backoff and continue-on-error via env vars:
+
+```bash
+export IMAGE_API_MAX_RETRIES=5
+export IMAGE_API_BACKOFF_SECONDS=2
+export IMAGE_API_TIMEOUT_SECONDS=120
+export IMAGE_API_SLEEP_BETWEEN_CALLS=0.2
+export IMAGE_API_CONTINUE_ON_ERROR=1
+```
+
+Behavior:
+- failures are appended to `outputs/closed_multimodal_transformer_api/<model_id>/<mode>/errors.jsonl`
+- successful calls keep saving PNG + metadata JSON as usual
+- progress is printed every 25 prompts
+
+### Closed benchmark batch CLI
+
+For CCIG-style closed-model benchmarking (shared abstraction + registry + metadata JSONL):
+
+```bash
+python -m scripts.generate_images \
+  --config configs/generation_config.yaml \
+  --models openai_gpt_image_1_5 google_nano_banana openai_dalle_3 \
+  --levels L0 L1 \
+  --limit-per-level 5 \
+  --seeds 0 \
+  --dry-run
+```
+
+Output layout:
+- `outputs/generations/<model_id>/<complexity_level>/<prompt_id>/seed_<seed>_img_0.png`
+- `outputs/generation_metadata.jsonl`
+
 Prompt-length note:
 - `sd15` and `sdxl_base` rely on CLIP-style context windows (typically short, ~77 tokens per encoder branch).
 - `pixart_sigma` and `flux_1_dev` use T5-based text embeddings and now support `--max_sequence_length` in `finetune`.

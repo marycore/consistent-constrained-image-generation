@@ -82,3 +82,18 @@ def adapters_dir(ckpt_dir: str | Path) -> Path:
     d.mkdir(parents=True, exist_ok=True)
     return d
 
+
+def append_api_error(
+    *,
+    output_root: str | Path,
+    category: str,
+    model_id: str,
+    mode: str,
+    error_entry: dict,
+) -> None:
+    """Append one API failure record to outputs/<category>/<model_id>/<mode>/errors.jsonl."""
+    base_dir = Path(output_root) / category / model_id / mode
+    base_dir.mkdir(parents=True, exist_ok=True)
+    with (base_dir / "errors.jsonl").open("a", encoding="utf-8") as f:
+        f.write(json.dumps(error_entry, ensure_ascii=False) + "\n")
+

@@ -1,0 +1,26 @@
+models:
+  closed:
+    - openai_gpt_image_1_5
+    - openai_dalle_3
+    - google_nano_banana
+    - google_imagen_4
+    - ideogram_3
+    - recraft
+    - nova_canvas
+    - seedream
+
+prompts:
+  path: configs/prompt_general_clevr.jsonl
+
+generation:
+  width: 1024
+  height: 1024
+  num_images_per_prompt: 1
+  seeds: [0]
+  max_retries: 3
+  timeout_seconds: 180
+
+budget:
+  max_usd: 300
+  track_estimated_cost: true
+  cost_overrides_usd: {}

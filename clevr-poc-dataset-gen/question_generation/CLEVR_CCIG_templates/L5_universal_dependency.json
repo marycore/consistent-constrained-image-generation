@@ -1,24 +1,77 @@
 [
   {
     "text": [
-      "For the <Z> <C> <M> <S>, does there exist a <Z2> <C2> <M2> <S2> [that is] <R> it?",
-      "Does this trigger object have a witness object satisfying the dependency?"
+      "Create a scene where every trigger object (<Z>,<C>,<M>,<S>) has at least one witness object (<Z2>,<C2>,<M2>,<S2>) linked by <R>.",
+      "Create a scene where this universal dependency is violated for no trigger object."
     ],
     "nodes": [
-      { "inputs": [], "type": "scene" },
-      { "side_inputs": ["<Z>", "<C>", "<M>", "<S>"], "inputs": [0], "type": "filter_unique" },
-      { "side_inputs": ["<R>", "<Z2>", "<C2>", "<M2>", "<S2>"], "inputs": [1], "type": "relate_filter_exist" }
+      {
+        "inputs": [],
+        "type": "scene"
+      },
+      {
+        "side_inputs": [
+          "<Z>",
+          "<C>",
+          "<M>",
+          "<S>"
+        ],
+        "inputs": [
+          0
+        ],
+        "type": "filter_unique"
+      },
+      {
+        "side_inputs": [
+          "<R>",
+          "<Z2>",
+          "<C2>",
+          "<M2>",
+          "<S2>"
+        ],
+        "inputs": [
+          1
+        ],
+        "type": "relate_filter_exist"
+      }
     ],
     "params": [
-      { "type": "Size", "name": "<Z>" },
-      { "type": "Color", "name": "<C>" },
-      { "type": "Material", "name": "<M>" },
-      { "type": "Shape", "name": "<S>" },
-      { "type": "Relation", "name": "<R>" },
-      { "type": "Size", "name": "<Z2>" },
-      { "type": "Color", "name": "<C2>" },
-      { "type": "Material", "name": "<M2>" },
-      { "type": "Shape", "name": "<S2>" }
+      {
+        "type": "Size",
+        "name": "<Z>"
+      },
+      {
+        "type": "Color",
+        "name": "<C>"
+      },
+      {
+        "type": "Material",
+        "name": "<M>"
+      },
+      {
+        "type": "Shape",
+        "name": "<S>"
+      },
+      {
+        "type": "Relation",
+        "name": "<R>"
+      },
+      {
+        "type": "Size",
+        "name": "<Z2>"
+      },
+      {
+        "type": "Color",
+        "name": "<C2>"
+      },
+      {
+        "type": "Material",
+        "name": "<M2>"
+      },
+      {
+        "type": "Shape",
+        "name": "<S2>"
+      }
     ],
     "constraints": []
   }

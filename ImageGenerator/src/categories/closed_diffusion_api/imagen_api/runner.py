@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-import os
 from dataclasses import dataclass
 
+from ....common.closed_bridge import run_closed_via_registry
 from ....common.registry import register
 from ....common.types import Runner, Category, PromptRecord, Mode, FinetuneConfig
 
@@ -20,9 +20,14 @@ class ImagenAPIRunner(Runner):
         seed: int,
         output_root: str,
     ) -> None:
-        raise NotImplementedError(
-            "imagen_api runner is a placeholder. "
-            "Implement your Imagen client here and read credentials from environment variables."
+        run_closed_via_registry(
+            legacy_model_id=self.model_id,
+            provider_model_id="google_imagen_4",
+            category=self.category,
+            prompts=prompts,
+            mode=mode,
+            seed=seed,
+            output_root=output_root,
         )
 
     def finetune(

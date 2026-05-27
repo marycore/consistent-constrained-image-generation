@@ -1,25 +1,83 @@
 [
   {
     "text": [
-      "Is the number of <Z> <C> <M> <S> objects equal to the number of <Z2> <C2> <M2> <S2> objects?",
-      "Do the two globally defined subsets have equal cardinality?"
+      "Create a scene where two filtered subsets (<Z>,<C>,<M>,<S>) and (<Z2>,<C2>,<M2>,<S2>) have equal cardinality.",
+      "Create a scene enforcing all-different for property values within a region under the selected filter."
     ],
     "nodes": [
-      { "inputs": [], "type": "scene" },
-      { "side_inputs": ["<Z>", "<C>", "<M>", "<S>"], "inputs": [0], "type": "filter_count" },
-      { "inputs": [], "type": "scene" },
-      { "side_inputs": ["<Z2>", "<C2>", "<M2>", "<S2>"], "inputs": [2], "type": "filter_count" },
-      { "inputs": [1, 3], "type": "equal_integer" }
+      {
+        "inputs": [],
+        "type": "scene"
+      },
+      {
+        "side_inputs": [
+          "<Z>",
+          "<C>",
+          "<M>",
+          "<S>"
+        ],
+        "inputs": [
+          0
+        ],
+        "type": "filter_count"
+      },
+      {
+        "inputs": [],
+        "type": "scene"
+      },
+      {
+        "side_inputs": [
+          "<Z2>",
+          "<C2>",
+          "<M2>",
+          "<S2>"
+        ],
+        "inputs": [
+          2
+        ],
+        "type": "filter_count"
+      },
+      {
+        "inputs": [
+          1,
+          3
+        ],
+        "type": "equal_integer"
+      }
     ],
     "params": [
-      { "type": "Size", "name": "<Z>" },
-      { "type": "Color", "name": "<C>" },
-      { "type": "Material", "name": "<M>" },
-      { "type": "Shape", "name": "<S>" },
-      { "type": "Size", "name": "<Z2>" },
-      { "type": "Color", "name": "<C2>" },
-      { "type": "Material", "name": "<M2>" },
-      { "type": "Shape", "name": "<S2>" }
+      {
+        "type": "Size",
+        "name": "<Z>"
+      },
+      {
+        "type": "Color",
+        "name": "<C>"
+      },
+      {
+        "type": "Material",
+        "name": "<M>"
+      },
+      {
+        "type": "Shape",
+        "name": "<S>"
+      },
+      {
+        "type": "Size",
+        "name": "<Z2>"
+      },
+      {
+        "type": "Color",
+        "name": "<C2>"
+      },
+      {
+        "type": "Material",
+        "name": "<M2>"
+      },
+      {
+        "type": "Shape",
+        "name": "<S2>"
+      }
     ],
     "constraints": []
   }
