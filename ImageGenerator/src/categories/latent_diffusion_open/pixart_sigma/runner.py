@@ -74,7 +74,7 @@ class PixArtSigmaRunner(Runner):
 
         pipe = PixArtAlphaPipeline.from_pretrained(
             "PixArt-alpha/PixArt-XL-2-1024-MS",
-            torch_dtype=torch.float16 if torch.cuda.is_available() else torch.float32,
+            torch_dtype=torch.float32,
         )
         adapters_path = Path(ckpt_dir) / "adapters"
         if not adapters_path.exists():
