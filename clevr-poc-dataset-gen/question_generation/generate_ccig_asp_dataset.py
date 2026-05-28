@@ -137,10 +137,11 @@ def build_prompt_text(*, objects: list[dict[str, str | int]], constraint_text: s
             f"o{o['id']}(region={o['region']}, size={o['size']}, color={o['color']}, material={o['material']}, shape={o['shape']})"
         )
     intro = (
-        f"Create a scene with 4 regions and {len(objects)} objects. "
+        f"Create a scene with white background, divided into 4 regions and containing {len(objects)} objects. "
+        f"The regions are numbered from 0 to 3: Region 0: top left, Region 1: top right, Region 2: bottom left, Region 3: bottom right. "
         f"The objects are: {', '.join(obj_parts)}."
     )
-    return f"{intro} Satisfy this constraint: {constraint_text}"
+    return f"{intro} Satisfy this constraint: {constraint_text} Do not write, label, or annotate any text, numbers, or identifiers on the image."
 
 
 def validate_with_clingo(asp_code: str, clingo_bin: str) -> tuple[bool, str]:
