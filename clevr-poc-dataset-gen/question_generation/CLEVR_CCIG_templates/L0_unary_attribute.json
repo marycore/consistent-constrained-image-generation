@@ -1,8 +1,11 @@
 [
   {
+    "asp_template_file": "constraint_templates_L0_exist.txt",
+    "constraint_family": "exist",
     "text": [
-      "Create a scene where at least one object satisfies unary attributes: size=<Z>, color=<C>, material=<M>, shape=<S>.",
-      "Create a scene where no object satisfies unary attributes: size=<Z>, color=<C>, material=<M>, shape=<S>."
+      "At least one object in region <R> must have color <V>.",
+      "Region <R> must contain at least one object whose color is <V>.",
+      "There must exist an object in region <R> with color <V>."
     ],
     "nodes": [
       {
@@ -11,35 +14,389 @@
       },
       {
         "side_inputs": [
-          "<Z>",
-          "<C>",
-          "<M>",
-          "<S>"
+          "<R>",
+          "<V>"
         ],
         "inputs": [
           0
         ],
-        "type": "filter_exist"
+        "type": "constraint_exist_region"
+      },
+      {
+        "inputs": [
+          1
+        ],
+        "type": "property_color"
       }
     ],
     "params": [
       {
-        "type": "Size",
-        "name": "<Z>"
+        "type": "Region",
+        "name": "<R>"
       },
       {
         "type": "Color",
-        "name": "<C>"
+        "name": "<V>"
+      }
+    ],
+    "constraints": [
+      {
+        "params": [
+          "<V>"
+        ],
+        "type": "NULL"
+      }
+    ],
+    "property_focus": "color"
+  },
+  {
+    "asp_template_file": "constraint_templates_L0_exist.txt",
+    "constraint_family": "exist",
+    "text": [
+      "At least one object in region <R> must have material <V>.",
+      "Region <R> must contain at least one object whose material is <V>.",
+      "There must exist an object in region <R> with material <V>."
+    ],
+    "nodes": [
+      {
+        "inputs": [],
+        "type": "scene"
+      },
+      {
+        "side_inputs": [
+          "<R>",
+          "<V>"
+        ],
+        "inputs": [
+          0
+        ],
+        "type": "constraint_exist_region"
+      },
+      {
+        "inputs": [
+          1
+        ],
+        "type": "property_material"
+      }
+    ],
+    "params": [
+      {
+        "type": "Region",
+        "name": "<R>"
       },
       {
         "type": "Material",
-        "name": "<M>"
+        "name": "<V>"
+      }
+    ],
+    "constraints": [
+      {
+        "params": [
+          "<V>"
+        ],
+        "type": "NULL"
+      }
+    ],
+    "property_focus": "material"
+  },
+  {
+    "asp_template_file": "constraint_templates_L0_exist.txt",
+    "constraint_family": "exist",
+    "text": [
+      "At least one object in region <R> must have shape <V>.",
+      "Region <R> must contain at least one object whose shape is <V>.",
+      "There must exist an object in region <R> with shape <V>."
+    ],
+    "nodes": [
+      {
+        "inputs": [],
+        "type": "scene"
+      },
+      {
+        "side_inputs": [
+          "<R>",
+          "<V>"
+        ],
+        "inputs": [
+          0
+        ],
+        "type": "constraint_exist_region"
+      },
+      {
+        "inputs": [
+          1
+        ],
+        "type": "property_shape"
+      }
+    ],
+    "params": [
+      {
+        "type": "Region",
+        "name": "<R>"
       },
       {
         "type": "Shape",
-        "name": "<S>"
+        "name": "<V>"
       }
     ],
-    "constraints": []
+    "constraints": [
+      {
+        "params": [
+          "<V>"
+        ],
+        "type": "NULL"
+      }
+    ],
+    "property_focus": "shape"
+  },
+  {
+    "asp_template_file": "constraint_templates_L0_exist.txt",
+    "constraint_family": "exist",
+    "text": [
+      "At least one object in region <R> must have size <V>.",
+      "Region <R> must contain at least one object whose size is <V>.",
+      "There must exist an object in region <R> with size <V>."
+    ],
+    "nodes": [
+      {
+        "inputs": [],
+        "type": "scene"
+      },
+      {
+        "side_inputs": [
+          "<R>",
+          "<V>"
+        ],
+        "inputs": [
+          0
+        ],
+        "type": "constraint_exist_region"
+      },
+      {
+        "inputs": [
+          1
+        ],
+        "type": "property_size"
+      }
+    ],
+    "params": [
+      {
+        "type": "Region",
+        "name": "<R>"
+      },
+      {
+        "type": "Size",
+        "name": "<V>"
+      }
+    ],
+    "constraints": [
+      {
+        "params": [
+          "<V>"
+        ],
+        "type": "NULL"
+      }
+    ],
+    "property_focus": "size"
+  },
+  {
+    "asp_template_file": "constraint_templates_L0_forbid.txt",
+    "constraint_family": "forbid",
+    "text": [
+      "No object in region <R> may have color <V>.",
+      "Region <R> must not contain any object with color <V>.",
+      "It is forbidden for any object in region <R> to have color <V>."
+    ],
+    "nodes": [
+      {
+        "inputs": [],
+        "type": "scene"
+      },
+      {
+        "side_inputs": [
+          "<R>",
+          "<V>"
+        ],
+        "inputs": [
+          0
+        ],
+        "type": "constraint_forbid_region"
+      },
+      {
+        "inputs": [
+          1
+        ],
+        "type": "property_color"
+      }
+    ],
+    "params": [
+      {
+        "type": "Region",
+        "name": "<R>"
+      },
+      {
+        "type": "Color",
+        "name": "<V>"
+      }
+    ],
+    "constraints": [
+      {
+        "params": [
+          "<V>"
+        ],
+        "type": "NULL"
+      }
+    ],
+    "property_focus": "color"
+  },
+  {
+    "asp_template_file": "constraint_templates_L0_forbid.txt",
+    "constraint_family": "forbid",
+    "text": [
+      "No object in region <R> may have material <V>.",
+      "Region <R> must not contain any object with material <V>.",
+      "It is forbidden for any object in region <R> to have material <V>."
+    ],
+    "nodes": [
+      {
+        "inputs": [],
+        "type": "scene"
+      },
+      {
+        "side_inputs": [
+          "<R>",
+          "<V>"
+        ],
+        "inputs": [
+          0
+        ],
+        "type": "constraint_forbid_region"
+      },
+      {
+        "inputs": [
+          1
+        ],
+        "type": "property_material"
+      }
+    ],
+    "params": [
+      {
+        "type": "Region",
+        "name": "<R>"
+      },
+      {
+        "type": "Material",
+        "name": "<V>"
+      }
+    ],
+    "constraints": [
+      {
+        "params": [
+          "<V>"
+        ],
+        "type": "NULL"
+      }
+    ],
+    "property_focus": "material"
+  },
+  {
+    "asp_template_file": "constraint_templates_L0_forbid.txt",
+    "constraint_family": "forbid",
+    "text": [
+      "No object in region <R> may have shape <V>.",
+      "Region <R> must not contain any object with shape <V>.",
+      "It is forbidden for any object in region <R> to have shape <V>."
+    ],
+    "nodes": [
+      {
+        "inputs": [],
+        "type": "scene"
+      },
+      {
+        "side_inputs": [
+          "<R>",
+          "<V>"
+        ],
+        "inputs": [
+          0
+        ],
+        "type": "constraint_forbid_region"
+      },
+      {
+        "inputs": [
+          1
+        ],
+        "type": "property_shape"
+      }
+    ],
+    "params": [
+      {
+        "type": "Region",
+        "name": "<R>"
+      },
+      {
+        "type": "Shape",
+        "name": "<V>"
+      }
+    ],
+    "constraints": [
+      {
+        "params": [
+          "<V>"
+        ],
+        "type": "NULL"
+      }
+    ],
+    "property_focus": "shape"
+  },
+  {
+    "asp_template_file": "constraint_templates_L0_forbid.txt",
+    "constraint_family": "forbid",
+    "text": [
+      "No object in region <R> may have size <V>.",
+      "Region <R> must not contain any object with size <V>.",
+      "It is forbidden for any object in region <R> to have size <V>."
+    ],
+    "nodes": [
+      {
+        "inputs": [],
+        "type": "scene"
+      },
+      {
+        "side_inputs": [
+          "<R>",
+          "<V>"
+        ],
+        "inputs": [
+          0
+        ],
+        "type": "constraint_forbid_region"
+      },
+      {
+        "inputs": [
+          1
+        ],
+        "type": "property_size"
+      }
+    ],
+    "params": [
+      {
+        "type": "Region",
+        "name": "<R>"
+      },
+      {
+        "type": "Size",
+        "name": "<V>"
+      }
+    ],
+    "constraints": [
+      {
+        "params": [
+          "<V>"
+        ],
+        "type": "NULL"
+      }
+    ],
+    "property_focus": "size"
   }
 ]

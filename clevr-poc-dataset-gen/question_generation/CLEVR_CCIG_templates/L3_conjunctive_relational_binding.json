@@ -1,8 +1,11 @@
 [
   {
+    "asp_template_file": "constraint_templates_L3_shared_hub.txt",
+    "constraint_family": "shared_hub",
     "text": [
-      "Create a scene where at least one shared object satisfies both relations <R> and <R2> with the specified endpoint attributes.",
-      "Create a scene where no object satisfies both relations <R> and <R2> simultaneously for the specified endpoint attributes."
+      "There must exist an object Z and two distinct objects X1 and X2 such that Z is <D1> of X1 and Z is <D2> of X2, with <D1> fixed to left.",
+      "Some object Z must simultaneously satisfy relation left to X1 and relation <D2> to X2.",
+      "A shared object Z must link X1 and X2 via relations left and <D2> respectively."
     ],
     "nodes": [
       {
@@ -11,136 +14,189 @@
       },
       {
         "side_inputs": [
-          "<Z>",
-          "<C>",
-          "<M>",
-          "<S>"
+          "<D1>",
+          "<D2>"
         ],
         "inputs": [
           0
         ],
-        "type": "filter_unique"
+        "type": "constraint_shared_hub"
       },
       {
-        "side_inputs": [
-          "<R>"
-        ],
         "inputs": [
           1
         ],
-        "type": "relate"
+        "type": "relation_left"
+      }
+    ],
+    "params": [
+      {
+        "type": "Relation",
+        "name": "<D1>"
       },
+      {
+        "type": "Relation",
+        "name": "<D2>"
+      }
+    ],
+    "constraints": [
+      {
+        "params": [
+          "<D1>"
+        ],
+        "type": "NULL"
+      }
+    ],
+    "relation_focus": "left"
+  },
+  {
+    "asp_template_file": "constraint_templates_L3_shared_hub.txt",
+    "constraint_family": "shared_hub",
+    "text": [
+      "There must exist an object Z and two distinct objects X1 and X2 such that Z is <D1> of X1 and Z is <D2> of X2, with <D1> fixed to right.",
+      "Some object Z must simultaneously satisfy relation right to X1 and relation <D2> to X2.",
+      "A shared object Z must link X1 and X2 via relations right and <D2> respectively."
+    ],
+    "nodes": [
       {
         "inputs": [],
         "type": "scene"
       },
       {
         "side_inputs": [
-          "<Z2>",
-          "<C2>",
-          "<M2>",
-          "<S2>"
+          "<D1>",
+          "<D2>"
         ],
         "inputs": [
-          3
+          0
         ],
-        "type": "filter_unique"
-      },
-      {
-        "side_inputs": [
-          "<R2>"
-        ],
-        "inputs": [
-          4
-        ],
-        "type": "relate"
+        "type": "constraint_shared_hub"
       },
       {
         "inputs": [
-          2,
-          5
+          1
         ],
-        "type": "intersect"
-      },
-      {
-        "side_inputs": [
-          "<Z3>",
-          "<C3>",
-          "<M3>",
-          "<S3>"
-        ],
-        "inputs": [
-          6
-        ],
-        "type": "filter_exist"
+        "type": "relation_right"
       }
     ],
     "params": [
       {
-        "type": "Size",
-        "name": "<Z>"
-      },
-      {
-        "type": "Color",
-        "name": "<C>"
-      },
-      {
-        "type": "Material",
-        "name": "<M>"
-      },
-      {
-        "type": "Shape",
-        "name": "<S>"
+        "type": "Relation",
+        "name": "<D1>"
       },
       {
         "type": "Relation",
-        "name": "<R>"
-      },
-      {
-        "type": "Size",
-        "name": "<Z2>"
-      },
-      {
-        "type": "Color",
-        "name": "<C2>"
-      },
-      {
-        "type": "Material",
-        "name": "<M2>"
-      },
-      {
-        "type": "Shape",
-        "name": "<S2>"
-      },
-      {
-        "type": "Relation",
-        "name": "<R2>"
-      },
-      {
-        "type": "Size",
-        "name": "<Z3>"
-      },
-      {
-        "type": "Color",
-        "name": "<C3>"
-      },
-      {
-        "type": "Material",
-        "name": "<M3>"
-      },
-      {
-        "type": "Shape",
-        "name": "<S3>"
+        "name": "<D2>"
       }
     ],
     "constraints": [
       {
         "params": [
-          2,
-          5
+          "<D1>"
         ],
-        "type": "OUT_NEQ"
+        "type": "NULL"
       }
-    ]
+    ],
+    "relation_focus": "right"
+  },
+  {
+    "asp_template_file": "constraint_templates_L3_shared_hub.txt",
+    "constraint_family": "shared_hub",
+    "text": [
+      "There must exist an object Z and two distinct objects X1 and X2 such that Z is <D1> of X1 and Z is <D2> of X2, with <D1> fixed to front.",
+      "Some object Z must simultaneously satisfy relation front to X1 and relation <D2> to X2.",
+      "A shared object Z must link X1 and X2 via relations front and <D2> respectively."
+    ],
+    "nodes": [
+      {
+        "inputs": [],
+        "type": "scene"
+      },
+      {
+        "side_inputs": [
+          "<D1>",
+          "<D2>"
+        ],
+        "inputs": [
+          0
+        ],
+        "type": "constraint_shared_hub"
+      },
+      {
+        "inputs": [
+          1
+        ],
+        "type": "relation_front"
+      }
+    ],
+    "params": [
+      {
+        "type": "Relation",
+        "name": "<D1>"
+      },
+      {
+        "type": "Relation",
+        "name": "<D2>"
+      }
+    ],
+    "constraints": [
+      {
+        "params": [
+          "<D1>"
+        ],
+        "type": "NULL"
+      }
+    ],
+    "relation_focus": "front"
+  },
+  {
+    "asp_template_file": "constraint_templates_L3_shared_hub.txt",
+    "constraint_family": "shared_hub",
+    "text": [
+      "There must exist an object Z and two distinct objects X1 and X2 such that Z is <D1> of X1 and Z is <D2> of X2, with <D1> fixed to behind.",
+      "Some object Z must simultaneously satisfy relation behind to X1 and relation <D2> to X2.",
+      "A shared object Z must link X1 and X2 via relations behind and <D2> respectively."
+    ],
+    "nodes": [
+      {
+        "inputs": [],
+        "type": "scene"
+      },
+      {
+        "side_inputs": [
+          "<D1>",
+          "<D2>"
+        ],
+        "inputs": [
+          0
+        ],
+        "type": "constraint_shared_hub"
+      },
+      {
+        "inputs": [
+          1
+        ],
+        "type": "relation_behind"
+      }
+    ],
+    "params": [
+      {
+        "type": "Relation",
+        "name": "<D1>"
+      },
+      {
+        "type": "Relation",
+        "name": "<D2>"
+      }
+    ],
+    "constraints": [
+      {
+        "params": [
+          "<D1>"
+        ],
+        "type": "NULL"
+      }
+    ],
+    "relation_focus": "behind"
   }
 ]

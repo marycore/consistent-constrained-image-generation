@@ -1,0 +1,90 @@
+{
+  "combos": [
+    {
+      "id": "2_L0_exist+L0_forbid",
+      "components": [
+        {"level": "L0", "constraint_family": "exist"},
+        {"level": "L0", "constraint_family": "forbid"}
+      ]
+    },
+    {
+      "id": "2_L0_exist+L2_chain2",
+      "components": [
+        {"level": "L0", "constraint_family": "exist"},
+        {"level": "L2", "constraint_family": "chain2"}
+      ]
+    },
+    {
+      "id": "2_L0+L1",
+      "components": [
+        {"level": "L0"},
+        {"level": "L1"}
+      ]
+    },
+    {
+      "id": "2_L4_implication+L6_unary_count",
+      "components": [
+        {"level": "L4", "constraint_family": "implication"},
+        {"level": "L6", "constraint_family": "unary_count"}
+      ]
+    },
+    {
+      "id": "2_L7_witness_exist+L7_witness_unique",
+      "components": [
+        {"level": "L7", "constraint_family": "witness_exist"},
+        {"level": "L7", "constraint_family": "witness_unique"}
+      ]
+    },
+    {
+      "id": "3_L0_exist+L1_exist_pair+L2_chain2",
+      "components": [
+        {"level": "L0", "constraint_family": "exist"},
+        {"level": "L1", "constraint_family": "exist_pair"},
+        {"level": "L2", "constraint_family": "chain2"}
+      ]
+    },
+    {
+      "id": "3_L0_forbid+L3_shared_hub+L5_universal_witness",
+      "components": [
+        {"level": "L0", "constraint_family": "forbid"},
+        {"level": "L3", "constraint_family": "shared_hub"},
+        {"level": "L5", "constraint_family": "universal_witness"}
+      ]
+    },
+    {
+      "id": "3_L1+L3+L6",
+      "components": [
+        {"level": "L1"},
+        {"level": "L3"},
+        {"level": "L6"}
+      ]
+    },
+    {
+      "id": "4_L0_exist+L2_chain2+L4_implication+L6_unary_count",
+      "components": [
+        {"level": "L0", "constraint_family": "exist"},
+        {"level": "L2", "constraint_family": "chain2"},
+        {"level": "L4", "constraint_family": "implication"},
+        {"level": "L6", "constraint_family": "unary_count"}
+      ]
+    },
+    {
+      "id": "4_L1_exist_pair+L3_shared_hub+L7_witness_exist+L8_count_coupling",
+      "components": [
+        {"level": "L1", "constraint_family": "exist_pair"},
+        {"level": "L3", "constraint_family": "shared_hub"},
+        {"level": "L7", "constraint_family": "witness_exist"},
+        {"level": "L8", "constraint_family": "count_coupling"}
+      ]
+    },
+    {
+      "id": "4_L0+L2+L4+L8",
+      "components": [
+        {"level": "L0"},
+        {"level": "L2"},
+        {"level": "L4"},
+        {"level": "L8"}
+      ]
+    }
+  ]
+}

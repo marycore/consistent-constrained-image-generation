@@ -1,8 +1,10 @@
 [
   {
+    "asp_template_file": "constraint_templates_L6_unary_count.txt",
+    "constraint_family": "unary_count",
     "text": [
-      "Create a scene where the exact count of objects matching a unary filter equals N.",
-      "Create a scene where the exact count of objects satisfying a relation-based aggregate equals N."
+      "Exactly <N1> objects in region <R1> must have color <V1>.",
+      "The count of objects in region <R1> with color <V1> must equal <N1>."
     ],
     "nodes": [
       {
@@ -11,68 +13,582 @@
       },
       {
         "side_inputs": [
-          "<Z>",
-          "<C>",
-          "<M>",
-          "<S>"
+          "<R1>",
+          "<V1>",
+          "<N1>",
+          "<R2>",
+          "<P2>",
+          "<V2>",
+          "<D1>"
         ],
         "inputs": [
           0
         ],
-        "type": "filter_unique"
+        "type": "constraint_exact_count"
       },
       {
-        "side_inputs": [
-          "<R>",
-          "<Z2>",
-          "<C2>",
-          "<M2>",
-          "<S2>"
-        ],
         "inputs": [
           1
         ],
-        "type": "relate_filter_count"
+        "type": "property_color"
       }
     ],
     "params": [
       {
-        "type": "Size",
-        "name": "<Z>"
+        "type": "Region",
+        "name": "<R1>"
       },
       {
         "type": "Color",
-        "name": "<C>"
+        "name": "<V1>"
       },
       {
-        "type": "Material",
-        "name": "<M>"
+        "type": "Count",
+        "name": "<N1>"
       },
       {
-        "type": "Shape",
-        "name": "<S>"
+        "type": "Region",
+        "name": "<R2>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
       },
       {
         "type": "Relation",
-        "name": "<R>"
+        "name": "<D1>"
+      }
+    ],
+    "constraints": [
+      {
+        "params": [
+          "<V1>"
+        ],
+        "type": "NULL"
+      }
+    ],
+    "property_focus": "color"
+  },
+  {
+    "asp_template_file": "constraint_templates_L6_unary_count.txt",
+    "constraint_family": "unary_count",
+    "text": [
+      "Exactly <N1> objects in region <R1> must have material <V1>.",
+      "The count of objects in region <R1> with material <V1> must equal <N1>."
+    ],
+    "nodes": [
+      {
+        "inputs": [],
+        "type": "scene"
       },
       {
-        "type": "Size",
-        "name": "<Z2>"
+        "side_inputs": [
+          "<R1>",
+          "<V1>",
+          "<N1>",
+          "<R2>",
+          "<P2>",
+          "<V2>",
+          "<D1>"
+        ],
+        "inputs": [
+          0
+        ],
+        "type": "constraint_exact_count"
       },
       {
-        "type": "Color",
-        "name": "<C2>"
+        "inputs": [
+          1
+        ],
+        "type": "property_material"
+      }
+    ],
+    "params": [
+      {
+        "type": "Region",
+        "name": "<R1>"
       },
       {
         "type": "Material",
-        "name": "<M2>"
+        "name": "<V1>"
+      },
+      {
+        "type": "Count",
+        "name": "<N1>"
+      },
+      {
+        "type": "Region",
+        "name": "<R2>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      },
+      {
+        "type": "Relation",
+        "name": "<D1>"
+      }
+    ],
+    "constraints": [
+      {
+        "params": [
+          "<V1>"
+        ],
+        "type": "NULL"
+      }
+    ],
+    "property_focus": "material"
+  },
+  {
+    "asp_template_file": "constraint_templates_L6_unary_count.txt",
+    "constraint_family": "unary_count",
+    "text": [
+      "Exactly <N1> objects in region <R1> must have shape <V1>.",
+      "The count of objects in region <R1> with shape <V1> must equal <N1>."
+    ],
+    "nodes": [
+      {
+        "inputs": [],
+        "type": "scene"
+      },
+      {
+        "side_inputs": [
+          "<R1>",
+          "<V1>",
+          "<N1>",
+          "<R2>",
+          "<P2>",
+          "<V2>",
+          "<D1>"
+        ],
+        "inputs": [
+          0
+        ],
+        "type": "constraint_exact_count"
+      },
+      {
+        "inputs": [
+          1
+        ],
+        "type": "property_shape"
+      }
+    ],
+    "params": [
+      {
+        "type": "Region",
+        "name": "<R1>"
       },
       {
         "type": "Shape",
-        "name": "<S2>"
+        "name": "<V1>"
+      },
+      {
+        "type": "Count",
+        "name": "<N1>"
+      },
+      {
+        "type": "Region",
+        "name": "<R2>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      },
+      {
+        "type": "Relation",
+        "name": "<D1>"
       }
     ],
-    "constraints": []
+    "constraints": [
+      {
+        "params": [
+          "<V1>"
+        ],
+        "type": "NULL"
+      }
+    ],
+    "property_focus": "shape"
+  },
+  {
+    "asp_template_file": "constraint_templates_L6_unary_count.txt",
+    "constraint_family": "unary_count",
+    "text": [
+      "Exactly <N1> objects in region <R1> must have size <V1>.",
+      "The count of objects in region <R1> with size <V1> must equal <N1>."
+    ],
+    "nodes": [
+      {
+        "inputs": [],
+        "type": "scene"
+      },
+      {
+        "side_inputs": [
+          "<R1>",
+          "<V1>",
+          "<N1>",
+          "<R2>",
+          "<P2>",
+          "<V2>",
+          "<D1>"
+        ],
+        "inputs": [
+          0
+        ],
+        "type": "constraint_exact_count"
+      },
+      {
+        "inputs": [
+          1
+        ],
+        "type": "property_size"
+      }
+    ],
+    "params": [
+      {
+        "type": "Region",
+        "name": "<R1>"
+      },
+      {
+        "type": "Size",
+        "name": "<V1>"
+      },
+      {
+        "type": "Count",
+        "name": "<N1>"
+      },
+      {
+        "type": "Region",
+        "name": "<R2>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      },
+      {
+        "type": "Relation",
+        "name": "<D1>"
+      }
+    ],
+    "constraints": [
+      {
+        "params": [
+          "<V1>"
+        ],
+        "type": "NULL"
+      }
+    ],
+    "property_focus": "size"
+  },
+  {
+    "asp_template_file": "constraint_templates_L6_relational_count.txt",
+    "constraint_family": "relational_count",
+    "text": [
+      "Exactly <N1> objects X must satisfy relation <D1> to some object in region <R2> with <P2> <V2>, with X having color <V1>.",
+      "The number of objects with color <V1> that are <D1> of an object in region <R2> with <P2> <V2> must equal <N1>."
+    ],
+    "nodes": [
+      {
+        "inputs": [],
+        "type": "scene"
+      },
+      {
+        "side_inputs": [
+          "<R1>",
+          "<V1>",
+          "<N1>",
+          "<R2>",
+          "<P2>",
+          "<V2>",
+          "<D1>"
+        ],
+        "inputs": [
+          0
+        ],
+        "type": "constraint_relational_count"
+      },
+      {
+        "inputs": [
+          1
+        ],
+        "type": "property_color"
+      }
+    ],
+    "params": [
+      {
+        "type": "Region",
+        "name": "<R1>"
+      },
+      {
+        "type": "Color",
+        "name": "<V1>"
+      },
+      {
+        "type": "Count",
+        "name": "<N1>"
+      },
+      {
+        "type": "Region",
+        "name": "<R2>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      },
+      {
+        "type": "Relation",
+        "name": "<D1>"
+      }
+    ],
+    "constraints": [
+      {
+        "params": [
+          "<V1>"
+        ],
+        "type": "NULL"
+      }
+    ],
+    "property_focus": "color"
+  },
+  {
+    "asp_template_file": "constraint_templates_L6_relational_count.txt",
+    "constraint_family": "relational_count",
+    "text": [
+      "Exactly <N1> objects X must satisfy relation <D1> to some object in region <R2> with <P2> <V2>, with X having material <V1>.",
+      "The number of objects with material <V1> that are <D1> of an object in region <R2> with <P2> <V2> must equal <N1>."
+    ],
+    "nodes": [
+      {
+        "inputs": [],
+        "type": "scene"
+      },
+      {
+        "side_inputs": [
+          "<R1>",
+          "<V1>",
+          "<N1>",
+          "<R2>",
+          "<P2>",
+          "<V2>",
+          "<D1>"
+        ],
+        "inputs": [
+          0
+        ],
+        "type": "constraint_relational_count"
+      },
+      {
+        "inputs": [
+          1
+        ],
+        "type": "property_material"
+      }
+    ],
+    "params": [
+      {
+        "type": "Region",
+        "name": "<R1>"
+      },
+      {
+        "type": "Material",
+        "name": "<V1>"
+      },
+      {
+        "type": "Count",
+        "name": "<N1>"
+      },
+      {
+        "type": "Region",
+        "name": "<R2>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      },
+      {
+        "type": "Relation",
+        "name": "<D1>"
+      }
+    ],
+    "constraints": [
+      {
+        "params": [
+          "<V1>"
+        ],
+        "type": "NULL"
+      }
+    ],
+    "property_focus": "material"
+  },
+  {
+    "asp_template_file": "constraint_templates_L6_relational_count.txt",
+    "constraint_family": "relational_count",
+    "text": [
+      "Exactly <N1> objects X must satisfy relation <D1> to some object in region <R2> with <P2> <V2>, with X having shape <V1>.",
+      "The number of objects with shape <V1> that are <D1> of an object in region <R2> with <P2> <V2> must equal <N1>."
+    ],
+    "nodes": [
+      {
+        "inputs": [],
+        "type": "scene"
+      },
+      {
+        "side_inputs": [
+          "<R1>",
+          "<V1>",
+          "<N1>",
+          "<R2>",
+          "<P2>",
+          "<V2>",
+          "<D1>"
+        ],
+        "inputs": [
+          0
+        ],
+        "type": "constraint_relational_count"
+      },
+      {
+        "inputs": [
+          1
+        ],
+        "type": "property_shape"
+      }
+    ],
+    "params": [
+      {
+        "type": "Region",
+        "name": "<R1>"
+      },
+      {
+        "type": "Shape",
+        "name": "<V1>"
+      },
+      {
+        "type": "Count",
+        "name": "<N1>"
+      },
+      {
+        "type": "Region",
+        "name": "<R2>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      },
+      {
+        "type": "Relation",
+        "name": "<D1>"
+      }
+    ],
+    "constraints": [
+      {
+        "params": [
+          "<V1>"
+        ],
+        "type": "NULL"
+      }
+    ],
+    "property_focus": "shape"
+  },
+  {
+    "asp_template_file": "constraint_templates_L6_relational_count.txt",
+    "constraint_family": "relational_count",
+    "text": [
+      "Exactly <N1> objects X must satisfy relation <D1> to some object in region <R2> with <P2> <V2>, with X having size <V1>.",
+      "The number of objects with size <V1> that are <D1> of an object in region <R2> with <P2> <V2> must equal <N1>."
+    ],
+    "nodes": [
+      {
+        "inputs": [],
+        "type": "scene"
+      },
+      {
+        "side_inputs": [
+          "<R1>",
+          "<V1>",
+          "<N1>",
+          "<R2>",
+          "<P2>",
+          "<V2>",
+          "<D1>"
+        ],
+        "inputs": [
+          0
+        ],
+        "type": "constraint_relational_count"
+      },
+      {
+        "inputs": [
+          1
+        ],
+        "type": "property_size"
+      }
+    ],
+    "params": [
+      {
+        "type": "Region",
+        "name": "<R1>"
+      },
+      {
+        "type": "Size",
+        "name": "<V1>"
+      },
+      {
+        "type": "Count",
+        "name": "<N1>"
+      },
+      {
+        "type": "Region",
+        "name": "<R2>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      },
+      {
+        "type": "Relation",
+        "name": "<D1>"
+      }
+    ],
+    "constraints": [
+      {
+        "params": [
+          "<V1>"
+        ],
+        "type": "NULL"
+      }
+    ],
+    "property_focus": "size"
   }
 ]

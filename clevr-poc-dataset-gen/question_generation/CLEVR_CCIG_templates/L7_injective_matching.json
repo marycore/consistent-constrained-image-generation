@@ -1,8 +1,10 @@
 [
   {
+    "asp_template_file": "constraint_templates_L7_witness_exist.txt",
+    "constraint_family": "witness_exist",
     "text": [
-      "Create a scene where each source object (<Z>,<C>,<M>,<S>) has at least one witness object (<Z2>,<C2>,<M2>,<S2>) under relation <R>.",
-      "Create a scene where each source object has at most one such witness object under relation <R>."
+      "Every object in region <R1> with color <V1> must have at least one witness in region <R2> with <P2> <V2> related by <D1>.",
+      "Each source object in region <R1> with color <V1> requires at least one matching witness object."
     ],
     "nodes": [
       {
@@ -11,81 +13,542 @@
       },
       {
         "side_inputs": [
-          "<Z>",
-          "<C>",
-          "<M>",
-          "<S>"
+          "<R1>",
+          "<V1>",
+          "<R2>",
+          "<P2>",
+          "<V2>",
+          "<D1>"
         ],
         "inputs": [
           0
         ],
-        "type": "filter_unique"
+        "type": "constraint_injective_exist"
       },
       {
-        "side_inputs": [
-          "<R>",
-          "<Z2>",
-          "<C2>",
-          "<M2>",
-          "<S2>"
-        ],
         "inputs": [
           1
         ],
-        "type": "relate_filter_unique"
-      },
-      {
-        "inputs": [
-          2
-        ],
-        "type": "query_color"
+        "type": "property_color"
       }
     ],
     "params": [
       {
-        "type": "Size",
-        "name": "<Z>"
+        "type": "Region",
+        "name": "<R1>"
       },
       {
         "type": "Color",
-        "name": "<C>"
+        "name": "<V1>"
       },
       {
-        "type": "Material",
-        "name": "<M>"
+        "type": "Region",
+        "name": "<R2>"
       },
       {
-        "type": "Shape",
-        "name": "<S>"
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
       },
       {
         "type": "Relation",
-        "name": "<R>"
-      },
-      {
-        "type": "Size",
-        "name": "<Z2>"
-      },
-      {
-        "type": "Color",
-        "name": "<C2>"
-      },
-      {
-        "type": "Material",
-        "name": "<M2>"
-      },
-      {
-        "type": "Shape",
-        "name": "<S2>"
+        "name": "<D1>"
       }
     ],
     "constraints": [
       {
         "params": [
-          "<C2>"
+          "<V1>"
         ],
         "type": "NULL"
       }
-    ]
+    ],
+    "property_focus": "color"
+  },
+  {
+    "asp_template_file": "constraint_templates_L7_witness_exist.txt",
+    "constraint_family": "witness_exist",
+    "text": [
+      "Every object in region <R1> with material <V1> must have at least one witness in region <R2> with <P2> <V2> related by <D1>.",
+      "Each source object in region <R1> with material <V1> requires at least one matching witness object."
+    ],
+    "nodes": [
+      {
+        "inputs": [],
+        "type": "scene"
+      },
+      {
+        "side_inputs": [
+          "<R1>",
+          "<V1>",
+          "<R2>",
+          "<P2>",
+          "<V2>",
+          "<D1>"
+        ],
+        "inputs": [
+          0
+        ],
+        "type": "constraint_injective_exist"
+      },
+      {
+        "inputs": [
+          1
+        ],
+        "type": "property_material"
+      }
+    ],
+    "params": [
+      {
+        "type": "Region",
+        "name": "<R1>"
+      },
+      {
+        "type": "Material",
+        "name": "<V1>"
+      },
+      {
+        "type": "Region",
+        "name": "<R2>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      },
+      {
+        "type": "Relation",
+        "name": "<D1>"
+      }
+    ],
+    "constraints": [
+      {
+        "params": [
+          "<V1>"
+        ],
+        "type": "NULL"
+      }
+    ],
+    "property_focus": "material"
+  },
+  {
+    "asp_template_file": "constraint_templates_L7_witness_exist.txt",
+    "constraint_family": "witness_exist",
+    "text": [
+      "Every object in region <R1> with shape <V1> must have at least one witness in region <R2> with <P2> <V2> related by <D1>.",
+      "Each source object in region <R1> with shape <V1> requires at least one matching witness object."
+    ],
+    "nodes": [
+      {
+        "inputs": [],
+        "type": "scene"
+      },
+      {
+        "side_inputs": [
+          "<R1>",
+          "<V1>",
+          "<R2>",
+          "<P2>",
+          "<V2>",
+          "<D1>"
+        ],
+        "inputs": [
+          0
+        ],
+        "type": "constraint_injective_exist"
+      },
+      {
+        "inputs": [
+          1
+        ],
+        "type": "property_shape"
+      }
+    ],
+    "params": [
+      {
+        "type": "Region",
+        "name": "<R1>"
+      },
+      {
+        "type": "Shape",
+        "name": "<V1>"
+      },
+      {
+        "type": "Region",
+        "name": "<R2>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      },
+      {
+        "type": "Relation",
+        "name": "<D1>"
+      }
+    ],
+    "constraints": [
+      {
+        "params": [
+          "<V1>"
+        ],
+        "type": "NULL"
+      }
+    ],
+    "property_focus": "shape"
+  },
+  {
+    "asp_template_file": "constraint_templates_L7_witness_exist.txt",
+    "constraint_family": "witness_exist",
+    "text": [
+      "Every object in region <R1> with size <V1> must have at least one witness in region <R2> with <P2> <V2> related by <D1>.",
+      "Each source object in region <R1> with size <V1> requires at least one matching witness object."
+    ],
+    "nodes": [
+      {
+        "inputs": [],
+        "type": "scene"
+      },
+      {
+        "side_inputs": [
+          "<R1>",
+          "<V1>",
+          "<R2>",
+          "<P2>",
+          "<V2>",
+          "<D1>"
+        ],
+        "inputs": [
+          0
+        ],
+        "type": "constraint_injective_exist"
+      },
+      {
+        "inputs": [
+          1
+        ],
+        "type": "property_size"
+      }
+    ],
+    "params": [
+      {
+        "type": "Region",
+        "name": "<R1>"
+      },
+      {
+        "type": "Size",
+        "name": "<V1>"
+      },
+      {
+        "type": "Region",
+        "name": "<R2>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      },
+      {
+        "type": "Relation",
+        "name": "<D1>"
+      }
+    ],
+    "constraints": [
+      {
+        "params": [
+          "<V1>"
+        ],
+        "type": "NULL"
+      }
+    ],
+    "property_focus": "size"
+  },
+  {
+    "asp_template_file": "constraint_templates_L7_witness_unique.txt",
+    "constraint_family": "witness_unique",
+    "text": [
+      "Every object in region <R1> with color <V1> may have at most one witness in region <R2> with <P2> <V2> related by <D1>.",
+      "Each source object in region <R1> with color <V1> must have a unique witness object satisfying the relation and filter."
+    ],
+    "nodes": [
+      {
+        "inputs": [],
+        "type": "scene"
+      },
+      {
+        "side_inputs": [
+          "<R1>",
+          "<V1>",
+          "<R2>",
+          "<P2>",
+          "<V2>",
+          "<D1>"
+        ],
+        "inputs": [
+          0
+        ],
+        "type": "constraint_injective_unique"
+      },
+      {
+        "inputs": [
+          1
+        ],
+        "type": "property_color"
+      }
+    ],
+    "params": [
+      {
+        "type": "Region",
+        "name": "<R1>"
+      },
+      {
+        "type": "Color",
+        "name": "<V1>"
+      },
+      {
+        "type": "Region",
+        "name": "<R2>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      },
+      {
+        "type": "Relation",
+        "name": "<D1>"
+      }
+    ],
+    "constraints": [
+      {
+        "params": [
+          "<V1>"
+        ],
+        "type": "NULL"
+      }
+    ],
+    "property_focus": "color"
+  },
+  {
+    "asp_template_file": "constraint_templates_L7_witness_unique.txt",
+    "constraint_family": "witness_unique",
+    "text": [
+      "Every object in region <R1> with material <V1> may have at most one witness in region <R2> with <P2> <V2> related by <D1>.",
+      "Each source object in region <R1> with material <V1> must have a unique witness object satisfying the relation and filter."
+    ],
+    "nodes": [
+      {
+        "inputs": [],
+        "type": "scene"
+      },
+      {
+        "side_inputs": [
+          "<R1>",
+          "<V1>",
+          "<R2>",
+          "<P2>",
+          "<V2>",
+          "<D1>"
+        ],
+        "inputs": [
+          0
+        ],
+        "type": "constraint_injective_unique"
+      },
+      {
+        "inputs": [
+          1
+        ],
+        "type": "property_material"
+      }
+    ],
+    "params": [
+      {
+        "type": "Region",
+        "name": "<R1>"
+      },
+      {
+        "type": "Material",
+        "name": "<V1>"
+      },
+      {
+        "type": "Region",
+        "name": "<R2>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      },
+      {
+        "type": "Relation",
+        "name": "<D1>"
+      }
+    ],
+    "constraints": [
+      {
+        "params": [
+          "<V1>"
+        ],
+        "type": "NULL"
+      }
+    ],
+    "property_focus": "material"
+  },
+  {
+    "asp_template_file": "constraint_templates_L7_witness_unique.txt",
+    "constraint_family": "witness_unique",
+    "text": [
+      "Every object in region <R1> with shape <V1> may have at most one witness in region <R2> with <P2> <V2> related by <D1>.",
+      "Each source object in region <R1> with shape <V1> must have a unique witness object satisfying the relation and filter."
+    ],
+    "nodes": [
+      {
+        "inputs": [],
+        "type": "scene"
+      },
+      {
+        "side_inputs": [
+          "<R1>",
+          "<V1>",
+          "<R2>",
+          "<P2>",
+          "<V2>",
+          "<D1>"
+        ],
+        "inputs": [
+          0
+        ],
+        "type": "constraint_injective_unique"
+      },
+      {
+        "inputs": [
+          1
+        ],
+        "type": "property_shape"
+      }
+    ],
+    "params": [
+      {
+        "type": "Region",
+        "name": "<R1>"
+      },
+      {
+        "type": "Shape",
+        "name": "<V1>"
+      },
+      {
+        "type": "Region",
+        "name": "<R2>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      },
+      {
+        "type": "Relation",
+        "name": "<D1>"
+      }
+    ],
+    "constraints": [
+      {
+        "params": [
+          "<V1>"
+        ],
+        "type": "NULL"
+      }
+    ],
+    "property_focus": "shape"
+  },
+  {
+    "asp_template_file": "constraint_templates_L7_witness_unique.txt",
+    "constraint_family": "witness_unique",
+    "text": [
+      "Every object in region <R1> with size <V1> may have at most one witness in region <R2> with <P2> <V2> related by <D1>.",
+      "Each source object in region <R1> with size <V1> must have a unique witness object satisfying the relation and filter."
+    ],
+    "nodes": [
+      {
+        "inputs": [],
+        "type": "scene"
+      },
+      {
+        "side_inputs": [
+          "<R1>",
+          "<V1>",
+          "<R2>",
+          "<P2>",
+          "<V2>",
+          "<D1>"
+        ],
+        "inputs": [
+          0
+        ],
+        "type": "constraint_injective_unique"
+      },
+      {
+        "inputs": [
+          1
+        ],
+        "type": "property_size"
+      }
+    ],
+    "params": [
+      {
+        "type": "Region",
+        "name": "<R1>"
+      },
+      {
+        "type": "Size",
+        "name": "<V1>"
+      },
+      {
+        "type": "Region",
+        "name": "<R2>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      },
+      {
+        "type": "Relation",
+        "name": "<D1>"
+      }
+    ],
+    "constraints": [
+      {
+        "params": [
+          "<V1>"
+        ],
+        "type": "NULL"
+      }
+    ],
+    "property_focus": "size"
   }
 ]

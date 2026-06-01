@@ -1,8 +1,11 @@
 [
   {
+    "asp_template_file": "constraint_templates_L2_chain2.txt",
+    "constraint_family": "chain2",
     "text": [
-      "Create a scene containing a 2-hop chain with relations <R> then <R2> across objects with attributes (<Z>,<C>,<M>,<S>) -> (<Z2>,<C2>,<M2>,<S2>) -> (<Z3>,<C3>,<M3>,<S3>).",
-      "Create a scene where the specified 2-hop chain with relations <R> then <R2> does not occur."
+      "There must exist a chain of three distinct objects X1, X2, X3 such that X1 is <D1> of X2 and X2 is <D2> of X3, with <D1> fixed to left.",
+      "A 2-hop relational chain X1->left->X2-><D2>->X3 must exist among three distinct objects.",
+      "Some triple of objects must satisfy relations left then <D2> in sequence."
     ],
     "nodes": [
       {
@@ -11,101 +14,189 @@
       },
       {
         "side_inputs": [
-          "<Z>",
-          "<C>",
-          "<M>",
-          "<S>"
+          "<D1>",
+          "<D2>"
         ],
         "inputs": [
           0
         ],
-        "type": "filter_unique"
+        "type": "constraint_chain2"
       },
       {
-        "side_inputs": [
-          "<R>",
-          "<Z2>",
-          "<C2>",
-          "<M2>",
-          "<S2>"
-        ],
         "inputs": [
           1
         ],
-        "type": "relate_filter_unique"
-      },
-      {
-        "side_inputs": [
-          "<R2>",
-          "<Z3>",
-          "<C3>",
-          "<M3>",
-          "<S3>"
-        ],
-        "inputs": [
-          2
-        ],
-        "type": "relate_filter_exist"
+        "type": "relation_left"
       }
     ],
     "params": [
       {
-        "type": "Size",
-        "name": "<Z>"
-      },
-      {
-        "type": "Color",
-        "name": "<C>"
-      },
-      {
-        "type": "Material",
-        "name": "<M>"
-      },
-      {
-        "type": "Shape",
-        "name": "<S>"
+        "type": "Relation",
+        "name": "<D1>"
       },
       {
         "type": "Relation",
-        "name": "<R>"
-      },
-      {
-        "type": "Size",
-        "name": "<Z2>"
-      },
-      {
-        "type": "Color",
-        "name": "<C2>"
-      },
-      {
-        "type": "Material",
-        "name": "<M2>"
-      },
-      {
-        "type": "Shape",
-        "name": "<S2>"
-      },
-      {
-        "type": "Relation",
-        "name": "<R2>"
-      },
-      {
-        "type": "Size",
-        "name": "<Z3>"
-      },
-      {
-        "type": "Color",
-        "name": "<C3>"
-      },
-      {
-        "type": "Material",
-        "name": "<M3>"
-      },
-      {
-        "type": "Shape",
-        "name": "<S3>"
+        "name": "<D2>"
       }
     ],
-    "constraints": []
+    "constraints": [
+      {
+        "params": [
+          "<D1>"
+        ],
+        "type": "NULL"
+      }
+    ],
+    "relation_focus": "left"
+  },
+  {
+    "asp_template_file": "constraint_templates_L2_chain2.txt",
+    "constraint_family": "chain2",
+    "text": [
+      "There must exist a chain of three distinct objects X1, X2, X3 such that X1 is <D1> of X2 and X2 is <D2> of X3, with <D1> fixed to right.",
+      "A 2-hop relational chain X1->right->X2-><D2>->X3 must exist among three distinct objects.",
+      "Some triple of objects must satisfy relations right then <D2> in sequence."
+    ],
+    "nodes": [
+      {
+        "inputs": [],
+        "type": "scene"
+      },
+      {
+        "side_inputs": [
+          "<D1>",
+          "<D2>"
+        ],
+        "inputs": [
+          0
+        ],
+        "type": "constraint_chain2"
+      },
+      {
+        "inputs": [
+          1
+        ],
+        "type": "relation_right"
+      }
+    ],
+    "params": [
+      {
+        "type": "Relation",
+        "name": "<D1>"
+      },
+      {
+        "type": "Relation",
+        "name": "<D2>"
+      }
+    ],
+    "constraints": [
+      {
+        "params": [
+          "<D1>"
+        ],
+        "type": "NULL"
+      }
+    ],
+    "relation_focus": "right"
+  },
+  {
+    "asp_template_file": "constraint_templates_L2_chain2.txt",
+    "constraint_family": "chain2",
+    "text": [
+      "There must exist a chain of three distinct objects X1, X2, X3 such that X1 is <D1> of X2 and X2 is <D2> of X3, with <D1> fixed to front.",
+      "A 2-hop relational chain X1->front->X2-><D2>->X3 must exist among three distinct objects.",
+      "Some triple of objects must satisfy relations front then <D2> in sequence."
+    ],
+    "nodes": [
+      {
+        "inputs": [],
+        "type": "scene"
+      },
+      {
+        "side_inputs": [
+          "<D1>",
+          "<D2>"
+        ],
+        "inputs": [
+          0
+        ],
+        "type": "constraint_chain2"
+      },
+      {
+        "inputs": [
+          1
+        ],
+        "type": "relation_front"
+      }
+    ],
+    "params": [
+      {
+        "type": "Relation",
+        "name": "<D1>"
+      },
+      {
+        "type": "Relation",
+        "name": "<D2>"
+      }
+    ],
+    "constraints": [
+      {
+        "params": [
+          "<D1>"
+        ],
+        "type": "NULL"
+      }
+    ],
+    "relation_focus": "front"
+  },
+  {
+    "asp_template_file": "constraint_templates_L2_chain2.txt",
+    "constraint_family": "chain2",
+    "text": [
+      "There must exist a chain of three distinct objects X1, X2, X3 such that X1 is <D1> of X2 and X2 is <D2> of X3, with <D1> fixed to behind.",
+      "A 2-hop relational chain X1->behind->X2-><D2>->X3 must exist among three distinct objects.",
+      "Some triple of objects must satisfy relations behind then <D2> in sequence."
+    ],
+    "nodes": [
+      {
+        "inputs": [],
+        "type": "scene"
+      },
+      {
+        "side_inputs": [
+          "<D1>",
+          "<D2>"
+        ],
+        "inputs": [
+          0
+        ],
+        "type": "constraint_chain2"
+      },
+      {
+        "inputs": [
+          1
+        ],
+        "type": "relation_behind"
+      }
+    ],
+    "params": [
+      {
+        "type": "Relation",
+        "name": "<D1>"
+      },
+      {
+        "type": "Relation",
+        "name": "<D2>"
+      }
+    ],
+    "constraints": [
+      {
+        "params": [
+          "<D1>"
+        ],
+        "type": "NULL"
+      }
+    ],
+    "relation_focus": "behind"
   }
 ]

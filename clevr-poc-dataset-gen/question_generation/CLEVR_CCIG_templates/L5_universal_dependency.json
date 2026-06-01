@@ -1,8 +1,10 @@
 [
   {
+    "asp_template_file": "constraint_templates_L5_universal_witness.txt",
+    "constraint_family": "universal_witness",
     "text": [
-      "Create a scene where every trigger object (<Z>,<C>,<M>,<S>) has at least one witness object (<Z2>,<C2>,<M2>,<S2>) linked by <R>.",
-      "Create a scene where this universal dependency is violated for no trigger object."
+      "Every object in region <R1> with color <V1> must have at least one witness object in region <R2> with <P2> <V2> related by <D1>.",
+      "Each trigger object in region <R1> with color <V1> requires a witness in region <R2> with <P2> <V2> standing in relation <D1> to it."
     ],
     "nodes": [
       {
@@ -11,68 +13,266 @@
       },
       {
         "side_inputs": [
-          "<Z>",
-          "<C>",
-          "<M>",
-          "<S>"
+          "<R1>",
+          "<V1>",
+          "<R2>",
+          "<P2>",
+          "<V2>",
+          "<D1>"
         ],
         "inputs": [
           0
         ],
-        "type": "filter_unique"
+        "type": "constraint_universal_witness"
       },
       {
-        "side_inputs": [
-          "<R>",
-          "<Z2>",
-          "<C2>",
-          "<M2>",
-          "<S2>"
-        ],
         "inputs": [
           1
         ],
-        "type": "relate_filter_exist"
+        "type": "property_color"
       }
     ],
     "params": [
       {
-        "type": "Size",
-        "name": "<Z>"
+        "type": "Region",
+        "name": "<R1>"
       },
       {
         "type": "Color",
-        "name": "<C>"
+        "name": "<V1>"
       },
       {
-        "type": "Material",
-        "name": "<M>"
+        "type": "Region",
+        "name": "<R2>"
       },
       {
-        "type": "Shape",
-        "name": "<S>"
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
       },
       {
         "type": "Relation",
-        "name": "<R>"
+        "name": "<D1>"
+      }
+    ],
+    "constraints": [
+      {
+        "params": [
+          "<V1>"
+        ],
+        "type": "NULL"
+      }
+    ],
+    "property_focus": "color"
+  },
+  {
+    "asp_template_file": "constraint_templates_L5_universal_witness.txt",
+    "constraint_family": "universal_witness",
+    "text": [
+      "Every object in region <R1> with material <V1> must have at least one witness object in region <R2> with <P2> <V2> related by <D1>.",
+      "Each trigger object in region <R1> with material <V1> requires a witness in region <R2> with <P2> <V2> standing in relation <D1> to it."
+    ],
+    "nodes": [
+      {
+        "inputs": [],
+        "type": "scene"
       },
       {
-        "type": "Size",
-        "name": "<Z2>"
+        "side_inputs": [
+          "<R1>",
+          "<V1>",
+          "<R2>",
+          "<P2>",
+          "<V2>",
+          "<D1>"
+        ],
+        "inputs": [
+          0
+        ],
+        "type": "constraint_universal_witness"
       },
       {
-        "type": "Color",
-        "name": "<C2>"
+        "inputs": [
+          1
+        ],
+        "type": "property_material"
+      }
+    ],
+    "params": [
+      {
+        "type": "Region",
+        "name": "<R1>"
       },
       {
         "type": "Material",
-        "name": "<M2>"
+        "name": "<V1>"
+      },
+      {
+        "type": "Region",
+        "name": "<R2>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      },
+      {
+        "type": "Relation",
+        "name": "<D1>"
+      }
+    ],
+    "constraints": [
+      {
+        "params": [
+          "<V1>"
+        ],
+        "type": "NULL"
+      }
+    ],
+    "property_focus": "material"
+  },
+  {
+    "asp_template_file": "constraint_templates_L5_universal_witness.txt",
+    "constraint_family": "universal_witness",
+    "text": [
+      "Every object in region <R1> with shape <V1> must have at least one witness object in region <R2> with <P2> <V2> related by <D1>.",
+      "Each trigger object in region <R1> with shape <V1> requires a witness in region <R2> with <P2> <V2> standing in relation <D1> to it."
+    ],
+    "nodes": [
+      {
+        "inputs": [],
+        "type": "scene"
+      },
+      {
+        "side_inputs": [
+          "<R1>",
+          "<V1>",
+          "<R2>",
+          "<P2>",
+          "<V2>",
+          "<D1>"
+        ],
+        "inputs": [
+          0
+        ],
+        "type": "constraint_universal_witness"
+      },
+      {
+        "inputs": [
+          1
+        ],
+        "type": "property_shape"
+      }
+    ],
+    "params": [
+      {
+        "type": "Region",
+        "name": "<R1>"
       },
       {
         "type": "Shape",
-        "name": "<S2>"
+        "name": "<V1>"
+      },
+      {
+        "type": "Region",
+        "name": "<R2>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      },
+      {
+        "type": "Relation",
+        "name": "<D1>"
       }
     ],
-    "constraints": []
+    "constraints": [
+      {
+        "params": [
+          "<V1>"
+        ],
+        "type": "NULL"
+      }
+    ],
+    "property_focus": "shape"
+  },
+  {
+    "asp_template_file": "constraint_templates_L5_universal_witness.txt",
+    "constraint_family": "universal_witness",
+    "text": [
+      "Every object in region <R1> with size <V1> must have at least one witness object in region <R2> with <P2> <V2> related by <D1>.",
+      "Each trigger object in region <R1> with size <V1> requires a witness in region <R2> with <P2> <V2> standing in relation <D1> to it."
+    ],
+    "nodes": [
+      {
+        "inputs": [],
+        "type": "scene"
+      },
+      {
+        "side_inputs": [
+          "<R1>",
+          "<V1>",
+          "<R2>",
+          "<P2>",
+          "<V2>",
+          "<D1>"
+        ],
+        "inputs": [
+          0
+        ],
+        "type": "constraint_universal_witness"
+      },
+      {
+        "inputs": [
+          1
+        ],
+        "type": "property_size"
+      }
+    ],
+    "params": [
+      {
+        "type": "Region",
+        "name": "<R1>"
+      },
+      {
+        "type": "Size",
+        "name": "<V1>"
+      },
+      {
+        "type": "Region",
+        "name": "<R2>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      },
+      {
+        "type": "Relation",
+        "name": "<D1>"
+      }
+    ],
+    "constraints": [
+      {
+        "params": [
+          "<V1>"
+        ],
+        "type": "NULL"
+      }
+    ],
+    "property_focus": "size"
   }
 ]
