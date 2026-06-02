@@ -1,2 +1,2 @@
 % This enforces that at least one object in region R1 has property P1=V1.
-:- not 1 { X : object(X), at(X, R1'), hasProperty(X, P1', V1') }.
+:- #count { X : object(X), at(X, R1'), hasProperty(X, P1', V1') } = 0.

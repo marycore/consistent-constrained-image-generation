@@ -106,6 +106,22 @@ Progress on stderr; use `--class_filter L0 --instances_per_class 5` for a quick 
 
 With `--validate_with_clingo`, UNSAT resamples are saved to `ccig_asp_dataset_unsat.jsonl` (same format + `clingo_result`, `for_target_id`).
 
+`clingo_result` in sidecar rows distinguishes true logical failures and syntax issues:
+- `UNSAT` for true unsatisfiable constraints
+- `ASP_PARSE_ERROR` for parse/syntax errors
+
+### Single-level, balanced families per level
+
+```bash
+python3 question_generation/generate_ccig_asp_dataset.py \
+  --mode single \
+  --instances_per_class 100 \
+  --family_sampling equal \
+  --validate_with_clingo \
+  --output_jsonl question_generation/ccig_asp_dataset.jsonl \
+  --seed 42
+```
+
 ### Single-level, one family (e.g. L0 exist)
 
 ```bash

@@ -103,6 +103,15 @@ def parse_args() -> argparse.Namespace:
         ),
     )
     p.add_argument(
+        "--family_sampling",
+        choices=["random", "equal"],
+        default="random",
+        help=(
+            "Single mode family selection when no --constraint_family override is provided. "
+            "'random' samples families naturally; 'equal' balances family counts per level."
+        ),
+    )
+    p.add_argument(
         "--combo_size",
         type=int,
         default=2,
@@ -245,6 +254,28 @@ def load_level_bundle(
     return template_file, templates
 
 
+def build_family_schedule(
+    templates: list[dict],
+    n_instances: int,
+    rng: random.Random,
+) -> list[str]:
+    """Balanced family schedule per level (roughly equal; shuffled)."""
+    families = sorted({t["constraint_family"] for t in templates})
+    if not families:
+        raise ValueError("No constraint_family values found in templates.")
+    base = n_instances // len(families)
+    remainder = n_instances % len(families)
+    schedule: list[str] = []
+    for fam in families:
+        schedule.extend([fam] * base)
+    if remainder:
+        extra = families[:]
+        rng.shuffle(extra)
+        schedule.extend(extra[:remainder])
+    rng.shuffle(schedule)
+    return schedule
+
+
 def try_build_instance(
     *,
     components: list[ComponentInstance],
@@ -349,7 +380,9 @@ def generate_with_validation(
         if unsat_out is not None:
             progress.unsat_records_written += 1
             unsat_id = f"unsat_{progress.unsat_records_written:06d}"
-            if "ASP_PARSE_ERROR" in clingo_out and not args.quiet:
+            is_parse_error = "ASP_PARSE_ERROR" in clingo_out
+            fail_result = "ASP_PARSE_ERROR" if is_parse_error else "UNSAT"
+            if is_parse_error and not args.quiet:
                 progress.say(f"{label} | ASP parse error (bad rule syntax), resampling...")
             write_record(
                 unsat_out,
@@ -360,14 +393,16 @@ def generate_with_validation(
                 texts=texts,
                 asp_code=asp_code,
                 combo_spec_id=combo_spec_id,
-                clingo_result="UNSAT",
+                clingo_result=fail_result,
                 extra={
                     "for_target_id": target_record_id,
                     "resample_attempt": attempt,
                 },
             )
             if not args.quiet:
-                progress.say(f"{label} | recorded UNSAT -> {unsat_id} (attempt {attempt})")
+                progress.say(
+                    f"{label} | recorded {fail_result} -> {unsat_id} (attempt {attempt})"
+                )
     raise RuntimeError(
         f"Could not generate satisfiable instance after {args.max_attempts_per_instance} attempts.\n"
         f"Context: {label}\n"
@@ -477,7 +512,13 @@ def main() -> None:
                     continue
                 template_file, templates = bundles[level]
                 n_instances = int(override_map.get(level, args.instances_per_class))
-                family_note = family_map.get(level, args.constraint_family) or "any"
+                forced_family = family_map.get(level, args.constraint_family)
+                family_schedule: list[str] | None = None
+                if not forced_family and args.family_sampling == "equal":
+                    family_schedule = build_family_schedule(templates, n_instances, rng)
+                family_note = forced_family or (
+                    "equal-balanced" if family_schedule is not None else "random"
+                )
                 progress.step(
                     f"--- {level}: {n_instances} instances | family={family_note} | file={template_file} ---"
                 )
@@ -485,13 +526,18 @@ def main() -> None:
                     rec_id += 1
                     target_id = f"scene_{rec_id:06d}"
                     label = f"{level} [{inst_idx}/{n_instances}] {target_id}"
+                    planned_family = (
+                        family_schedule[inst_idx - 1] if family_schedule is not None else None
+                    )
 
                     def build_single(
                         level=level,
                         template_file=template_file,
                         templates=templates,
+                        forced_family=forced_family,
+                        planned_family=planned_family,
                     ):
-                        family = family_map.get(level, args.constraint_family)
+                        family = forced_family or planned_family
                         filt = (
                             ComboComponentFilter(level=level, constraint_family=family)
                             if family

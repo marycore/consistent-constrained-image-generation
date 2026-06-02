@@ -116,6 +116,7 @@ python3 question_generation/build_ccig_templates.py
 | `--class_filter` | all levels | Subset, e.g. `L0 L1 L2` |
 | `--constraint_family` | random | Pin logic variant (use with `--class_filter`) |
 | `--constraint_family_map_json` | — | Per-level family, e.g. `'{"L0":"exist","L1":"exist_pair"}'` |
+| `--family_sampling` | `random` | Single mode family policy (when not pinned): `random` or `equal` |
 | `--min_objects` / `--max_objects` | `5` / `9` | Sampled `n_objects` for `object(0..N)` |
 | `--seed` | `42` | RNG seed |
 | `--output_jsonl` | `ccig_asp_dataset.jsonl` | Output path |
@@ -135,7 +136,7 @@ Combo-only: `--combo_pairs_json`, `--combo_levels`, `--combo_size`.
 
 ## 1. Single-level dataset
 
-One constraint per record. Random template (and family, unless pinned) within each level.
+One constraint per record. Random template within each level; family policy is random by default, or balanced with `--family_sampling equal` (unless pinned via `--constraint_family*`).
 
 **All levels, 100 per level, with clingo:**
 
@@ -193,6 +194,18 @@ python3 question_generation/generate_ccig_asp_dataset.py \
   --instances_per_class 50 \
   --validate_with_clingo \
   --output_jsonl question_generation/ccig_asp_dataset.jsonl
+```
+
+**Balanced families per level** (equal counts, shuffled):
+
+```bash
+python3 question_generation/generate_ccig_asp_dataset.py \
+  --mode single \
+  --instances_per_class 100 \
+  --family_sampling equal \
+  --validate_with_clingo \
+  --output_jsonl question_generation/ccig_asp_dataset.jsonl \
+  --seed 42
 ```
 
 **Per-level instance counts:**
@@ -328,7 +341,7 @@ Same schema as SAT rows, plus:
 | Field | Meaning |
 |-------|---------|
 | `id` | `unsat_000001`, … |
-| `clingo_result` | `"UNSAT"` |
+| `clingo_result` | `"UNSAT"` for true UNSAT, `"ASP_PARSE_ERROR"` for parse/syntax failures |
 | `for_target_id` | SAT slot, e.g. `scene_000012` |
 | `resample_attempt` | Failed try number (1, 2, …) |
 
