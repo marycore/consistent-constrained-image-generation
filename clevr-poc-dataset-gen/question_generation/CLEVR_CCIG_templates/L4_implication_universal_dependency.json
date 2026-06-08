@@ -1,10 +1,10 @@
 [
   {
-    "asp_template_file": "constraint_templates_L6_unary_count.txt",
-    "constraint_family": "unary_count",
+    "asp_template_file": "constraint_templates_L4_implication.txt",
+    "constraint_family": "implication",
     "text": [
-      "Exactly <N1> objects in region <R1> must have color <V1>.",
-      "The count of objects in region <R1> with color <V1> must equal <N1>."
+      "Every object in region <R1> with color <V1> must be <D1> of at least one other object.",
+      "If an object is in region <R1> and has color <V1>, it must stand in relation <D1> to some other object."
     ],
     "nodes": [
       {
@@ -15,16 +15,12 @@
         "side_inputs": [
           "<R1>",
           "<V1>",
-          "<N1>",
-          "<R2>",
-          "<P2>",
-          "<V2>",
           "<D1>"
         ],
         "inputs": [
           0
         ],
-        "type": "constraint_exact_count"
+        "type": "constraint_implication"
       },
       {
         "inputs": [
@@ -43,22 +39,6 @@
         "name": "<V1>"
       },
       {
-        "type": "Count",
-        "name": "<N1>"
-      },
-      {
-        "type": "Region",
-        "name": "<R2>"
-      },
-      {
-        "type": "Property",
-        "name": "<P2>"
-      },
-      {
-        "type": "Value",
-        "name": "<V2>"
-      },
-      {
         "type": "Relation",
         "name": "<D1>"
       }
@@ -74,11 +54,11 @@
     "property_focus": "color"
   },
   {
-    "asp_template_file": "constraint_templates_L6_unary_count.txt",
-    "constraint_family": "unary_count",
+    "asp_template_file": "constraint_templates_L4_implication.txt",
+    "constraint_family": "implication",
     "text": [
-      "Exactly <N1> objects in region <R1> must have material <V1>.",
-      "The count of objects in region <R1> with material <V1> must equal <N1>."
+      "Every object in region <R1> with material <V1> must be <D1> of at least one other object.",
+      "If an object is in region <R1> and has material <V1>, it must stand in relation <D1> to some other object."
     ],
     "nodes": [
       {
@@ -89,16 +69,12 @@
         "side_inputs": [
           "<R1>",
           "<V1>",
-          "<N1>",
-          "<R2>",
-          "<P2>",
-          "<V2>",
           "<D1>"
         ],
         "inputs": [
           0
         ],
-        "type": "constraint_exact_count"
+        "type": "constraint_implication"
       },
       {
         "inputs": [
@@ -117,22 +93,6 @@
         "name": "<V1>"
       },
       {
-        "type": "Count",
-        "name": "<N1>"
-      },
-      {
-        "type": "Region",
-        "name": "<R2>"
-      },
-      {
-        "type": "Property",
-        "name": "<P2>"
-      },
-      {
-        "type": "Value",
-        "name": "<V2>"
-      },
-      {
         "type": "Relation",
         "name": "<D1>"
       }
@@ -148,11 +108,11 @@
     "property_focus": "material"
   },
   {
-    "asp_template_file": "constraint_templates_L6_unary_count.txt",
-    "constraint_family": "unary_count",
+    "asp_template_file": "constraint_templates_L4_implication.txt",
+    "constraint_family": "implication",
     "text": [
-      "Exactly <N1> objects in region <R1> must have shape <V1>.",
-      "The count of objects in region <R1> with shape <V1> must equal <N1>."
+      "Every object in region <R1> with shape <V1> must be <D1> of at least one other object.",
+      "If an object is in region <R1> and has shape <V1>, it must stand in relation <D1> to some other object."
     ],
     "nodes": [
       {
@@ -163,16 +123,12 @@
         "side_inputs": [
           "<R1>",
           "<V1>",
-          "<N1>",
-          "<R2>",
-          "<P2>",
-          "<V2>",
           "<D1>"
         ],
         "inputs": [
           0
         ],
-        "type": "constraint_exact_count"
+        "type": "constraint_implication"
       },
       {
         "inputs": [
@@ -191,22 +147,6 @@
         "name": "<V1>"
       },
       {
-        "type": "Count",
-        "name": "<N1>"
-      },
-      {
-        "type": "Region",
-        "name": "<R2>"
-      },
-      {
-        "type": "Property",
-        "name": "<P2>"
-      },
-      {
-        "type": "Value",
-        "name": "<V2>"
-      },
-      {
         "type": "Relation",
         "name": "<D1>"
       }
@@ -222,11 +162,11 @@
     "property_focus": "shape"
   },
   {
-    "asp_template_file": "constraint_templates_L6_unary_count.txt",
-    "constraint_family": "unary_count",
+    "asp_template_file": "constraint_templates_L4_implication.txt",
+    "constraint_family": "implication",
     "text": [
-      "Exactly <N1> objects in region <R1> must have size <V1>.",
-      "The count of objects in region <R1> with size <V1> must equal <N1>."
+      "Every object in region <R1> with size <V1> must be <D1> of at least one other object.",
+      "If an object is in region <R1> and has size <V1>, it must stand in relation <D1> to some other object."
     ],
     "nodes": [
       {
@@ -237,16 +177,12 @@
         "side_inputs": [
           "<R1>",
           "<V1>",
-          "<N1>",
-          "<R2>",
-          "<P2>",
-          "<V2>",
           "<D1>"
         ],
         "inputs": [
           0
         ],
-        "type": "constraint_exact_count"
+        "type": "constraint_implication"
       },
       {
         "inputs": [
@@ -263,22 +199,6 @@
       {
         "type": "Size",
         "name": "<V1>"
-      },
-      {
-        "type": "Count",
-        "name": "<N1>"
-      },
-      {
-        "type": "Region",
-        "name": "<R2>"
-      },
-      {
-        "type": "Property",
-        "name": "<P2>"
-      },
-      {
-        "type": "Value",
-        "name": "<V2>"
       },
       {
         "type": "Relation",
@@ -296,11 +216,11 @@
     "property_focus": "size"
   },
   {
-    "asp_template_file": "constraint_templates_L6_relational_count.txt",
-    "constraint_family": "relational_count",
+    "asp_template_file": "constraint_templates_L4_universal_witness.txt",
+    "constraint_family": "universal_witness",
     "text": [
-      "Exactly <N1> objects X must satisfy relation <D1> to some object in region <R2> with <P2> <V2>, with X having color <V1>.",
-      "The number of objects with color <V1> that are <D1> of an object in region <R2> with <P2> <V2> must equal <N1>."
+      "For every object in region <R1> with color <V1>, there must exist an object in region <R2> with <P2> <V2> that is <D1> of it.",
+      "Each object in region <R1> with color <V1> requires a witness in region <R2> with <P2> <V2> standing in relation <D1> to it."
     ],
     "nodes": [
       {
@@ -311,7 +231,6 @@
         "side_inputs": [
           "<R1>",
           "<V1>",
-          "<N1>",
           "<R2>",
           "<P2>",
           "<V2>",
@@ -320,7 +239,7 @@
         "inputs": [
           0
         ],
-        "type": "constraint_relational_count"
+        "type": "constraint_universal_witness"
       },
       {
         "inputs": [
@@ -337,10 +256,6 @@
       {
         "type": "Color",
         "name": "<V1>"
-      },
-      {
-        "type": "Count",
-        "name": "<N1>"
       },
       {
         "type": "Region",
@@ -370,11 +285,11 @@
     "property_focus": "color"
   },
   {
-    "asp_template_file": "constraint_templates_L6_relational_count.txt",
-    "constraint_family": "relational_count",
+    "asp_template_file": "constraint_templates_L4_universal_witness.txt",
+    "constraint_family": "universal_witness",
     "text": [
-      "Exactly <N1> objects X must satisfy relation <D1> to some object in region <R2> with <P2> <V2>, with X having material <V1>.",
-      "The number of objects with material <V1> that are <D1> of an object in region <R2> with <P2> <V2> must equal <N1>."
+      "For every object in region <R1> with material <V1>, there must exist an object in region <R2> with <P2> <V2> that is <D1> of it.",
+      "Each object in region <R1> with material <V1> requires a witness in region <R2> with <P2> <V2> standing in relation <D1> to it."
     ],
     "nodes": [
       {
@@ -385,7 +300,6 @@
         "side_inputs": [
           "<R1>",
           "<V1>",
-          "<N1>",
           "<R2>",
           "<P2>",
           "<V2>",
@@ -394,7 +308,7 @@
         "inputs": [
           0
         ],
-        "type": "constraint_relational_count"
+        "type": "constraint_universal_witness"
       },
       {
         "inputs": [
@@ -411,10 +325,6 @@
       {
         "type": "Material",
         "name": "<V1>"
-      },
-      {
-        "type": "Count",
-        "name": "<N1>"
       },
       {
         "type": "Region",
@@ -444,11 +354,11 @@
     "property_focus": "material"
   },
   {
-    "asp_template_file": "constraint_templates_L6_relational_count.txt",
-    "constraint_family": "relational_count",
+    "asp_template_file": "constraint_templates_L4_universal_witness.txt",
+    "constraint_family": "universal_witness",
     "text": [
-      "Exactly <N1> objects X must satisfy relation <D1> to some object in region <R2> with <P2> <V2>, with X having shape <V1>.",
-      "The number of objects with shape <V1> that are <D1> of an object in region <R2> with <P2> <V2> must equal <N1>."
+      "For every object in region <R1> with shape <V1>, there must exist an object in region <R2> with <P2> <V2> that is <D1> of it.",
+      "Each object in region <R1> with shape <V1> requires a witness in region <R2> with <P2> <V2> standing in relation <D1> to it."
     ],
     "nodes": [
       {
@@ -459,7 +369,6 @@
         "side_inputs": [
           "<R1>",
           "<V1>",
-          "<N1>",
           "<R2>",
           "<P2>",
           "<V2>",
@@ -468,7 +377,7 @@
         "inputs": [
           0
         ],
-        "type": "constraint_relational_count"
+        "type": "constraint_universal_witness"
       },
       {
         "inputs": [
@@ -485,10 +394,6 @@
       {
         "type": "Shape",
         "name": "<V1>"
-      },
-      {
-        "type": "Count",
-        "name": "<N1>"
       },
       {
         "type": "Region",
@@ -518,11 +423,11 @@
     "property_focus": "shape"
   },
   {
-    "asp_template_file": "constraint_templates_L6_relational_count.txt",
-    "constraint_family": "relational_count",
+    "asp_template_file": "constraint_templates_L4_universal_witness.txt",
+    "constraint_family": "universal_witness",
     "text": [
-      "Exactly <N1> objects X must satisfy relation <D1> to some object in region <R2> with <P2> <V2>, with X having size <V1>.",
-      "The number of objects with size <V1> that are <D1> of an object in region <R2> with <P2> <V2> must equal <N1>."
+      "For every object in region <R1> with size <V1>, there must exist an object in region <R2> with <P2> <V2> that is <D1> of it.",
+      "Each object in region <R1> with size <V1> requires a witness in region <R2> with <P2> <V2> standing in relation <D1> to it."
     ],
     "nodes": [
       {
@@ -533,7 +438,6 @@
         "side_inputs": [
           "<R1>",
           "<V1>",
-          "<N1>",
           "<R2>",
           "<P2>",
           "<V2>",
@@ -542,7 +446,7 @@
         "inputs": [
           0
         ],
-        "type": "constraint_relational_count"
+        "type": "constraint_universal_witness"
       },
       {
         "inputs": [
@@ -559,10 +463,6 @@
       {
         "type": "Size",
         "name": "<V1>"
-      },
-      {
-        "type": "Count",
-        "name": "<N1>"
       },
       {
         "type": "Region",

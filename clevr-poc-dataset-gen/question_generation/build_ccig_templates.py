@@ -11,22 +11,22 @@ PROPS = ["color", "material", "shape", "size"]
 RELS = ["left", "right", "front", "behind"]
 
 # One ASP file per logic variant (single rule per file).
+# Hierarchy: L0–L7 (8 levels after merging old L4+L5 into L4).
 ASP = {
-    "L0_exist": "constraint_templates_L0_exist.txt",
-    "L0_forbid": "constraint_templates_L0_forbid.txt",
-    "L1_exist_pair": "constraint_templates_L1_exist_pair.txt",
-    "L1_forbid_pair": "constraint_templates_L1_forbid_pair.txt",
-    "L2_chain2": "constraint_templates_L2_chain2.txt",
-    "L3_shared_hub": "constraint_templates_L3_shared_hub.txt",
-    "L4_implication": "constraint_templates_L4_implication.txt",
-    "L4_forbid_conditional_pair": "constraint_templates_L4_forbid_conditional_pair.txt",
-    "L5_universal_witness": "constraint_templates_L5_universal_witness.txt",
-    "L6_unary_count": "constraint_templates_L6_unary_count.txt",
-    "L6_relational_count": "constraint_templates_L6_relational_count.txt",
-    "L7_witness_exist": "constraint_templates_L7_witness_exist.txt",
-    "L7_witness_unique": "constraint_templates_L7_witness_unique.txt",
-    "L8_count_coupling": "constraint_templates_L8_count_coupling.txt",
-    "L8_all_different": "constraint_templates_L8_all_different.txt",
+    "L0_exist":               "constraint_templates_L0_exist.txt",
+    "L0_forbid":              "constraint_templates_L0_forbid.txt",
+    "L1_exist_pair":          "constraint_templates_L1_exist_pair.txt",
+    "L1_forbid_pair":         "constraint_templates_L1_forbid_pair.txt",
+    "L2_chain2":              "constraint_templates_L2_chain2.txt",
+    "L2_chain3":              "constraint_templates_L2_chain3.txt",
+    "L3_shared_hub":          "constraint_templates_L3_shared_hub.txt",
+    "L4_implication":         "constraint_templates_L4_implication.txt",
+    "L4_universal_witness":   "constraint_templates_L4_universal_witness.txt",
+    "L5_unary_count":         "constraint_templates_L5_unary_count.txt",
+    "L5_relational_count":    "constraint_templates_L5_relational_count.txt",
+    "L6_witness_unique":      "constraint_templates_L6_witness_unique.txt",
+    "L7_count_coupling":      "constraint_templates_L7_count_coupling.txt",
+    "L7_all_different":       "constraint_templates_L7_all_different.txt",
 }
 
 
@@ -156,29 +156,50 @@ def l1_entries() -> list[dict]:
 
 def l2_entries() -> list[dict]:
     entries = []
-    for rel in RELS:
-        entries.append(
-            entry(
-                asp_key="L2_chain2",
-                constraint_family="chain2",
-                relation_focus=rel,
-                text=[
-                    f"There must exist a chain of three distinct objects X1, X2, X3 such that X1 is <D1> of X2 and X2 is <D2> of X3, with <D1> fixed to {rel}.",
-                    f"A 2-hop relational chain X1->{rel}->X2-><D2>->X3 must exist among three distinct objects.",
-                    f"Some triple of objects must satisfy relations {rel} then <D2> in sequence.",
-                ],
-                nodes=[
-                    node_scene(),
-                    {"side_inputs": ["<D1>", "<D2>"], "inputs": [0], "type": "constraint_chain2"},
-                    {"inputs": [1], "type": f"relation_{rel}"},
-                ],
-                params=[
+    for asp_key, family, n_hops in [("L2_chain2", "chain2", 2), ("L2_chain3", "chain3", 3)]:
+        for rel in RELS:
+            if n_hops == 2:
+                texts = [
+                    f"There must exist a chain of three distinct objects X1, X2, X3 such that "
+                    f"X1 is {rel} of X2 and X2 is <D2> of X3.",
+                    f"A 2-hop relational chain X1 -{rel}-> X2 -<D2>-> X3 must exist among three distinct objects.",
+                    f"Some triple of objects must satisfy: first is {rel} of second, second is <D2> of third.",
+                ]
+                params = [
                     {"type": "Relation", "name": "<D1>"},
                     {"type": "Relation", "name": "<D2>"},
-                ],
-                constraints=[{"params": ["<D1>"], "type": "NULL"}],
+                ]
+                side_inputs = ["<D1>", "<D2>"]
+                ntype = "constraint_chain2"
+            else:
+                texts = [
+                    f"There must exist a chain of four distinct objects X1, X2, X3, X4 such that "
+                    f"X1 is {rel} of X2, X2 is <D2> of X3, and X3 is <D3> of X4.",
+                    f"A 3-hop relational chain X1 -{rel}-> X2 -<D2>-> X3 -<D3>-> X4 must exist among four distinct objects.",
+                    f"Some quadruple of objects must satisfy: first is {rel} of second, second is <D2> of third, third is <D3> of fourth.",
+                ]
+                params = [
+                    {"type": "Relation", "name": "<D1>"},
+                    {"type": "Relation", "name": "<D2>"},
+                    {"type": "Relation", "name": "<D3>"},
+                ]
+                side_inputs = ["<D1>", "<D2>", "<D3>"]
+                ntype = "constraint_chain3"
+            entries.append(
+                entry(
+                    asp_key=asp_key,
+                    constraint_family=family,
+                    relation_focus=rel,
+                    text=texts,
+                    nodes=[
+                        node_scene(),
+                        {"side_inputs": side_inputs, "inputs": [0], "type": ntype},
+                        {"inputs": [1], "type": f"relation_{rel}"},
+                    ],
+                    params=params,
+                    constraints=[{"params": ["<D1>"], "type": "NULL"}],
+                )
             )
-        )
     return entries
 
 
@@ -191,9 +212,10 @@ def l3_entries() -> list[dict]:
                 constraint_family="shared_hub",
                 relation_focus=rel,
                 text=[
-                    f"There must exist an object Z and two distinct objects X1 and X2 such that Z is <D1> of X1 and Z is <D2> of X2, with <D1> fixed to {rel}.",
-                    f"Some object Z must simultaneously satisfy relation {rel} to X1 and relation <D2> to X2.",
-                    f"A shared object Z must link X1 and X2 via relations {rel} and <D2> respectively.",
+                    f"There must exist an object Z and two distinct objects X1 and X2 such that "
+                    f"Z is {rel} of X1 and Z is <D2> of X2.",
+                    f"Some object Z must simultaneously satisfy relation {rel} to X1 and relation <D2> to a distinct X2.",
+                    f"A hub object Z must link two distinct objects X1 and X2 via relations {rel} and <D2> respectively.",
                 ],
                 nodes=[
                     node_scene(),
@@ -211,67 +233,52 @@ def l3_entries() -> list[dict]:
 
 
 def l4_entries() -> list[dict]:
+    """L4: Implication / Universal Dependency (merged from old L4 + L5)."""
     entries = []
-    for asp_key, family in [
-        ("L4_implication", "implication"),
-        ("L4_forbid_conditional_pair", "forbid_conditional_pair"),
-    ]:
-        for prop in PROPS:
-            ptype = prop.capitalize()
-            if family == "implication":
-                texts = [
-                    f"Every object in region <R1> with {prop} <V1> must be <D1> of at least one other object.",
-                    f"If an object is in region <R1> and has {prop} <V1>, it must have the <D1> relation to some other object.",
-                ]
-                ntype = "constraint_implication"
-            else:
-                texts = [
-                    f"No two distinct objects in regions <R1> and <R2> with {prop} <V1> and <P2> <V2> may satisfy relation <D1>.",
-                    f"It is forbidden for an object in region <R1> with {prop} <V1> to be <D1> of an object in region <R2> with <P2> <V2>.",
-                    f"It is forbidden for a <V1> object in region <R1> to be <D1> of a <V2> object in region <R2>.",
-                ]
-                ntype = "constraint_forbid_conditional_pair"
-            entries.append(
-                entry(
-                    asp_key=asp_key,
-                    constraint_family=family,
-                    property_focus=prop,
-                    text=texts,
-                    nodes=[
-                        node_scene(),
-                        {
-                            "side_inputs": ["<R1>", "<V1>", "<R2>", "<P2>", "<V2>", "<D1>"],
-                            "inputs": [0],
-                            "type": ntype,
-                        },
-                        prop_terminal(prop),
-                    ],
-                    params=[
-                        {"type": "Region", "name": "<R1>"},
-                        {"type": ptype, "name": "<V1>"},
-                        {"type": "Region", "name": "<R2>"},
-                        {"type": "Property", "name": "<P2>"},
-                        {"type": "Value", "name": "<V2>"},
-                        {"type": "Relation", "name": "<D1>"},
-                    ],
-                    constraints=[{"params": ["<V1>"], "type": "NULL"}],
-                )
-            )
-    return entries
 
-
-def l5_entries() -> list[dict]:
-    entries = []
+    # Sub-family 1: implication — ∀x(A(x) → ∃y R(x,y))
     for prop in PROPS:
         ptype = prop.capitalize()
         entries.append(
             entry(
-                asp_key="L5_universal_witness",
+                asp_key="L4_implication",
+                constraint_family="implication",
+                property_focus=prop,
+                text=[
+                    f"Every object in region <R1> with {prop} <V1> must be <D1> of at least one other object.",
+                    f"If an object is in region <R1> and has {prop} <V1>, it must stand in relation <D1> to some other object.",
+                ],
+                nodes=[
+                    node_scene(),
+                    {
+                        "side_inputs": ["<R1>", "<V1>", "<D1>"],
+                        "inputs": [0],
+                        "type": "constraint_implication",
+                    },
+                    prop_terminal(prop),
+                ],
+                params=[
+                    {"type": "Region", "name": "<R1>"},
+                    {"type": ptype, "name": "<V1>"},
+                    {"type": "Relation", "name": "<D1>"},
+                ],
+                constraints=[{"params": ["<V1>"], "type": "NULL"}],
+            )
+        )
+
+    # Sub-family 2: universal_witness — ∀x(A(x) → ∃y(B(y) ∧ R(y,x)))
+    for prop in PROPS:
+        ptype = prop.capitalize()
+        entries.append(
+            entry(
+                asp_key="L4_universal_witness",
                 constraint_family="universal_witness",
                 property_focus=prop,
                 text=[
-                    f"Every object in region <R1> with {prop} <V1> must have at least one witness object in region <R2> with <P2> <V2> related by <D1>.",
-                    f"Each trigger object in region <R1> with {prop} <V1> requires a witness in region <R2> with <P2> <V2> standing in relation <D1> to it.",
+                    f"For every object in region <R1> with {prop} <V1>, there must exist an object "
+                    f"in region <R2> with <P2> <V2> that is <D1> of it.",
+                    f"Each object in region <R1> with {prop} <V1> requires a witness in region <R2> "
+                    f"with <P2> <V2> standing in relation <D1> to it.",
                 ],
                 nodes=[
                     node_scene(),
@@ -296,9 +303,10 @@ def l5_entries() -> list[dict]:
     return entries
 
 
-def l6_entries() -> list[dict]:
+def l5_entries() -> list[dict]:
+    """L5: Relational Aggregates — #{x:Φ(x)}=k"""
     entries = []
-    for asp_key, family in [("L6_unary_count", "unary_count"), ("L6_relational_count", "relational_count")]:
+    for asp_key, family in [("L5_unary_count", "unary_count"), ("L5_relational_count", "relational_count")]:
         for prop in PROPS:
             ptype = prop.capitalize()
             if family == "unary_count":
@@ -309,8 +317,10 @@ def l6_entries() -> list[dict]:
                 ntype = "constraint_exact_count"
             else:
                 texts = [
-                    f"Exactly <N1> objects X must satisfy relation <D1> to some object in region <R2> with <P2> <V2>, with X having {prop} <V1>.",
-                    f"The number of objects with {prop} <V1> that are <D1> of an object in region <R2> with <P2> <V2> must equal <N1>.",
+                    f"Exactly <N1> objects with {prop} <V1> must stand in relation <D1> to some object "
+                    f"in region <R2> with <P2> <V2>.",
+                    f"The number of objects with {prop} <V1> that are <D1> of an object in region <R2> "
+                    f"with <P2> <V2> must equal <N1>.",
                 ]
                 ntype = "constraint_relational_count"
             entries.append(
@@ -343,67 +353,63 @@ def l6_entries() -> list[dict]:
     return entries
 
 
-def l7_entries() -> list[dict]:
+def l6_entries() -> list[dict]:
+    """L6: Injective Matching — ∀x(S(x) → ∃!z R(z,x))"""
     entries = []
-    for asp_key, family in [("L7_witness_exist", "witness_exist"), ("L7_witness_unique", "witness_unique")]:
-        for prop in PROPS:
-            ptype = prop.capitalize()
-            if family == "witness_exist":
-                texts = [
-                    f"Every object in region <R1> with {prop} <V1> must have at least one witness in region <R2> with <P2> <V2> related by <D1>.",
-                    f"Each source object in region <R1> with {prop} <V1> requires at least one matching witness object.",
-                ]
-                ntype = "constraint_injective_exist"
-            else:
-                texts = [
-                    f"Every object in region <R1> with {prop} <V1> may have at most one witness in region <R2> with <P2> <V2> related by <D1>.",
-                    f"Each source object in region <R1> with {prop} <V1> must have a unique witness object satisfying the relation and filter.",
-                ]
-                ntype = "constraint_injective_unique"
-            entries.append(
-                entry(
-                    asp_key=asp_key,
-                    constraint_family=family,
-                    property_focus=prop,
-                    text=texts,
-                    nodes=[
-                        node_scene(),
-                        {
-                            "side_inputs": ["<R1>", "<V1>", "<R2>", "<P2>", "<V2>", "<D1>"],
-                            "inputs": [0],
-                            "type": ntype,
-                        },
-                        prop_terminal(prop),
-                    ],
-                    params=[
-                        {"type": "Region", "name": "<R1>"},
-                        {"type": ptype, "name": "<V1>"},
-                        {"type": "Region", "name": "<R2>"},
-                        {"type": "Property", "name": "<P2>"},
-                        {"type": "Value", "name": "<V2>"},
-                        {"type": "Relation", "name": "<D1>"},
-                    ],
-                    constraints=[{"params": ["<V1>"], "type": "NULL"}],
-                )
+    for prop in PROPS:
+        ptype = prop.capitalize()
+        entries.append(
+            entry(
+                asp_key="L6_witness_unique",
+                constraint_family="witness_unique",
+                property_focus=prop,
+                text=[
+                    f"Every object in region <R1> with {prop} <V1> must have exactly one witness "
+                    f"in region <R2> with <P2> <V2> standing in relation <D1> to it.",
+                    f"Each object in region <R1> with {prop} <V1> is matched to a unique witness "
+                    f"in region <R2> with <P2> <V2> via relation <D1>.",
+                ],
+                nodes=[
+                    node_scene(),
+                    {
+                        "side_inputs": ["<R1>", "<V1>", "<R2>", "<P2>", "<V2>", "<D1>"],
+                        "inputs": [0],
+                        "type": "constraint_injective_unique",
+                    },
+                    prop_terminal(prop),
+                ],
+                params=[
+                    {"type": "Region", "name": "<R1>"},
+                    {"type": ptype, "name": "<V1>"},
+                    {"type": "Region", "name": "<R2>"},
+                    {"type": "Property", "name": "<P2>"},
+                    {"type": "Value", "name": "<V2>"},
+                    {"type": "Relation", "name": "<D1>"},
+                ],
+                constraints=[{"params": ["<V1>"], "type": "NULL"}],
             )
+        )
     return entries
 
 
-def l8_entries() -> list[dict]:
+def l7_entries() -> list[dict]:
+    """L7: Global Coupling — #{x:Φ(x)}=#{y:Γ(y)} or ∀x1≠x2(P(x1)≠P(x2))"""
     entries = []
-    for asp_key, family in [("L8_count_coupling", "count_coupling"), ("L8_all_different", "all_different")]:
+    for asp_key, family in [("L7_count_coupling", "count_coupling"), ("L7_all_different", "all_different")]:
         for prop in PROPS:
             ptype = prop.capitalize()
             if family == "count_coupling":
                 texts = [
-                    f"The number of objects in region <R1> with {prop} <V1> must equal the number of objects in region <R2> with <P2> <V2>.",
-                    f"Global coupling: equal counts between objects in region <R1> with {prop} <V1> and objects in region <R2> with <P2> <V2>.",
+                    f"The number of objects in region <R1> with {prop} <V1> must equal "
+                    f"the number of objects in region <R2> with <P2> <V2>.",
+                    f"Global coupling: the count of objects in region <R1> with {prop} <V1> "
+                    f"must match the count of objects in region <R2> with <P2> <V2>.",
                 ]
                 ntype = "constraint_global_count_coupling"
             else:
                 texts = [
                     f"No two distinct objects in region <R1> may share the same {prop} value <V1>.",
-                    f"All objects in region <R1> must have distinct values of {prop}; value <V1> cannot repeat.",
+                    f"All objects in region <R1> must have distinct {prop} values; <V1> cannot repeat.",
                 ]
                 ntype = "constraint_all_different"
             entries.append(
@@ -435,15 +441,14 @@ def l8_entries() -> list[dict]:
 
 
 FILES = {
-    "L0_unary_attribute.json": l0_entries,
-    "L1_single_relational.json": l1_entries,
-    "L2_relational_composition.json": l2_entries,
+    "L0_unary_attribute.json":               l0_entries,
+    "L1_single_relational.json":             l1_entries,
+    "L2_relational_composition.json":        l2_entries,
     "L3_conjunctive_relational_binding.json": l3_entries,
-    "L4_implication_negation_rules.json": l4_entries,
-    "L5_universal_dependency.json": l5_entries,
-    "L6_relational_aggregates.json": l6_entries,
-    "L7_injective_matching.json": l7_entries,
-    "L8_global_coupling.json": l8_entries,
+    "L4_implication_universal_dependency.json": l4_entries,
+    "L5_relational_aggregates.json":         l5_entries,
+    "L6_injective_matching.json":            l6_entries,
+    "L7_global_coupling.json":               l7_entries,
 }
 
 

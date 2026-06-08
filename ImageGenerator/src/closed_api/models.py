@@ -67,23 +67,26 @@ class _OpenAIImageModel(ImageGenerationModel):
             if not api_key:
                 raise RuntimeError("OPENAI_API_KEY is not set.")
             from openai import OpenAI  # type: ignore
+            import urllib.request
 
-            client = OpenAI(api_key=api_key, timeout=timeout_seconds)
+            client = OpenAI(api_key=api_key)
             self.ensure_parent(output_path)
             response = _retry(
                 lambda: client.images.generate(
                     model=self.api_model,
                     prompt=prompt,
                     size=f"{width}x{height}",
-                    n=num_images,
-                    response_format="b64_json",
                 ),
                 retries=max_retries,
             )
-            b64 = response.data[0].b64_json
-            if not b64:
-                raise RuntimeError("OpenAI image response missing b64_json payload.")
-            img = Image.open(BytesIO(base64.b64decode(b64))).convert("RGB")
+            item = response.data[0]
+            if item.b64_json:
+                img = Image.open(BytesIO(base64.b64decode(item.b64_json))).convert("RGB")
+            elif item.url:
+                with urllib.request.urlopen(item.url) as resp:
+                    img = Image.open(BytesIO(resp.read())).convert("RGB")
+            else:
+                raise RuntimeError("OpenAI image response contains neither b64_json nor url.")
             img.save(output_path)
             return GenerationResult(
                 success=True,
@@ -91,6 +94,7 @@ class _OpenAIImageModel(ImageGenerationModel):
                 provider=self.provider,
                 prompt_id=prompt_id,
                 complexity_level=complexity_level,
+                constraint_family=str(kwargs.get("constraint_family", "")),
                 prompt=prompt,
                 constraints_general=str(kwargs.get("constraints_general", "")),
                 constraints_specific=str(kwargs.get("constraints_specific", "")),
@@ -111,6 +115,7 @@ class _OpenAIImageModel(ImageGenerationModel):
                 provider=self.provider,
                 prompt_id=prompt_id,
                 complexity_level=complexity_level,
+                constraint_family=str(kwargs.get("constraint_family", "")),
                 prompt=prompt,
                 constraints_general=str(kwargs.get("constraints_general", "")),
                 constraints_specific=str(kwargs.get("constraints_specific", "")),
@@ -133,13 +138,13 @@ class OpenAIGPTImage15(_OpenAIImageModel):
 
 class OpenAIGPTImage2(_OpenAIImageModel):
     model_id = "openai_gpt_image_2"
-    # Update when provider publishes the final model slug in your account.
     api_model = "gpt-image-1"
 
 
 class OpenAIDalle3(_OpenAIImageModel):
     model_id = "openai_dalle_3"
-    api_model = "dall-e-3"
+    # dall-e-3 was removed from the v2 images endpoint; gpt-image-1 is the replacement
+    api_model = "gpt-image-1"
 
 
 class GoogleNanoBanana(ImageGenerationModel):
@@ -150,7 +155,7 @@ class GoogleNanoBanana(ImageGenerationModel):
     def generate(self, **kwargs: Any) -> GenerationResult:
         return _generate_google_gemini(
             model_id=self.model_id,
-            api_model=os.getenv("GEMINI_IMAGE_MODEL", "gemini-2.0-flash-exp"),
+            api_model=os.getenv("GEMINI_IMAGE_MODEL", "gemini-2.0-flash-preview-image-generation"),
             cost=COST_DEFAULTS[self.model_id],
             **kwargs,
         )
@@ -194,17 +199,18 @@ def _generate_google_gemini(
         key = os.getenv("GOOGLE_API_KEY") or os.getenv("GEMINI_API_KEY")
         if not key and not os.getenv("GOOGLE_APPLICATION_CREDENTIALS"):
             raise RuntimeError("Set GOOGLE_API_KEY (or GEMINI_API_KEY) or GOOGLE_APPLICATION_CREDENTIALS.")
-        import google.generativeai as genai  # type: ignore
+        from google import genai  # type: ignore
+        from google.genai import types as genai_types  # type: ignore
 
-        if key:
-            genai.configure(api_key=key)
-        model = genai.GenerativeModel(api_model)
+        client = genai.Client(api_key=key)
 
         def _call():
-            return model.generate_content(
-                prompt,
-                generation_config={"temperature": 0.0},
-                request_options={"timeout": timeout_seconds},
+            return client.models.generate_content(
+                model=api_model,
+                contents=prompt,
+                config=genai_types.GenerateContentConfig(
+                    response_modalities=["IMAGE"],
+                ),
             )
 
         resp = _retry(_call, retries=max_retries)
@@ -219,6 +225,7 @@ def _generate_google_gemini(
             provider="google",
             prompt_id=prompt_id,
             complexity_level=complexity_level,
+            constraint_family=str(kwargs.get("constraint_family", "")),
             prompt=prompt,
             constraints_general=str(kwargs.get("constraints_general", "")),
             constraints_specific=str(kwargs.get("constraints_specific", "")),
@@ -229,7 +236,7 @@ def _generate_google_gemini(
             generation_parameters={"width": width, "height": height, "num_images": num_images},
             latency_seconds=time.monotonic() - start,
             estimated_cost_usd=cost,
-            raw_response_metadata={"provider_response": "google.generativeai"},
+            raw_response_metadata={"provider_response": "google.genai"},
             error_message=None,
         )
     except Exception as e:
@@ -239,6 +246,7 @@ def _generate_google_gemini(
             provider="google",
             prompt_id=prompt_id,
             complexity_level=complexity_level,
+            constraint_family=str(kwargs.get("constraint_family", "")),
             prompt=prompt,
             constraints_general=str(kwargs.get("constraints_general", "")),
             constraints_specific=str(kwargs.get("constraints_specific", "")),
@@ -313,6 +321,7 @@ def _stub_result(
         provider=provider,
         prompt_id=prompt_id,
         complexity_level=complexity_level,
+        constraint_family=str(kwargs.get("constraint_family", "")),
         prompt=prompt,
         constraints_general=str(kwargs.get("constraints_general", "")),
         constraints_specific=str(kwargs.get("constraints_specific", "")),

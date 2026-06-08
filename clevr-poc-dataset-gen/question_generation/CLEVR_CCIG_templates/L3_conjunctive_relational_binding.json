@@ -3,9 +3,9 @@
     "asp_template_file": "constraint_templates_L3_shared_hub.txt",
     "constraint_family": "shared_hub",
     "text": [
-      "There must exist an object Z and two distinct objects X1 and X2 such that Z is <D1> of X1 and Z is <D2> of X2, with <D1> fixed to left.",
-      "Some object Z must simultaneously satisfy relation left to X1 and relation <D2> to X2.",
-      "A shared object Z must link X1 and X2 via relations left and <D2> respectively."
+      "There must exist an object Z and two distinct objects X1 and X2 such that Z is left of X1 and Z is <D2> of X2.",
+      "Some object Z must simultaneously satisfy relation left to X1 and relation <D2> to a distinct X2.",
+      "A hub object Z must link two distinct objects X1 and X2 via relations left and <D2> respectively."
     ],
     "nodes": [
       {
@@ -53,9 +53,9 @@
     "asp_template_file": "constraint_templates_L3_shared_hub.txt",
     "constraint_family": "shared_hub",
     "text": [
-      "There must exist an object Z and two distinct objects X1 and X2 such that Z is <D1> of X1 and Z is <D2> of X2, with <D1> fixed to right.",
-      "Some object Z must simultaneously satisfy relation right to X1 and relation <D2> to X2.",
-      "A shared object Z must link X1 and X2 via relations right and <D2> respectively."
+      "There must exist an object Z and two distinct objects X1 and X2 such that Z is right of X1 and Z is <D2> of X2.",
+      "Some object Z must simultaneously satisfy relation right to X1 and relation <D2> to a distinct X2.",
+      "A hub object Z must link two distinct objects X1 and X2 via relations right and <D2> respectively."
     ],
     "nodes": [
       {
@@ -103,9 +103,9 @@
     "asp_template_file": "constraint_templates_L3_shared_hub.txt",
     "constraint_family": "shared_hub",
     "text": [
-      "There must exist an object Z and two distinct objects X1 and X2 such that Z is <D1> of X1 and Z is <D2> of X2, with <D1> fixed to front.",
-      "Some object Z must simultaneously satisfy relation front to X1 and relation <D2> to X2.",
-      "A shared object Z must link X1 and X2 via relations front and <D2> respectively."
+      "There must exist an object Z and two distinct objects X1 and X2 such that Z is front of X1 and Z is <D2> of X2.",
+      "Some object Z must simultaneously satisfy relation front to X1 and relation <D2> to a distinct X2.",
+      "A hub object Z must link two distinct objects X1 and X2 via relations front and <D2> respectively."
     ],
     "nodes": [
       {
@@ -153,9 +153,9 @@
     "asp_template_file": "constraint_templates_L3_shared_hub.txt",
     "constraint_family": "shared_hub",
     "text": [
-      "There must exist an object Z and two distinct objects X1 and X2 such that Z is <D1> of X1 and Z is <D2> of X2, with <D1> fixed to behind.",
-      "Some object Z must simultaneously satisfy relation behind to X1 and relation <D2> to X2.",
-      "A shared object Z must link X1 and X2 via relations behind and <D2> respectively."
+      "There must exist an object Z and two distinct objects X1 and X2 such that Z is behind of X1 and Z is <D2> of X2.",
+      "Some object Z must simultaneously satisfy relation behind to X1 and relation <D2> to a distinct X2.",
+      "A hub object Z must link two distinct objects X1 and X2 via relations behind and <D2> respectively."
     ],
     "nodes": [
       {

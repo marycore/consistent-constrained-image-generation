@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import random
 from pathlib import Path
 from typing import Iterable
 
@@ -8,9 +9,10 @@ from .config import load_generation_config
 from .models import COST_DEFAULTS
 from .registry import build_closed_registry
 from .types import PromptItem
+from src.common.prompts import build_clevr_prompt
 
 
-def read_prompts(path: str | Path) -> list[PromptItem]:
+def read_prompts(path: str | Path, *, shuffle: bool = True, shuffle_seed: int = 42) -> list[PromptItem]:
     out: list[PromptItem] = []
     with Path(path).open("r", encoding="utf-8") as f:
         for line in f:
@@ -18,17 +20,37 @@ def read_prompts(path: str | Path) -> list[PromptItem]:
             if not line:
                 continue
             obj = json.loads(line)
+            text_field = obj.get("text")
+            if isinstance(text_field, list) and text_field:
+                constraint = random.choice(text_field)
+                n_objects = int(obj.get("n_objects", 0))
+                prompt_text = build_clevr_prompt(constraint, n_objects)
+            else:
+                prompt_text = str(obj.get("prompt", text_field or ""))
+
+            complexity = obj.get("complexity_level", obj.get("level"))
+            if complexity is None:
+                classes = obj.get("complexity_classes")
+                complexity = classes[0] if isinstance(classes, list) and classes else "L0"
+
+            families = obj.get("constraint_families")
+            constraint_family = families[0] if isinstance(families, list) and families else str(obj.get("constraint_family", "unknown"))
+
             out.append(
                 PromptItem(
                     prompt_id=str(obj.get("prompt_id", obj.get("id", "unknown"))),
-                    complexity_level=str(obj.get("complexity_level", obj.get("level", "L0"))),
-                    prompt=str(obj.get("prompt", "")),
+                    complexity_level=str(complexity),
+                    constraint_family=constraint_family,
+                    prompt=prompt_text,
                     constraints_general=str(obj.get("constraints_general", obj.get("constraints", ""))),
                     constraints_specific=str(obj.get("constraints_specific", "")),
                     template_family=obj.get("template_family"),
                     raw=obj,
                 )
             )
+    if shuffle:
+        rng = random.Random(shuffle_seed)
+        rng.shuffle(out)
     return out
 
 
@@ -54,8 +76,8 @@ def estimate_cost(
     return total if has_known else None
 
 
-def output_path_for(model_id: str, level: str, prompt_id: str, seed: int, img_idx: int) -> Path:
-    return Path("outputs") / "generations" / model_id / level / prompt_id / f"seed_{seed}_img_{img_idx}.png"
+def output_path_for(model_id: str, level: str, constraint_family: str, prompt_id: str) -> Path:
+    return Path("outputs") / "generations" / model_id / level / constraint_family / f"{prompt_id}.png"
 
 
 def append_global_metadata(entry: dict) -> None:
@@ -111,7 +133,7 @@ def run_closed_generation(
         model = registry[model_id]
         for p in prompts:
             for seed in use_seeds:
-                out_path = output_path_for(model_id, p.complexity_level, p.prompt_id, seed, 0)
+                out_path = output_path_for(model_id, p.complexity_level, p.constraint_family, p.prompt_id)
                 if resume and out_path.exists() and not overwrite:
                     stats["skipped"] += 1
                     continue
@@ -124,6 +146,7 @@ def run_closed_generation(
                             "provider": model.provider,
                             "prompt_id": p.prompt_id,
                             "complexity_level": p.complexity_level,
+                            "constraint_family": p.constraint_family,
                             "output_path": str(out_path),
                             "seed_requested": seed,
                         }
@@ -135,6 +158,7 @@ def run_closed_generation(
                     output_path=str(out_path),
                     prompt_id=p.prompt_id,
                     complexity_level=p.complexity_level,
+                    constraint_family=p.constraint_family,
                     seed=seed,
                     width=int(cfg["generation"]["width"]),
                     height=int(cfg["generation"]["height"]),

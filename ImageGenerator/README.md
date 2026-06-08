@@ -108,7 +108,7 @@ Set API keys in your shell:
 export OPENAI_API_KEY="your_openai_key"
 export GEMINI_API_KEY="your_gemini_key"
 # Optional for Gemini model selection:
-export GEMINI_IMAGE_MODEL="gemini-2.0-flash-exp"
+export GEMINI_IMAGE_MODEL="gemini-2.0-flash-preview-image-generation"
 ```
 
 Run one of the closed models with a JSONL prompt file (e.g. 1000 lines):
@@ -134,23 +134,154 @@ Behavior:
 - successful calls keep saving PNG + metadata JSON as usual
 - progress is printed every 25 prompts
 
-### Closed benchmark batch CLI
+### Closed benchmark batch CLI (CCIG evaluation)
 
-For CCIG-style closed-model benchmarking (shared abstraction + registry + metadata JSONL):
+The batch pipeline reads from `ccig_asp_dataset.jsonl`, **randomly shuffles** the 900 instances (seeded, reproducible), and saves images organised by complexity class and constraint family.
+
+**Dataset:** `clevr-poc-dataset-gen/question_generation/ccig_asp_dataset.jsonl`  
+9 complexity levels (L0–L8) × 100 instances each, across 15 constraint families.  
+One text paraphrase is chosen at random per instance each run.
+
+**Output layout:**
+```
+outputs/generations/<model_id>/<level>/<constraint_family>/<scene_id>.png
+outputs/generation_metadata.jsonl
+```
+
+Example: `outputs/generations/openai_dalle_3/L2/implication/scene_000312.png`
+
+#### 1. Set API keys
+
+```bash
+export OPENAI_API_KEY="sk-..."
+export GEMINI_API_KEY="..."          # or GOOGLE_API_KEY
+export GEMINI_IMAGE_MODEL="gemini-2.0-flash-preview-image-generation"   # optional override
+```
+
+#### 2. Dry run first (no API calls, just plans metadata)
+
+```bash
+cd ImageGenerator
+
+python -m scripts.generate_images \
+  --config configs/generation_config.yaml \
+  --dry-run
+```
+
+#### 3. Run per model — full dataset (900 prompts)
+
+All commands are run from the `ImageGenerator/` directory. Use `--resume` on any interrupted run to skip already-generated images.
+
+**OpenAI GPT-Image-1 (gpt-image-1)**
+```bash
+python -m scripts.generate_images \
+  --config configs/generation_config.yaml \
+  --models openai_gpt_image_1_5 \
+  --resume
+```
+
+**OpenAI DALL-E 3**
+```bash
+python -m scripts.generate_images \
+  --config configs/generation_config.yaml \
+  --models openai_dalle_3 \
+  --resume
+```
+
+**Google Gemini (nano-banana / gemini-2.0-flash-preview-image-generation)**
+```bash
+python -m scripts.generate_images \
+  --config configs/generation_config.yaml \
+  --models google_nano_banana \
+  --resume
+```
+
+**Google Imagen 4** *(stub — wire provider client first)*
+```bash
+python -m scripts.generate_images \
+  --config configs/generation_config.yaml \
+  --models google_imagen_4 \
+  --resume
+```
+
+**Ideogram 3** *(stub — wire provider client first)*
+```bash
+python -m scripts.generate_images \
+  --config configs/generation_config.yaml \
+  --models ideogram_3 \
+  --resume
+```
+
+**Recraft** *(stub — wire provider client first)*
+```bash
+python -m scripts.generate_images \
+  --config configs/generation_config.yaml \
+  --models recraft \
+  --resume
+```
+
+**Adobe Firefly** *(stub — wire provider client first)*
+```bash
+python -m scripts.generate_images \
+  --config configs/generation_config.yaml \
+  --models firefly \
+  --resume
+```
+
+**AWS Nova Canvas** *(stub — wire provider client first)*
+```bash
+python -m scripts.generate_images \
+  --config configs/generation_config.yaml \
+  --models nova_canvas \
+  --resume
+```
+
+**BytePlus Seedream** *(stub — wire provider client first)*
+```bash
+python -m scripts.generate_images \
+  --config configs/generation_config.yaml \
+  --models seedream \
+  --resume
+```
+
+**xAI Grok Imagine** *(stub — wire provider client first)*
+```bash
+python -m scripts.generate_images \
+  --config configs/generation_config.yaml \
+  --models grok_imagine \
+  --resume
+```
+
+#### 4. Run all wired models in one pass
 
 ```bash
 python -m scripts.generate_images \
   --config configs/generation_config.yaml \
-  --models openai_gpt_image_1_5 google_nano_banana openai_dalle_3 \
-  --levels L0 L1 \
-  --limit-per-level 5 \
-  --seeds 0 \
-  --dry-run
+  --models openai_gpt_image_1_5 openai_dalle_3 google_nano_banana \
+  --resume
 ```
 
-Output layout:
-- `outputs/generations/<model_id>/<complexity_level>/<prompt_id>/seed_<seed>_img_0.png`
-- `outputs/generation_metadata.jsonl`
+#### 5. Useful flags
+
+| Flag | Effect |
+|---|---|
+| `--dry-run` | Write metadata only, no API calls |
+| `--resume` | Skip images whose output file already exists |
+| `--overwrite` | Re-generate even if the file exists |
+| `--levels L0 L1 L2` | Restrict to specific complexity classes |
+| `--limit-per-level N` | Cap instances per class (e.g. `10` for a pilot run) |
+| `--models <id> ...` | Run only the listed model ids |
+
+#### 6. Estimated cost (full 900-instance run, 1 image per prompt)
+
+| Model | $/image | Total |
+|---|---|---|
+| openai_gpt_image_1_5 | $0.034 | ~$30.60 |
+| openai_dalle_3 | $0.040 | ~$36.00 |
+| google_nano_banana | $0.040 | ~$36.00 |
+| google_imagen_4 | $0.040 | ~$36.00 |
+
+Models marked *(stub)* in `src/closed_api/models.py` will return a failed result until a provider API client is wired in their `generate()` method — they do not call any external API and incur no cost.
 
 Prompt-length note:
 - `sd15` and `sdxl_base` rely on CLIP-style context windows (typically short, ~77 tokens per encoder branch).

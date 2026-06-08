@@ -9,6 +9,7 @@ class PromptItem:
     prompt_id: str
     prompt: str
     complexity_level: str
+    constraint_family: str = ""
     constraints_general: str = ""
     constraints_specific: str = ""
     template_family: str | None = None
@@ -27,6 +28,7 @@ class GenerationResult:
     provider: str
     prompt_id: str
     complexity_level: str
+    constraint_family: str
     prompt: str
     constraints_general: str
     constraints_specific: str

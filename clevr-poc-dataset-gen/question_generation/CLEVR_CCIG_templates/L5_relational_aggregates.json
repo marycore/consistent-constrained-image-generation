@@ -1,10 +1,10 @@
 [
   {
-    "asp_template_file": "constraint_templates_L7_witness_exist.txt",
-    "constraint_family": "witness_exist",
+    "asp_template_file": "constraint_templates_L5_unary_count.txt",
+    "constraint_family": "unary_count",
     "text": [
-      "Every object in region <R1> with color <V1> must have at least one witness in region <R2> with <P2> <V2> related by <D1>.",
-      "Each source object in region <R1> with color <V1> requires at least one matching witness object."
+      "Exactly <N1> objects in region <R1> must have color <V1>.",
+      "The count of objects in region <R1> with color <V1> must equal <N1>."
     ],
     "nodes": [
       {
@@ -15,6 +15,7 @@
         "side_inputs": [
           "<R1>",
           "<V1>",
+          "<N1>",
           "<R2>",
           "<P2>",
           "<V2>",
@@ -23,7 +24,7 @@
         "inputs": [
           0
         ],
-        "type": "constraint_injective_exist"
+        "type": "constraint_exact_count"
       },
       {
         "inputs": [
@@ -40,6 +41,10 @@
       {
         "type": "Color",
         "name": "<V1>"
+      },
+      {
+        "type": "Count",
+        "name": "<N1>"
       },
       {
         "type": "Region",
@@ -69,11 +74,11 @@
     "property_focus": "color"
   },
   {
-    "asp_template_file": "constraint_templates_L7_witness_exist.txt",
-    "constraint_family": "witness_exist",
+    "asp_template_file": "constraint_templates_L5_unary_count.txt",
+    "constraint_family": "unary_count",
     "text": [
-      "Every object in region <R1> with material <V1> must have at least one witness in region <R2> with <P2> <V2> related by <D1>.",
-      "Each source object in region <R1> with material <V1> requires at least one matching witness object."
+      "Exactly <N1> objects in region <R1> must have material <V1>.",
+      "The count of objects in region <R1> with material <V1> must equal <N1>."
     ],
     "nodes": [
       {
@@ -84,6 +89,7 @@
         "side_inputs": [
           "<R1>",
           "<V1>",
+          "<N1>",
           "<R2>",
           "<P2>",
           "<V2>",
@@ -92,7 +98,7 @@
         "inputs": [
           0
         ],
-        "type": "constraint_injective_exist"
+        "type": "constraint_exact_count"
       },
       {
         "inputs": [
@@ -109,6 +115,10 @@
       {
         "type": "Material",
         "name": "<V1>"
+      },
+      {
+        "type": "Count",
+        "name": "<N1>"
       },
       {
         "type": "Region",
@@ -138,11 +148,11 @@
     "property_focus": "material"
   },
   {
-    "asp_template_file": "constraint_templates_L7_witness_exist.txt",
-    "constraint_family": "witness_exist",
+    "asp_template_file": "constraint_templates_L5_unary_count.txt",
+    "constraint_family": "unary_count",
     "text": [
-      "Every object in region <R1> with shape <V1> must have at least one witness in region <R2> with <P2> <V2> related by <D1>.",
-      "Each source object in region <R1> with shape <V1> requires at least one matching witness object."
+      "Exactly <N1> objects in region <R1> must have shape <V1>.",
+      "The count of objects in region <R1> with shape <V1> must equal <N1>."
     ],
     "nodes": [
       {
@@ -153,6 +163,7 @@
         "side_inputs": [
           "<R1>",
           "<V1>",
+          "<N1>",
           "<R2>",
           "<P2>",
           "<V2>",
@@ -161,7 +172,7 @@
         "inputs": [
           0
         ],
-        "type": "constraint_injective_exist"
+        "type": "constraint_exact_count"
       },
       {
         "inputs": [
@@ -178,6 +189,10 @@
       {
         "type": "Shape",
         "name": "<V1>"
+      },
+      {
+        "type": "Count",
+        "name": "<N1>"
       },
       {
         "type": "Region",
@@ -207,11 +222,11 @@
     "property_focus": "shape"
   },
   {
-    "asp_template_file": "constraint_templates_L7_witness_exist.txt",
-    "constraint_family": "witness_exist",
+    "asp_template_file": "constraint_templates_L5_unary_count.txt",
+    "constraint_family": "unary_count",
     "text": [
-      "Every object in region <R1> with size <V1> must have at least one witness in region <R2> with <P2> <V2> related by <D1>.",
-      "Each source object in region <R1> with size <V1> requires at least one matching witness object."
+      "Exactly <N1> objects in region <R1> must have size <V1>.",
+      "The count of objects in region <R1> with size <V1> must equal <N1>."
     ],
     "nodes": [
       {
@@ -222,6 +237,7 @@
         "side_inputs": [
           "<R1>",
           "<V1>",
+          "<N1>",
           "<R2>",
           "<P2>",
           "<V2>",
@@ -230,7 +246,7 @@
         "inputs": [
           0
         ],
-        "type": "constraint_injective_exist"
+        "type": "constraint_exact_count"
       },
       {
         "inputs": [
@@ -247,6 +263,10 @@
       {
         "type": "Size",
         "name": "<V1>"
+      },
+      {
+        "type": "Count",
+        "name": "<N1>"
       },
       {
         "type": "Region",
@@ -276,11 +296,11 @@
     "property_focus": "size"
   },
   {
-    "asp_template_file": "constraint_templates_L7_witness_unique.txt",
-    "constraint_family": "witness_unique",
+    "asp_template_file": "constraint_templates_L5_relational_count.txt",
+    "constraint_family": "relational_count",
     "text": [
-      "Every object in region <R1> with color <V1> may have at most one witness in region <R2> with <P2> <V2> related by <D1>.",
-      "Each source object in region <R1> with color <V1> must have a unique witness object satisfying the relation and filter."
+      "Exactly <N1> objects with color <V1> must stand in relation <D1> to some object in region <R2> with <P2> <V2>.",
+      "The number of objects with color <V1> that are <D1> of an object in region <R2> with <P2> <V2> must equal <N1>."
     ],
     "nodes": [
       {
@@ -291,6 +311,7 @@
         "side_inputs": [
           "<R1>",
           "<V1>",
+          "<N1>",
           "<R2>",
           "<P2>",
           "<V2>",
@@ -299,7 +320,7 @@
         "inputs": [
           0
         ],
-        "type": "constraint_injective_unique"
+        "type": "constraint_relational_count"
       },
       {
         "inputs": [
@@ -316,6 +337,10 @@
       {
         "type": "Color",
         "name": "<V1>"
+      },
+      {
+        "type": "Count",
+        "name": "<N1>"
       },
       {
         "type": "Region",
@@ -345,11 +370,11 @@
     "property_focus": "color"
   },
   {
-    "asp_template_file": "constraint_templates_L7_witness_unique.txt",
-    "constraint_family": "witness_unique",
+    "asp_template_file": "constraint_templates_L5_relational_count.txt",
+    "constraint_family": "relational_count",
     "text": [
-      "Every object in region <R1> with material <V1> may have at most one witness in region <R2> with <P2> <V2> related by <D1>.",
-      "Each source object in region <R1> with material <V1> must have a unique witness object satisfying the relation and filter."
+      "Exactly <N1> objects with material <V1> must stand in relation <D1> to some object in region <R2> with <P2> <V2>.",
+      "The number of objects with material <V1> that are <D1> of an object in region <R2> with <P2> <V2> must equal <N1>."
     ],
     "nodes": [
       {
@@ -360,6 +385,7 @@
         "side_inputs": [
           "<R1>",
           "<V1>",
+          "<N1>",
           "<R2>",
           "<P2>",
           "<V2>",
@@ -368,7 +394,7 @@
         "inputs": [
           0
         ],
-        "type": "constraint_injective_unique"
+        "type": "constraint_relational_count"
       },
       {
         "inputs": [
@@ -385,6 +411,10 @@
       {
         "type": "Material",
         "name": "<V1>"
+      },
+      {
+        "type": "Count",
+        "name": "<N1>"
       },
       {
         "type": "Region",
@@ -414,11 +444,11 @@
     "property_focus": "material"
   },
   {
-    "asp_template_file": "constraint_templates_L7_witness_unique.txt",
-    "constraint_family": "witness_unique",
+    "asp_template_file": "constraint_templates_L5_relational_count.txt",
+    "constraint_family": "relational_count",
     "text": [
-      "Every object in region <R1> with shape <V1> may have at most one witness in region <R2> with <P2> <V2> related by <D1>.",
-      "Each source object in region <R1> with shape <V1> must have a unique witness object satisfying the relation and filter."
+      "Exactly <N1> objects with shape <V1> must stand in relation <D1> to some object in region <R2> with <P2> <V2>.",
+      "The number of objects with shape <V1> that are <D1> of an object in region <R2> with <P2> <V2> must equal <N1>."
     ],
     "nodes": [
       {
@@ -429,6 +459,7 @@
         "side_inputs": [
           "<R1>",
           "<V1>",
+          "<N1>",
           "<R2>",
           "<P2>",
           "<V2>",
@@ -437,7 +468,7 @@
         "inputs": [
           0
         ],
-        "type": "constraint_injective_unique"
+        "type": "constraint_relational_count"
       },
       {
         "inputs": [
@@ -454,6 +485,10 @@
       {
         "type": "Shape",
         "name": "<V1>"
+      },
+      {
+        "type": "Count",
+        "name": "<N1>"
       },
       {
         "type": "Region",
@@ -483,11 +518,11 @@
     "property_focus": "shape"
   },
   {
-    "asp_template_file": "constraint_templates_L7_witness_unique.txt",
-    "constraint_family": "witness_unique",
+    "asp_template_file": "constraint_templates_L5_relational_count.txt",
+    "constraint_family": "relational_count",
     "text": [
-      "Every object in region <R1> with size <V1> may have at most one witness in region <R2> with <P2> <V2> related by <D1>.",
-      "Each source object in region <R1> with size <V1> must have a unique witness object satisfying the relation and filter."
+      "Exactly <N1> objects with size <V1> must stand in relation <D1> to some object in region <R2> with <P2> <V2>.",
+      "The number of objects with size <V1> that are <D1> of an object in region <R2> with <P2> <V2> must equal <N1>."
     ],
     "nodes": [
       {
@@ -498,6 +533,7 @@
         "side_inputs": [
           "<R1>",
           "<V1>",
+          "<N1>",
           "<R2>",
           "<P2>",
           "<V2>",
@@ -506,7 +542,7 @@
         "inputs": [
           0
         ],
-        "type": "constraint_injective_unique"
+        "type": "constraint_relational_count"
       },
       {
         "inputs": [
@@ -523,6 +559,10 @@
       {
         "type": "Size",
         "name": "<V1>"
+      },
+      {
+        "type": "Count",
+        "name": "<N1>"
       },
       {
         "type": "Region",

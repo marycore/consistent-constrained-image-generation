@@ -2,12 +2,14 @@ from __future__ import annotations
 
 import hashlib
 import json
+import random
 from pathlib import Path
 from typing import Iterable, List
 
 from PIL import Image
 
 from .types import PromptRecord, GenerationMetadata
+from .prompts import build_clevr_prompt
 
 
 def read_jsonl(path: str | Path) -> List[PromptRecord]:
@@ -21,11 +23,18 @@ def read_jsonl(path: str | Path) -> List[PromptRecord]:
             if not line:
                 continue
             obj = json.loads(line)
+            text_field = obj.get("text")
+            if isinstance(text_field, list) and text_field:
+                constraint = random.choice(text_field)
+                n_objects = int(obj.get("n_objects", 0))
+                prompt_text = build_clevr_prompt(constraint, n_objects)
+            else:
+                prompt_text = str(obj.get("prompt", text_field or ""))
             records.append(
                 PromptRecord(
-                    id=str(obj["id"]),
-                    prompt=str(obj["prompt"]),
-                    constraints_general=str(obj.get("constraints_general", "")),
+                    id=str(obj.get("id", obj.get("prompt_id", "unknown"))),
+                    prompt=prompt_text,
+                    constraints_general=str(obj.get("constraints_general", obj.get("constraints", ""))),
                     constraints_specific=str(obj.get("constraints_specific", "")),
                 )
             )

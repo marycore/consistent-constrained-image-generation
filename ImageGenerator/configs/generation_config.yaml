@@ -10,7 +10,7 @@ models:
     - seedream
 
 prompts:
-  path: configs/prompt_general_clevr.jsonl
+  path: ../clevr-poc-dataset-gen/question_generation/ccig_asp_dataset.jsonl
 
 generation:
   width: 1024

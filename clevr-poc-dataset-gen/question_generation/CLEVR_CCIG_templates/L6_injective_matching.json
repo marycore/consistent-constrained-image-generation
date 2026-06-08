@@ -1,10 +1,10 @@
 [
   {
-    "asp_template_file": "constraint_templates_L5_universal_witness.txt",
-    "constraint_family": "universal_witness",
+    "asp_template_file": "constraint_templates_L6_witness_unique.txt",
+    "constraint_family": "witness_unique",
     "text": [
-      "Every object in region <R1> with color <V1> must have at least one witness object in region <R2> with <P2> <V2> related by <D1>.",
-      "Each trigger object in region <R1> with color <V1> requires a witness in region <R2> with <P2> <V2> standing in relation <D1> to it."
+      "Every object in region <R1> with color <V1> must have exactly one witness in region <R2> with <P2> <V2> standing in relation <D1> to it.",
+      "Each object in region <R1> with color <V1> is matched to a unique witness in region <R2> with <P2> <V2> via relation <D1>."
     ],
     "nodes": [
       {
@@ -23,7 +23,7 @@
         "inputs": [
           0
         ],
-        "type": "constraint_universal_witness"
+        "type": "constraint_injective_unique"
       },
       {
         "inputs": [
@@ -69,11 +69,11 @@
     "property_focus": "color"
   },
   {
-    "asp_template_file": "constraint_templates_L5_universal_witness.txt",
-    "constraint_family": "universal_witness",
+    "asp_template_file": "constraint_templates_L6_witness_unique.txt",
+    "constraint_family": "witness_unique",
     "text": [
-      "Every object in region <R1> with material <V1> must have at least one witness object in region <R2> with <P2> <V2> related by <D1>.",
-      "Each trigger object in region <R1> with material <V1> requires a witness in region <R2> with <P2> <V2> standing in relation <D1> to it."
+      "Every object in region <R1> with material <V1> must have exactly one witness in region <R2> with <P2> <V2> standing in relation <D1> to it.",
+      "Each object in region <R1> with material <V1> is matched to a unique witness in region <R2> with <P2> <V2> via relation <D1>."
     ],
     "nodes": [
       {
@@ -92,7 +92,7 @@
         "inputs": [
           0
         ],
-        "type": "constraint_universal_witness"
+        "type": "constraint_injective_unique"
       },
       {
         "inputs": [
@@ -138,11 +138,11 @@
     "property_focus": "material"
   },
   {
-    "asp_template_file": "constraint_templates_L5_universal_witness.txt",
-    "constraint_family": "universal_witness",
+    "asp_template_file": "constraint_templates_L6_witness_unique.txt",
+    "constraint_family": "witness_unique",
     "text": [
-      "Every object in region <R1> with shape <V1> must have at least one witness object in region <R2> with <P2> <V2> related by <D1>.",
-      "Each trigger object in region <R1> with shape <V1> requires a witness in region <R2> with <P2> <V2> standing in relation <D1> to it."
+      "Every object in region <R1> with shape <V1> must have exactly one witness in region <R2> with <P2> <V2> standing in relation <D1> to it.",
+      "Each object in region <R1> with shape <V1> is matched to a unique witness in region <R2> with <P2> <V2> via relation <D1>."
     ],
     "nodes": [
       {
@@ -161,7 +161,7 @@
         "inputs": [
           0
         ],
-        "type": "constraint_universal_witness"
+        "type": "constraint_injective_unique"
       },
       {
         "inputs": [
@@ -207,11 +207,11 @@
     "property_focus": "shape"
   },
   {
-    "asp_template_file": "constraint_templates_L5_universal_witness.txt",
-    "constraint_family": "universal_witness",
+    "asp_template_file": "constraint_templates_L6_witness_unique.txt",
+    "constraint_family": "witness_unique",
     "text": [
-      "Every object in region <R1> with size <V1> must have at least one witness object in region <R2> with <P2> <V2> related by <D1>.",
-      "Each trigger object in region <R1> with size <V1> requires a witness in region <R2> with <P2> <V2> standing in relation <D1> to it."
+      "Every object in region <R1> with size <V1> must have exactly one witness in region <R2> with <P2> <V2> standing in relation <D1> to it.",
+      "Each object in region <R1> with size <V1> is matched to a unique witness in region <R2> with <P2> <V2> via relation <D1>."
     ],
     "nodes": [
       {
@@ -230,7 +230,7 @@
         "inputs": [
           0
         ],
-        "type": "constraint_universal_witness"
+        "type": "constraint_injective_unique"
       },
       {
         "inputs": [

@@ -1,10 +1,10 @@
 [
   {
-    "asp_template_file": "constraint_templates_L4_implication.txt",
-    "constraint_family": "implication",
+    "asp_template_file": "constraint_templates_L7_count_coupling.txt",
+    "constraint_family": "count_coupling",
     "text": [
-      "Every object in region <R1> with color <V1> must be <D1> of at least one other object.",
-      "If an object is in region <R1> and has color <V1>, it must have the <D1> relation to some other object."
+      "The number of objects in region <R1> with color <V1> must equal the number of objects in region <R2> with <P2> <V2>.",
+      "Global coupling: the count of objects in region <R1> with color <V1> must match the count of objects in region <R2> with <P2> <V2>."
     ],
     "nodes": [
       {
@@ -17,13 +17,12 @@
           "<V1>",
           "<R2>",
           "<P2>",
-          "<V2>",
-          "<D1>"
+          "<V2>"
         ],
         "inputs": [
           0
         ],
-        "type": "constraint_implication"
+        "type": "constraint_global_count_coupling"
       },
       {
         "inputs": [
@@ -52,10 +51,6 @@
       {
         "type": "Value",
         "name": "<V2>"
-      },
-      {
-        "type": "Relation",
-        "name": "<D1>"
       }
     ],
     "constraints": [
@@ -69,11 +64,11 @@
     "property_focus": "color"
   },
   {
-    "asp_template_file": "constraint_templates_L4_implication.txt",
-    "constraint_family": "implication",
+    "asp_template_file": "constraint_templates_L7_count_coupling.txt",
+    "constraint_family": "count_coupling",
     "text": [
-      "Every object in region <R1> with material <V1> must be <D1> of at least one other object.",
-      "If an object is in region <R1> and has material <V1>, it must have the <D1> relation to some other object."
+      "The number of objects in region <R1> with material <V1> must equal the number of objects in region <R2> with <P2> <V2>.",
+      "Global coupling: the count of objects in region <R1> with material <V1> must match the count of objects in region <R2> with <P2> <V2>."
     ],
     "nodes": [
       {
@@ -86,13 +81,12 @@
           "<V1>",
           "<R2>",
           "<P2>",
-          "<V2>",
-          "<D1>"
+          "<V2>"
         ],
         "inputs": [
           0
         ],
-        "type": "constraint_implication"
+        "type": "constraint_global_count_coupling"
       },
       {
         "inputs": [
@@ -121,10 +115,6 @@
       {
         "type": "Value",
         "name": "<V2>"
-      },
-      {
-        "type": "Relation",
-        "name": "<D1>"
       }
     ],
     "constraints": [
@@ -138,11 +128,11 @@
     "property_focus": "material"
   },
   {
-    "asp_template_file": "constraint_templates_L4_implication.txt",
-    "constraint_family": "implication",
+    "asp_template_file": "constraint_templates_L7_count_coupling.txt",
+    "constraint_family": "count_coupling",
     "text": [
-      "Every object in region <R1> with shape <V1> must be <D1> of at least one other object.",
-      "If an object is in region <R1> and has shape <V1>, it must have the <D1> relation to some other object."
+      "The number of objects in region <R1> with shape <V1> must equal the number of objects in region <R2> with <P2> <V2>.",
+      "Global coupling: the count of objects in region <R1> with shape <V1> must match the count of objects in region <R2> with <P2> <V2>."
     ],
     "nodes": [
       {
@@ -155,13 +145,12 @@
           "<V1>",
           "<R2>",
           "<P2>",
-          "<V2>",
-          "<D1>"
+          "<V2>"
         ],
         "inputs": [
           0
         ],
-        "type": "constraint_implication"
+        "type": "constraint_global_count_coupling"
       },
       {
         "inputs": [
@@ -190,10 +179,6 @@
       {
         "type": "Value",
         "name": "<V2>"
-      },
-      {
-        "type": "Relation",
-        "name": "<D1>"
       }
     ],
     "constraints": [
@@ -207,11 +192,11 @@
     "property_focus": "shape"
   },
   {
-    "asp_template_file": "constraint_templates_L4_implication.txt",
-    "constraint_family": "implication",
+    "asp_template_file": "constraint_templates_L7_count_coupling.txt",
+    "constraint_family": "count_coupling",
     "text": [
-      "Every object in region <R1> with size <V1> must be <D1> of at least one other object.",
-      "If an object is in region <R1> and has size <V1>, it must have the <D1> relation to some other object."
+      "The number of objects in region <R1> with size <V1> must equal the number of objects in region <R2> with <P2> <V2>.",
+      "Global coupling: the count of objects in region <R1> with size <V1> must match the count of objects in region <R2> with <P2> <V2>."
     ],
     "nodes": [
       {
@@ -224,13 +209,12 @@
           "<V1>",
           "<R2>",
           "<P2>",
-          "<V2>",
-          "<D1>"
+          "<V2>"
         ],
         "inputs": [
           0
         ],
-        "type": "constraint_implication"
+        "type": "constraint_global_count_coupling"
       },
       {
         "inputs": [
@@ -259,10 +243,6 @@
       {
         "type": "Value",
         "name": "<V2>"
-      },
-      {
-        "type": "Relation",
-        "name": "<D1>"
       }
     ],
     "constraints": [
@@ -276,12 +256,11 @@
     "property_focus": "size"
   },
   {
-    "asp_template_file": "constraint_templates_L4_forbid_conditional_pair.txt",
-    "constraint_family": "forbid_conditional_pair",
+    "asp_template_file": "constraint_templates_L7_all_different.txt",
+    "constraint_family": "all_different",
     "text": [
-      "No two distinct objects in regions <R1> and <R2> with color <V1> and <P2> <V2> may satisfy relation <D1>.",
-      "It is forbidden for an object in region <R1> with color <V1> to be <D1> of an object in region <R2> with <P2> <V2>.",
-      "It is forbidden for a <V1> object in region <R1> to be <D1> of a <V2> object in region <R2>."
+      "No two distinct objects in region <R1> may share the same color value <V1>.",
+      "All objects in region <R1> must have distinct color values; <V1> cannot repeat."
     ],
     "nodes": [
       {
@@ -294,13 +273,12 @@
           "<V1>",
           "<R2>",
           "<P2>",
-          "<V2>",
-          "<D1>"
+          "<V2>"
         ],
         "inputs": [
           0
         ],
-        "type": "constraint_forbid_conditional_pair"
+        "type": "constraint_all_different"
       },
       {
         "inputs": [
@@ -329,10 +307,6 @@
       {
         "type": "Value",
         "name": "<V2>"
-      },
-      {
-        "type": "Relation",
-        "name": "<D1>"
       }
     ],
     "constraints": [
@@ -346,12 +320,11 @@
     "property_focus": "color"
   },
   {
-    "asp_template_file": "constraint_templates_L4_forbid_conditional_pair.txt",
-    "constraint_family": "forbid_conditional_pair",
+    "asp_template_file": "constraint_templates_L7_all_different.txt",
+    "constraint_family": "all_different",
     "text": [
-      "No two distinct objects in regions <R1> and <R2> with material <V1> and <P2> <V2> may satisfy relation <D1>.",
-      "It is forbidden for an object in region <R1> with material <V1> to be <D1> of an object in region <R2> with <P2> <V2>.",
-      "It is forbidden for a <V1> object in region <R1> to be <D1> of a <V2> object in region <R2>."
+      "No two distinct objects in region <R1> may share the same material value <V1>.",
+      "All objects in region <R1> must have distinct material values; <V1> cannot repeat."
     ],
     "nodes": [
       {
@@ -364,13 +337,12 @@
           "<V1>",
           "<R2>",
           "<P2>",
-          "<V2>",
-          "<D1>"
+          "<V2>"
         ],
         "inputs": [
           0
         ],
-        "type": "constraint_forbid_conditional_pair"
+        "type": "constraint_all_different"
       },
       {
         "inputs": [
@@ -399,10 +371,6 @@
       {
         "type": "Value",
         "name": "<V2>"
-      },
-      {
-        "type": "Relation",
-        "name": "<D1>"
       }
     ],
     "constraints": [
@@ -416,12 +384,11 @@
     "property_focus": "material"
   },
   {
-    "asp_template_file": "constraint_templates_L4_forbid_conditional_pair.txt",
-    "constraint_family": "forbid_conditional_pair",
+    "asp_template_file": "constraint_templates_L7_all_different.txt",
+    "constraint_family": "all_different",
     "text": [
-      "No two distinct objects in regions <R1> and <R2> with shape <V1> and <P2> <V2> may satisfy relation <D1>.",
-      "It is forbidden for an object in region <R1> with shape <V1> to be <D1> of an object in region <R2> with <P2> <V2>.",
-      "It is forbidden for a <V1> object in region <R1> to be <D1> of a <V2> object in region <R2>."
+      "No two distinct objects in region <R1> may share the same shape value <V1>.",
+      "All objects in region <R1> must have distinct shape values; <V1> cannot repeat."
     ],
     "nodes": [
       {
@@ -434,13 +401,12 @@
           "<V1>",
           "<R2>",
           "<P2>",
-          "<V2>",
-          "<D1>"
+          "<V2>"
         ],
         "inputs": [
           0
         ],
-        "type": "constraint_forbid_conditional_pair"
+        "type": "constraint_all_different"
       },
       {
         "inputs": [
@@ -469,10 +435,6 @@
       {
         "type": "Value",
         "name": "<V2>"
-      },
-      {
-        "type": "Relation",
-        "name": "<D1>"
       }
     ],
     "constraints": [
@@ -486,12 +448,11 @@
     "property_focus": "shape"
   },
   {
-    "asp_template_file": "constraint_templates_L4_forbid_conditional_pair.txt",
-    "constraint_family": "forbid_conditional_pair",
+    "asp_template_file": "constraint_templates_L7_all_different.txt",
+    "constraint_family": "all_different",
     "text": [
-      "No two distinct objects in regions <R1> and <R2> with size <V1> and <P2> <V2> may satisfy relation <D1>.",
-      "It is forbidden for an object in region <R1> with size <V1> to be <D1> of an object in region <R2> with <P2> <V2>.",
-      "It is forbidden for a <V1> object in region <R1> to be <D1> of a <V2> object in region <R2>."
+      "No two distinct objects in region <R1> may share the same size value <V1>.",
+      "All objects in region <R1> must have distinct size values; <V1> cannot repeat."
     ],
     "nodes": [
       {
@@ -504,13 +465,12 @@
           "<V1>",
           "<R2>",
           "<P2>",
-          "<V2>",
-          "<D1>"
+          "<V2>"
         ],
         "inputs": [
           0
         ],
-        "type": "constraint_forbid_conditional_pair"
+        "type": "constraint_all_different"
       },
       {
         "inputs": [
@@ -539,10 +499,6 @@
       {
         "type": "Value",
         "name": "<V2>"
-      },
-      {
-        "type": "Relation",
-        "name": "<D1>"
       }
     ],
     "constraints": [
