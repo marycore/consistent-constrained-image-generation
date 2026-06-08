@@ -160,6 +160,12 @@ def parse_args() -> argparse.Namespace:
         help="Scene counter offset. First generated ID will be scene_{start_id+1:06d}. Use the last ID of an existing dataset to continue without collisions (e.g. --start_id 100 → first new record is scene_000101).",
     )
     p.add_argument(
+        "--start_unsat_id",
+        type=int,
+        default=0,
+        help="UNSAT counter offset. First UNSAT record will be unsat_{start_unsat_id+1:06d}. Use the last UNSAT ID of an existing sidecar to continue without collisions.",
+    )
+    p.add_argument(
         "--quiet",
         action="store_true",
         help="Only print level summaries and final stats (no per-instance lines).",
@@ -420,6 +426,7 @@ def main() -> None:
     args = parse_args()
     rng = random.Random(args.seed)
     progress = ProgressLog(quiet=args.quiet)
+    progress.unsat_records_written = args.start_unsat_id
 
     repo_root = Path(__file__).resolve().parents[1]
     index_path = repo_root / args.index_json
