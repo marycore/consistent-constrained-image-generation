@@ -323,10 +323,12 @@ def build_asp_assignment(
             asp_assignment["P1'"] = property_focus
         if "P2'" in asp_rule or "P2'" in comment:
             if "P2'" not in asp_assignment:
-                p2 = sample_distinct_property(property_focus, rng)
-                asp_assignment["P2'"] = p2
-                if "<P2>" not in param_assignment:
+                if "<P2>" in param_assignment:
+                    p2 = param_assignment["<P2>"]
+                else:
+                    p2 = sample_distinct_property(property_focus, rng)
                     param_assignment["<P2>"] = p2
+                asp_assignment["P2'"] = p2
 
     if relation_focus:
         asp_assignment["D1'"] = relation_focus

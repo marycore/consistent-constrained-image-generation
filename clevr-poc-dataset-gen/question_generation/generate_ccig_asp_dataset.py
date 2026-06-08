@@ -154,6 +154,12 @@ def parse_args() -> argparse.Namespace:
         help="Max resampling attempts per instance when validating with clingo.",
     )
     p.add_argument(
+        "--start_id",
+        type=int,
+        default=0,
+        help="Starting scene counter (default 0); first record will be scene_000001 when 0).",
+    )
+    p.add_argument(
         "--quiet",
         action="store_true",
         help="Only print level summaries and final stats (no per-instance lines).",
@@ -495,7 +501,7 @@ def main() -> None:
     else:
         planned_total = 0  # set below for combo
 
-    rec_id = 0
+    rec_id = args.start_id
     with ExitStack() as stack:
         out = stack.enter_context(out_path.open("w", encoding="utf-8"))
         unsat_out = (
