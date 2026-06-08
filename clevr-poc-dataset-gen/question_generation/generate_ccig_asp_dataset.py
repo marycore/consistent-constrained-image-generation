@@ -157,7 +157,7 @@ def parse_args() -> argparse.Namespace:
         "--start_id",
         type=int,
         default=0,
-        help="Starting scene counter (default 0); first record will be scene_000001 when 0).",
+        help="Scene counter offset. First generated ID will be scene_{start_id+1:06d}. Use the last ID of an existing dataset to continue without collisions (e.g. --start_id 100 → first new record is scene_000101).",
     )
     p.add_argument(
         "--quiet",
