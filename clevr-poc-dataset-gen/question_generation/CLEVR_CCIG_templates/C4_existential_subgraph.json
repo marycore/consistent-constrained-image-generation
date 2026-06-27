@@ -1,0 +1,526 @@
+[
+  {
+    "asp_template_file": "constraint_templates_C4_exist_pair.txt",
+    "constraint_family": "exist_pair",
+    "text": [
+      "A <V1> object in region <R1> is <D1> of a <V2> object in region <R2>.",
+      "Some <V1> object in region <R1> is <D1> of a <V2> object in region <R2>."
+    ],
+    "params": [
+      {
+        "type": "Region",
+        "name": "<R1>"
+      },
+      {
+        "type": "Color",
+        "name": "<V1>"
+      },
+      {
+        "type": "Region",
+        "name": "<R2>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      },
+      {
+        "type": "Relation",
+        "name": "<D1>"
+      }
+    ],
+    "property_focus": "color"
+  },
+  {
+    "asp_template_file": "constraint_templates_C4_exist_pair.txt",
+    "constraint_family": "exist_pair",
+    "text": [
+      "A <V1> object in region <R1> is <D1> of a <V2> object in region <R2>.",
+      "Some <V1> object in region <R1> is <D1> of a <V2> object in region <R2>."
+    ],
+    "params": [
+      {
+        "type": "Region",
+        "name": "<R1>"
+      },
+      {
+        "type": "Material",
+        "name": "<V1>"
+      },
+      {
+        "type": "Region",
+        "name": "<R2>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      },
+      {
+        "type": "Relation",
+        "name": "<D1>"
+      }
+    ],
+    "property_focus": "material"
+  },
+  {
+    "asp_template_file": "constraint_templates_C4_exist_pair.txt",
+    "constraint_family": "exist_pair",
+    "text": [
+      "A <V1> object in region <R1> is <D1> of a <V2> object in region <R2>.",
+      "Some <V1> object in region <R1> is <D1> of a <V2> object in region <R2>."
+    ],
+    "params": [
+      {
+        "type": "Region",
+        "name": "<R1>"
+      },
+      {
+        "type": "Shape",
+        "name": "<V1>"
+      },
+      {
+        "type": "Region",
+        "name": "<R2>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      },
+      {
+        "type": "Relation",
+        "name": "<D1>"
+      }
+    ],
+    "property_focus": "shape"
+  },
+  {
+    "asp_template_file": "constraint_templates_C4_exist_pair.txt",
+    "constraint_family": "exist_pair",
+    "text": [
+      "A <V1> object in region <R1> is <D1> of a <V2> object in region <R2>.",
+      "Some <V1> object in region <R1> is <D1> of a <V2> object in region <R2>."
+    ],
+    "params": [
+      {
+        "type": "Region",
+        "name": "<R1>"
+      },
+      {
+        "type": "Size",
+        "name": "<V1>"
+      },
+      {
+        "type": "Region",
+        "name": "<R2>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      },
+      {
+        "type": "Relation",
+        "name": "<D1>"
+      }
+    ],
+    "property_focus": "size"
+  },
+  {
+    "asp_template_file": "constraint_templates_C4_forbid_pair.txt",
+    "constraint_family": "forbid_pair",
+    "text": [
+      "No <V1> object in region <R1> is ever <D1> of a <V2> object in region <R2>.",
+      "A <V1> object in region <R1> is never <D1> of any <V2> object in region <R2>."
+    ],
+    "params": [
+      {
+        "type": "Region",
+        "name": "<R1>"
+      },
+      {
+        "type": "Color",
+        "name": "<V1>"
+      },
+      {
+        "type": "Region",
+        "name": "<R2>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      },
+      {
+        "type": "Relation",
+        "name": "<D1>"
+      }
+    ],
+    "property_focus": "color"
+  },
+  {
+    "asp_template_file": "constraint_templates_C4_forbid_pair.txt",
+    "constraint_family": "forbid_pair",
+    "text": [
+      "No <V1> object in region <R1> is ever <D1> of a <V2> object in region <R2>.",
+      "A <V1> object in region <R1> is never <D1> of any <V2> object in region <R2>."
+    ],
+    "params": [
+      {
+        "type": "Region",
+        "name": "<R1>"
+      },
+      {
+        "type": "Material",
+        "name": "<V1>"
+      },
+      {
+        "type": "Region",
+        "name": "<R2>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      },
+      {
+        "type": "Relation",
+        "name": "<D1>"
+      }
+    ],
+    "property_focus": "material"
+  },
+  {
+    "asp_template_file": "constraint_templates_C4_forbid_pair.txt",
+    "constraint_family": "forbid_pair",
+    "text": [
+      "No <V1> object in region <R1> is ever <D1> of a <V2> object in region <R2>.",
+      "A <V1> object in region <R1> is never <D1> of any <V2> object in region <R2>."
+    ],
+    "params": [
+      {
+        "type": "Region",
+        "name": "<R1>"
+      },
+      {
+        "type": "Shape",
+        "name": "<V1>"
+      },
+      {
+        "type": "Region",
+        "name": "<R2>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      },
+      {
+        "type": "Relation",
+        "name": "<D1>"
+      }
+    ],
+    "property_focus": "shape"
+  },
+  {
+    "asp_template_file": "constraint_templates_C4_forbid_pair.txt",
+    "constraint_family": "forbid_pair",
+    "text": [
+      "No <V1> object in region <R1> is ever <D1> of a <V2> object in region <R2>.",
+      "A <V1> object in region <R1> is never <D1> of any <V2> object in region <R2>."
+    ],
+    "params": [
+      {
+        "type": "Region",
+        "name": "<R1>"
+      },
+      {
+        "type": "Size",
+        "name": "<V1>"
+      },
+      {
+        "type": "Region",
+        "name": "<R2>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      },
+      {
+        "type": "Relation",
+        "name": "<D1>"
+      }
+    ],
+    "property_focus": "size"
+  },
+  {
+    "asp_template_file": "constraint_templates_C4_chain2.txt",
+    "constraint_family": "chain2",
+    "text": [
+      "Three objects form a chain: the first is to the left of the second, and the second is <D2> of the third.",
+      "A chain of three distinct objects exists where the first is to the left of the second and the second is <D2> of the third."
+    ],
+    "params": [
+      {
+        "type": "Relation",
+        "name": "<D1>"
+      },
+      {
+        "type": "Relation",
+        "name": "<D2>"
+      }
+    ],
+    "relation_focus": "left"
+  },
+  {
+    "asp_template_file": "constraint_templates_C4_chain2.txt",
+    "constraint_family": "chain2",
+    "text": [
+      "Three objects form a chain: the first is to the right of the second, and the second is <D2> of the third.",
+      "A chain of three distinct objects exists where the first is to the right of the second and the second is <D2> of the third."
+    ],
+    "params": [
+      {
+        "type": "Relation",
+        "name": "<D1>"
+      },
+      {
+        "type": "Relation",
+        "name": "<D2>"
+      }
+    ],
+    "relation_focus": "right"
+  },
+  {
+    "asp_template_file": "constraint_templates_C4_chain2.txt",
+    "constraint_family": "chain2",
+    "text": [
+      "Three objects form a chain: the first is in front of the second, and the second is <D2> of the third.",
+      "A chain of three distinct objects exists where the first is in front of the second and the second is <D2> of the third."
+    ],
+    "params": [
+      {
+        "type": "Relation",
+        "name": "<D1>"
+      },
+      {
+        "type": "Relation",
+        "name": "<D2>"
+      }
+    ],
+    "relation_focus": "front"
+  },
+  {
+    "asp_template_file": "constraint_templates_C4_chain2.txt",
+    "constraint_family": "chain2",
+    "text": [
+      "Three objects form a chain: the first is behind the second, and the second is <D2> of the third.",
+      "A chain of three distinct objects exists where the first is behind the second and the second is <D2> of the third."
+    ],
+    "params": [
+      {
+        "type": "Relation",
+        "name": "<D1>"
+      },
+      {
+        "type": "Relation",
+        "name": "<D2>"
+      }
+    ],
+    "relation_focus": "behind"
+  },
+  {
+    "asp_template_file": "constraint_templates_C4_chain3.txt",
+    "constraint_family": "chain3",
+    "text": [
+      "Four objects form a chain: the first is to the left of the second, the second is <D2> of the third, and the third is <D3> of the fourth.",
+      "A chain of four distinct objects exists where the first is to the left of the second, the second is <D2> of the third, and the third is <D3> of the fourth."
+    ],
+    "params": [
+      {
+        "type": "Relation",
+        "name": "<D1>"
+      },
+      {
+        "type": "Relation",
+        "name": "<D2>"
+      },
+      {
+        "type": "Relation",
+        "name": "<D3>"
+      }
+    ],
+    "relation_focus": "left"
+  },
+  {
+    "asp_template_file": "constraint_templates_C4_chain3.txt",
+    "constraint_family": "chain3",
+    "text": [
+      "Four objects form a chain: the first is to the right of the second, the second is <D2> of the third, and the third is <D3> of the fourth.",
+      "A chain of four distinct objects exists where the first is to the right of the second, the second is <D2> of the third, and the third is <D3> of the fourth."
+    ],
+    "params": [
+      {
+        "type": "Relation",
+        "name": "<D1>"
+      },
+      {
+        "type": "Relation",
+        "name": "<D2>"
+      },
+      {
+        "type": "Relation",
+        "name": "<D3>"
+      }
+    ],
+    "relation_focus": "right"
+  },
+  {
+    "asp_template_file": "constraint_templates_C4_chain3.txt",
+    "constraint_family": "chain3",
+    "text": [
+      "Four objects form a chain: the first is in front of the second, the second is <D2> of the third, and the third is <D3> of the fourth.",
+      "A chain of four distinct objects exists where the first is in front of the second, the second is <D2> of the third, and the third is <D3> of the fourth."
+    ],
+    "params": [
+      {
+        "type": "Relation",
+        "name": "<D1>"
+      },
+      {
+        "type": "Relation",
+        "name": "<D2>"
+      },
+      {
+        "type": "Relation",
+        "name": "<D3>"
+      }
+    ],
+    "relation_focus": "front"
+  },
+  {
+    "asp_template_file": "constraint_templates_C4_chain3.txt",
+    "constraint_family": "chain3",
+    "text": [
+      "Four objects form a chain: the first is behind the second, the second is <D2> of the third, and the third is <D3> of the fourth.",
+      "A chain of four distinct objects exists where the first is behind the second, the second is <D2> of the third, and the third is <D3> of the fourth."
+    ],
+    "params": [
+      {
+        "type": "Relation",
+        "name": "<D1>"
+      },
+      {
+        "type": "Relation",
+        "name": "<D2>"
+      },
+      {
+        "type": "Relation",
+        "name": "<D3>"
+      }
+    ],
+    "relation_focus": "behind"
+  },
+  {
+    "asp_template_file": "constraint_templates_C4_shared_hub.txt",
+    "constraint_family": "shared_hub",
+    "text": [
+      "One object is to the left of a second object and <D2> of a third, distinct object.",
+      "A hub object is to the left of one object and <D2> of another, distinct object."
+    ],
+    "params": [
+      {
+        "type": "Relation",
+        "name": "<D1>"
+      },
+      {
+        "type": "Relation",
+        "name": "<D2>"
+      }
+    ],
+    "relation_focus": "left"
+  },
+  {
+    "asp_template_file": "constraint_templates_C4_shared_hub.txt",
+    "constraint_family": "shared_hub",
+    "text": [
+      "One object is to the right of a second object and <D2> of a third, distinct object.",
+      "A hub object is to the right of one object and <D2> of another, distinct object."
+    ],
+    "params": [
+      {
+        "type": "Relation",
+        "name": "<D1>"
+      },
+      {
+        "type": "Relation",
+        "name": "<D2>"
+      }
+    ],
+    "relation_focus": "right"
+  },
+  {
+    "asp_template_file": "constraint_templates_C4_shared_hub.txt",
+    "constraint_family": "shared_hub",
+    "text": [
+      "One object is in front of a second object and <D2> of a third, distinct object.",
+      "A hub object is in front of one object and <D2> of another, distinct object."
+    ],
+    "params": [
+      {
+        "type": "Relation",
+        "name": "<D1>"
+      },
+      {
+        "type": "Relation",
+        "name": "<D2>"
+      }
+    ],
+    "relation_focus": "front"
+  },
+  {
+    "asp_template_file": "constraint_templates_C4_shared_hub.txt",
+    "constraint_family": "shared_hub",
+    "text": [
+      "One object is behind a second object and <D2> of a third, distinct object.",
+      "A hub object is behind one object and <D2> of another, distinct object."
+    ],
+    "params": [
+      {
+        "type": "Relation",
+        "name": "<D1>"
+      },
+      {
+        "type": "Relation",
+        "name": "<D2>"
+      }
+    ],
+    "relation_focus": "behind"
+  }
+]

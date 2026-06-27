@@ -1,0 +1,158 @@
+[
+  {
+    "asp_template_file": "constraint_templates_C5_pair_conditional.txt",
+    "constraint_family": "pair_conditional",
+    "text": [
+      "Whenever a <V1> object in region <R1> is <D1> of a <V2> object in region <R2>, it is also <D2> of that same object.",
+      "Any <V1> object in region <R1> that is <D1> of a <V2> object in region <R2> must also be <D2> of it."
+    ],
+    "params": [
+      {
+        "type": "Region",
+        "name": "<R1>"
+      },
+      {
+        "type": "Color",
+        "name": "<V1>"
+      },
+      {
+        "type": "Region",
+        "name": "<R2>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      },
+      {
+        "type": "Relation",
+        "name": "<D1>"
+      },
+      {
+        "type": "Relation",
+        "name": "<D2>"
+      }
+    ],
+    "property_focus": "color"
+  },
+  {
+    "asp_template_file": "constraint_templates_C5_pair_conditional.txt",
+    "constraint_family": "pair_conditional",
+    "text": [
+      "Whenever a <V1> object in region <R1> is <D1> of a <V2> object in region <R2>, it is also <D2> of that same object.",
+      "Any <V1> object in region <R1> that is <D1> of a <V2> object in region <R2> must also be <D2> of it."
+    ],
+    "params": [
+      {
+        "type": "Region",
+        "name": "<R1>"
+      },
+      {
+        "type": "Material",
+        "name": "<V1>"
+      },
+      {
+        "type": "Region",
+        "name": "<R2>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      },
+      {
+        "type": "Relation",
+        "name": "<D1>"
+      },
+      {
+        "type": "Relation",
+        "name": "<D2>"
+      }
+    ],
+    "property_focus": "material"
+  },
+  {
+    "asp_template_file": "constraint_templates_C5_pair_conditional.txt",
+    "constraint_family": "pair_conditional",
+    "text": [
+      "Whenever a <V1> object in region <R1> is <D1> of a <V2> object in region <R2>, it is also <D2> of that same object.",
+      "Any <V1> object in region <R1> that is <D1> of a <V2> object in region <R2> must also be <D2> of it."
+    ],
+    "params": [
+      {
+        "type": "Region",
+        "name": "<R1>"
+      },
+      {
+        "type": "Shape",
+        "name": "<V1>"
+      },
+      {
+        "type": "Region",
+        "name": "<R2>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      },
+      {
+        "type": "Relation",
+        "name": "<D1>"
+      },
+      {
+        "type": "Relation",
+        "name": "<D2>"
+      }
+    ],
+    "property_focus": "shape"
+  },
+  {
+    "asp_template_file": "constraint_templates_C5_pair_conditional.txt",
+    "constraint_family": "pair_conditional",
+    "text": [
+      "Whenever a <V1> object in region <R1> is <D1> of a <V2> object in region <R2>, it is also <D2> of that same object.",
+      "Any <V1> object in region <R1> that is <D1> of a <V2> object in region <R2> must also be <D2> of it."
+    ],
+    "params": [
+      {
+        "type": "Region",
+        "name": "<R1>"
+      },
+      {
+        "type": "Size",
+        "name": "<V1>"
+      },
+      {
+        "type": "Region",
+        "name": "<R2>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      },
+      {
+        "type": "Relation",
+        "name": "<D1>"
+      },
+      {
+        "type": "Relation",
+        "name": "<D2>"
+      }
+    ],
+    "property_focus": "size"
+  }
+]

@@ -1,60 +1,67 @@
 {
   "complexity_levels": [
     {
-      "level": "L0",
-      "file": "L0_unary_attribute.json",
-      "family": "F1",
-      "name": "Unary Attribute Constraints",
+      "level": "C1",
+      "file": "C1_existential_object.json",
+      "family": "Object-Level",
+      "name": "Existential Object",
       "constraint_families": ["exist", "forbid"]
     },
     {
-      "level": "L1",
-      "file": "L1_single_relational.json",
-      "family": "F2",
-      "name": "Single Relational Constraint",
-      "constraint_families": ["exist_pair", "forbid_pair"]
+      "level": "C2",
+      "file": "C2_universal_object.json",
+      "family": "Object-Level",
+      "name": "Universal Object",
+      "constraint_families": ["universal"]
     },
     {
-      "level": "L2",
-      "file": "L2_relational_composition.json",
-      "family": "F3",
-      "name": "Relational Composition",
-      "constraint_families": ["chain2", "chain3"]
+      "level": "C3",
+      "file": "C3_conditional_object.json",
+      "family": "Object-Level",
+      "name": "Conditional Object",
+      "constraint_families": ["conditional", "conditional_negated"]
     },
     {
-      "level": "L3",
-      "file": "L3_conjunctive_relational_binding.json",
-      "family": "F3",
-      "name": "Conjunctive Relational Binding",
-      "constraint_families": ["shared_hub"]
+      "level": "C4",
+      "file": "C4_existential_subgraph.json",
+      "family": "SubGraph-Level",
+      "name": "Existential (Subgraph)",
+      "constraint_families": ["exist_pair", "forbid_pair", "chain2", "chain3", "shared_hub"]
     },
     {
-      "level": "L4",
-      "file": "L4_implication_universal_dependency.json",
-      "family": "F4",
-      "name": "Implication / Universal Dependency",
-      "constraint_families": ["implication", "universal_witness"]
+      "level": "C5",
+      "file": "C5_conditional_subgraph.json",
+      "family": "SubGraph-Level",
+      "name": "Conditional (Subgraph)",
+      "constraint_families": ["pair_conditional"]
     },
     {
-      "level": "L5",
-      "file": "L5_relational_aggregates.json",
-      "family": "F5",
-      "name": "Relational Aggregates",
-      "constraint_families": ["unary_count", "relational_count"]
+      "level": "C6",
+      "file": "C6_existential_universal.json",
+      "family": "SubGraph-Level",
+      "name": "Existential-Universal",
+      "constraint_families": ["witness_universal"]
     },
     {
-      "level": "L6",
-      "file": "L6_injective_matching.json",
-      "family": "F6",
-      "name": "Injective Matching",
-      "constraint_families": ["witness_unique"]
+      "level": "C7",
+      "file": "C7_universal_existential.json",
+      "family": "SubGraph-Level",
+      "name": "Universal-Existential",
+      "constraint_families": ["implication", "universal_witness", "unique_witness"]
     },
     {
-      "level": "L7",
-      "file": "L7_global_coupling.json",
-      "family": "F7",
-      "name": "Global Coupling",
-      "constraint_families": ["count_coupling", "all_different"]
+      "level": "C8",
+      "file": "C8_cardinality.json",
+      "family": "Cardinality-Level",
+      "name": "Cardinality",
+      "constraint_families": ["unary_count", "relational_count", "all_different"]
+    },
+    {
+      "level": "C9",
+      "file": "C9_aggregate_comparison.json",
+      "family": "Cardinality-Level",
+      "name": "Aggregate Comparison",
+      "constraint_families": ["count_coupling"]
     }
   ],
   "combo_pairs_file": "combo_pairs.json"

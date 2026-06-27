@@ -1,0 +1,82 @@
+[
+  {
+    "asp_template_file": "constraint_templates_C2_universal.txt",
+    "constraint_family": "universal",
+    "text": [
+      "Every object in region <R1> has color <V1>.",
+      "All objects in region <R1> are <V1>.",
+      "Region <R1> contains only <V1> objects."
+    ],
+    "params": [
+      {
+        "type": "Region",
+        "name": "<R1>"
+      },
+      {
+        "type": "Color",
+        "name": "<V1>"
+      }
+    ],
+    "property_focus": "color"
+  },
+  {
+    "asp_template_file": "constraint_templates_C2_universal.txt",
+    "constraint_family": "universal",
+    "text": [
+      "Every object in region <R1> has material <V1>.",
+      "All objects in region <R1> are <V1>.",
+      "Region <R1> contains only <V1> objects."
+    ],
+    "params": [
+      {
+        "type": "Region",
+        "name": "<R1>"
+      },
+      {
+        "type": "Material",
+        "name": "<V1>"
+      }
+    ],
+    "property_focus": "material"
+  },
+  {
+    "asp_template_file": "constraint_templates_C2_universal.txt",
+    "constraint_family": "universal",
+    "text": [
+      "Every object in region <R1> has shape <V1>.",
+      "All objects in region <R1> are <V1>.",
+      "Region <R1> contains only <V1> objects."
+    ],
+    "params": [
+      {
+        "type": "Region",
+        "name": "<R1>"
+      },
+      {
+        "type": "Shape",
+        "name": "<V1>"
+      }
+    ],
+    "property_focus": "shape"
+  },
+  {
+    "asp_template_file": "constraint_templates_C2_universal.txt",
+    "constraint_family": "universal",
+    "text": [
+      "Every object in region <R1> has size <V1>.",
+      "All objects in region <R1> are <V1>.",
+      "Region <R1> contains only <V1> objects."
+    ],
+    "params": [
+      {
+        "type": "Region",
+        "name": "<R1>"
+      },
+      {
+        "type": "Size",
+        "name": "<V1>"
+      }
+    ],
+    "property_focus": "size"
+  }
+]

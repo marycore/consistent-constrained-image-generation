@@ -1,0 +1,310 @@
+[
+  {
+    "asp_template_file": "constraint_templates_C8_unary_count.txt",
+    "constraint_family": "unary_count",
+    "text": [
+      "Exactly <N1> <V1> objects are located in region <R1>.",
+      "Region <R1> contains exactly <N1> <V1> objects."
+    ],
+    "params": [
+      {
+        "type": "Region",
+        "name": "<R1>"
+      },
+      {
+        "type": "Color",
+        "name": "<V1>"
+      },
+      {
+        "type": "Count",
+        "name": "<N1>"
+      }
+    ],
+    "property_focus": "color"
+  },
+  {
+    "asp_template_file": "constraint_templates_C8_unary_count.txt",
+    "constraint_family": "unary_count",
+    "text": [
+      "Exactly <N1> <V1> objects are located in region <R1>.",
+      "Region <R1> contains exactly <N1> <V1> objects."
+    ],
+    "params": [
+      {
+        "type": "Region",
+        "name": "<R1>"
+      },
+      {
+        "type": "Material",
+        "name": "<V1>"
+      },
+      {
+        "type": "Count",
+        "name": "<N1>"
+      }
+    ],
+    "property_focus": "material"
+  },
+  {
+    "asp_template_file": "constraint_templates_C8_unary_count.txt",
+    "constraint_family": "unary_count",
+    "text": [
+      "Exactly <N1> <V1> objects are located in region <R1>.",
+      "Region <R1> contains exactly <N1> <V1> objects."
+    ],
+    "params": [
+      {
+        "type": "Region",
+        "name": "<R1>"
+      },
+      {
+        "type": "Shape",
+        "name": "<V1>"
+      },
+      {
+        "type": "Count",
+        "name": "<N1>"
+      }
+    ],
+    "property_focus": "shape"
+  },
+  {
+    "asp_template_file": "constraint_templates_C8_unary_count.txt",
+    "constraint_family": "unary_count",
+    "text": [
+      "Exactly <N1> <V1> objects are located in region <R1>.",
+      "Region <R1> contains exactly <N1> <V1> objects."
+    ],
+    "params": [
+      {
+        "type": "Region",
+        "name": "<R1>"
+      },
+      {
+        "type": "Size",
+        "name": "<V1>"
+      },
+      {
+        "type": "Count",
+        "name": "<N1>"
+      }
+    ],
+    "property_focus": "size"
+  },
+  {
+    "asp_template_file": "constraint_templates_C8_relational_count.txt",
+    "constraint_family": "relational_count",
+    "text": [
+      "Exactly <N1> <V1> objects are <D1> of some <V2> object in region <R2>.",
+      "There are exactly <N1> <V1> objects that are <D1> of a <V2> object in region <R2>."
+    ],
+    "params": [
+      {
+        "type": "Color",
+        "name": "<V1>"
+      },
+      {
+        "type": "Count",
+        "name": "<N1>"
+      },
+      {
+        "type": "Region",
+        "name": "<R2>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      },
+      {
+        "type": "Relation",
+        "name": "<D1>"
+      }
+    ],
+    "property_focus": "color"
+  },
+  {
+    "asp_template_file": "constraint_templates_C8_relational_count.txt",
+    "constraint_family": "relational_count",
+    "text": [
+      "Exactly <N1> <V1> objects are <D1> of some <V2> object in region <R2>.",
+      "There are exactly <N1> <V1> objects that are <D1> of a <V2> object in region <R2>."
+    ],
+    "params": [
+      {
+        "type": "Material",
+        "name": "<V1>"
+      },
+      {
+        "type": "Count",
+        "name": "<N1>"
+      },
+      {
+        "type": "Region",
+        "name": "<R2>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      },
+      {
+        "type": "Relation",
+        "name": "<D1>"
+      }
+    ],
+    "property_focus": "material"
+  },
+  {
+    "asp_template_file": "constraint_templates_C8_relational_count.txt",
+    "constraint_family": "relational_count",
+    "text": [
+      "Exactly <N1> <V1> objects are <D1> of some <V2> object in region <R2>.",
+      "There are exactly <N1> <V1> objects that are <D1> of a <V2> object in region <R2>."
+    ],
+    "params": [
+      {
+        "type": "Shape",
+        "name": "<V1>"
+      },
+      {
+        "type": "Count",
+        "name": "<N1>"
+      },
+      {
+        "type": "Region",
+        "name": "<R2>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      },
+      {
+        "type": "Relation",
+        "name": "<D1>"
+      }
+    ],
+    "property_focus": "shape"
+  },
+  {
+    "asp_template_file": "constraint_templates_C8_relational_count.txt",
+    "constraint_family": "relational_count",
+    "text": [
+      "Exactly <N1> <V1> objects are <D1> of some <V2> object in region <R2>.",
+      "There are exactly <N1> <V1> objects that are <D1> of a <V2> object in region <R2>."
+    ],
+    "params": [
+      {
+        "type": "Size",
+        "name": "<V1>"
+      },
+      {
+        "type": "Count",
+        "name": "<N1>"
+      },
+      {
+        "type": "Region",
+        "name": "<R2>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      },
+      {
+        "type": "Relation",
+        "name": "<D1>"
+      }
+    ],
+    "property_focus": "size"
+  },
+  {
+    "asp_template_file": "constraint_templates_C8_all_different.txt",
+    "constraint_family": "all_different",
+    "text": [
+      "At most one object in region <R1> has color <V1>.",
+      "No two distinct objects in region <R1> both have color <V1>."
+    ],
+    "params": [
+      {
+        "type": "Region",
+        "name": "<R1>"
+      },
+      {
+        "type": "Color",
+        "name": "<V1>"
+      }
+    ],
+    "property_focus": "color"
+  },
+  {
+    "asp_template_file": "constraint_templates_C8_all_different.txt",
+    "constraint_family": "all_different",
+    "text": [
+      "At most one object in region <R1> has material <V1>.",
+      "No two distinct objects in region <R1> both have material <V1>."
+    ],
+    "params": [
+      {
+        "type": "Region",
+        "name": "<R1>"
+      },
+      {
+        "type": "Material",
+        "name": "<V1>"
+      }
+    ],
+    "property_focus": "material"
+  },
+  {
+    "asp_template_file": "constraint_templates_C8_all_different.txt",
+    "constraint_family": "all_different",
+    "text": [
+      "At most one object in region <R1> has shape <V1>.",
+      "No two distinct objects in region <R1> both have shape <V1>."
+    ],
+    "params": [
+      {
+        "type": "Region",
+        "name": "<R1>"
+      },
+      {
+        "type": "Shape",
+        "name": "<V1>"
+      }
+    ],
+    "property_focus": "shape"
+  },
+  {
+    "asp_template_file": "constraint_templates_C8_all_different.txt",
+    "constraint_family": "all_different",
+    "text": [
+      "At most one object in region <R1> has size <V1>.",
+      "No two distinct objects in region <R1> both have size <V1>."
+    ],
+    "params": [
+      {
+        "type": "Region",
+        "name": "<R1>"
+      },
+      {
+        "type": "Size",
+        "name": "<V1>"
+      }
+    ],
+    "property_focus": "size"
+  }
+]

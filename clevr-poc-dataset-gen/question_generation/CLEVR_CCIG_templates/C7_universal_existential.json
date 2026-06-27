@@ -1,0 +1,374 @@
+[
+  {
+    "asp_template_file": "constraint_templates_C7_implication.txt",
+    "constraint_family": "implication",
+    "text": [
+      "Every <V1> object in region <R1> is <D1> of at least one other object.",
+      "Each <V1> object in region <R1> is <D1> of some other object."
+    ],
+    "params": [
+      {
+        "type": "Region",
+        "name": "<R1>"
+      },
+      {
+        "type": "Color",
+        "name": "<V1>"
+      },
+      {
+        "type": "Relation",
+        "name": "<D1>"
+      }
+    ],
+    "property_focus": "color"
+  },
+  {
+    "asp_template_file": "constraint_templates_C7_implication.txt",
+    "constraint_family": "implication",
+    "text": [
+      "Every <V1> object in region <R1> is <D1> of at least one other object.",
+      "Each <V1> object in region <R1> is <D1> of some other object."
+    ],
+    "params": [
+      {
+        "type": "Region",
+        "name": "<R1>"
+      },
+      {
+        "type": "Material",
+        "name": "<V1>"
+      },
+      {
+        "type": "Relation",
+        "name": "<D1>"
+      }
+    ],
+    "property_focus": "material"
+  },
+  {
+    "asp_template_file": "constraint_templates_C7_implication.txt",
+    "constraint_family": "implication",
+    "text": [
+      "Every <V1> object in region <R1> is <D1> of at least one other object.",
+      "Each <V1> object in region <R1> is <D1> of some other object."
+    ],
+    "params": [
+      {
+        "type": "Region",
+        "name": "<R1>"
+      },
+      {
+        "type": "Shape",
+        "name": "<V1>"
+      },
+      {
+        "type": "Relation",
+        "name": "<D1>"
+      }
+    ],
+    "property_focus": "shape"
+  },
+  {
+    "asp_template_file": "constraint_templates_C7_implication.txt",
+    "constraint_family": "implication",
+    "text": [
+      "Every <V1> object in region <R1> is <D1> of at least one other object.",
+      "Each <V1> object in region <R1> is <D1> of some other object."
+    ],
+    "params": [
+      {
+        "type": "Region",
+        "name": "<R1>"
+      },
+      {
+        "type": "Size",
+        "name": "<V1>"
+      },
+      {
+        "type": "Relation",
+        "name": "<D1>"
+      }
+    ],
+    "property_focus": "size"
+  },
+  {
+    "asp_template_file": "constraint_templates_C7_universal_witness.txt",
+    "constraint_family": "universal_witness",
+    "text": [
+      "Every <V1> object in region <R1> has at least one <V2> object in region <R2> that is <D1> of it.",
+      "Each <V1> object in region <R1> is matched by some <V2> object in region <R2> that is <D1> of it."
+    ],
+    "params": [
+      {
+        "type": "Region",
+        "name": "<R1>"
+      },
+      {
+        "type": "Color",
+        "name": "<V1>"
+      },
+      {
+        "type": "Region",
+        "name": "<R2>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      },
+      {
+        "type": "Relation",
+        "name": "<D1>"
+      }
+    ],
+    "property_focus": "color"
+  },
+  {
+    "asp_template_file": "constraint_templates_C7_universal_witness.txt",
+    "constraint_family": "universal_witness",
+    "text": [
+      "Every <V1> object in region <R1> has at least one <V2> object in region <R2> that is <D1> of it.",
+      "Each <V1> object in region <R1> is matched by some <V2> object in region <R2> that is <D1> of it."
+    ],
+    "params": [
+      {
+        "type": "Region",
+        "name": "<R1>"
+      },
+      {
+        "type": "Material",
+        "name": "<V1>"
+      },
+      {
+        "type": "Region",
+        "name": "<R2>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      },
+      {
+        "type": "Relation",
+        "name": "<D1>"
+      }
+    ],
+    "property_focus": "material"
+  },
+  {
+    "asp_template_file": "constraint_templates_C7_universal_witness.txt",
+    "constraint_family": "universal_witness",
+    "text": [
+      "Every <V1> object in region <R1> has at least one <V2> object in region <R2> that is <D1> of it.",
+      "Each <V1> object in region <R1> is matched by some <V2> object in region <R2> that is <D1> of it."
+    ],
+    "params": [
+      {
+        "type": "Region",
+        "name": "<R1>"
+      },
+      {
+        "type": "Shape",
+        "name": "<V1>"
+      },
+      {
+        "type": "Region",
+        "name": "<R2>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      },
+      {
+        "type": "Relation",
+        "name": "<D1>"
+      }
+    ],
+    "property_focus": "shape"
+  },
+  {
+    "asp_template_file": "constraint_templates_C7_universal_witness.txt",
+    "constraint_family": "universal_witness",
+    "text": [
+      "Every <V1> object in region <R1> has at least one <V2> object in region <R2> that is <D1> of it.",
+      "Each <V1> object in region <R1> is matched by some <V2> object in region <R2> that is <D1> of it."
+    ],
+    "params": [
+      {
+        "type": "Region",
+        "name": "<R1>"
+      },
+      {
+        "type": "Size",
+        "name": "<V1>"
+      },
+      {
+        "type": "Region",
+        "name": "<R2>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      },
+      {
+        "type": "Relation",
+        "name": "<D1>"
+      }
+    ],
+    "property_focus": "size"
+  },
+  {
+    "asp_template_file": "constraint_templates_C7_unique_witness.txt",
+    "constraint_family": "unique_witness",
+    "text": [
+      "Every <V1> object in region <R1> has exactly one <V2> object in region <R2> that is <D1> of it.",
+      "Each <V1> object in region <R1> is matched by exactly one <V2> object in region <R2> that is <D1> of it."
+    ],
+    "params": [
+      {
+        "type": "Region",
+        "name": "<R1>"
+      },
+      {
+        "type": "Color",
+        "name": "<V1>"
+      },
+      {
+        "type": "Region",
+        "name": "<R2>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      },
+      {
+        "type": "Relation",
+        "name": "<D1>"
+      }
+    ],
+    "property_focus": "color"
+  },
+  {
+    "asp_template_file": "constraint_templates_C7_unique_witness.txt",
+    "constraint_family": "unique_witness",
+    "text": [
+      "Every <V1> object in region <R1> has exactly one <V2> object in region <R2> that is <D1> of it.",
+      "Each <V1> object in region <R1> is matched by exactly one <V2> object in region <R2> that is <D1> of it."
+    ],
+    "params": [
+      {
+        "type": "Region",
+        "name": "<R1>"
+      },
+      {
+        "type": "Material",
+        "name": "<V1>"
+      },
+      {
+        "type": "Region",
+        "name": "<R2>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      },
+      {
+        "type": "Relation",
+        "name": "<D1>"
+      }
+    ],
+    "property_focus": "material"
+  },
+  {
+    "asp_template_file": "constraint_templates_C7_unique_witness.txt",
+    "constraint_family": "unique_witness",
+    "text": [
+      "Every <V1> object in region <R1> has exactly one <V2> object in region <R2> that is <D1> of it.",
+      "Each <V1> object in region <R1> is matched by exactly one <V2> object in region <R2> that is <D1> of it."
+    ],
+    "params": [
+      {
+        "type": "Region",
+        "name": "<R1>"
+      },
+      {
+        "type": "Shape",
+        "name": "<V1>"
+      },
+      {
+        "type": "Region",
+        "name": "<R2>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      },
+      {
+        "type": "Relation",
+        "name": "<D1>"
+      }
+    ],
+    "property_focus": "shape"
+  },
+  {
+    "asp_template_file": "constraint_templates_C7_unique_witness.txt",
+    "constraint_family": "unique_witness",
+    "text": [
+      "Every <V1> object in region <R1> has exactly one <V2> object in region <R2> that is <D1> of it.",
+      "Each <V1> object in region <R1> is matched by exactly one <V2> object in region <R2> that is <D1> of it."
+    ],
+    "params": [
+      {
+        "type": "Region",
+        "name": "<R1>"
+      },
+      {
+        "type": "Size",
+        "name": "<V1>"
+      },
+      {
+        "type": "Region",
+        "name": "<R2>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      },
+      {
+        "type": "Relation",
+        "name": "<D1>"
+      }
+    ],
+    "property_focus": "size"
+  }
+]

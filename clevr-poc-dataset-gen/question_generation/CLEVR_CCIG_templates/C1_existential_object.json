@@ -1,0 +1,162 @@
+[
+  {
+    "asp_template_file": "constraint_templates_C1_exist.txt",
+    "constraint_family": "exist",
+    "text": [
+      "Region <R1> contains at least one <V1> object.",
+      "At least one <V1> object appears in region <R1>.",
+      "There is a <V1> object somewhere in region <R1>."
+    ],
+    "params": [
+      {
+        "type": "Region",
+        "name": "<R1>"
+      },
+      {
+        "type": "Color",
+        "name": "<V1>"
+      }
+    ],
+    "property_focus": "color"
+  },
+  {
+    "asp_template_file": "constraint_templates_C1_exist.txt",
+    "constraint_family": "exist",
+    "text": [
+      "Region <R1> contains at least one <V1> object.",
+      "At least one <V1> object appears in region <R1>.",
+      "There is a <V1> object somewhere in region <R1>."
+    ],
+    "params": [
+      {
+        "type": "Region",
+        "name": "<R1>"
+      },
+      {
+        "type": "Material",
+        "name": "<V1>"
+      }
+    ],
+    "property_focus": "material"
+  },
+  {
+    "asp_template_file": "constraint_templates_C1_exist.txt",
+    "constraint_family": "exist",
+    "text": [
+      "Region <R1> contains at least one <V1> object.",
+      "At least one <V1> object appears in region <R1>.",
+      "There is a <V1> object somewhere in region <R1>."
+    ],
+    "params": [
+      {
+        "type": "Region",
+        "name": "<R1>"
+      },
+      {
+        "type": "Shape",
+        "name": "<V1>"
+      }
+    ],
+    "property_focus": "shape"
+  },
+  {
+    "asp_template_file": "constraint_templates_C1_exist.txt",
+    "constraint_family": "exist",
+    "text": [
+      "Region <R1> contains at least one <V1> object.",
+      "At least one <V1> object appears in region <R1>.",
+      "There is a <V1> object somewhere in region <R1>."
+    ],
+    "params": [
+      {
+        "type": "Region",
+        "name": "<R1>"
+      },
+      {
+        "type": "Size",
+        "name": "<V1>"
+      }
+    ],
+    "property_focus": "size"
+  },
+  {
+    "asp_template_file": "constraint_templates_C1_forbid.txt",
+    "constraint_family": "forbid",
+    "text": [
+      "Region <R1> contains no <V1> object.",
+      "No object in region <R1> is <V1>.",
+      "Region <R1> has zero <V1> objects."
+    ],
+    "params": [
+      {
+        "type": "Region",
+        "name": "<R1>"
+      },
+      {
+        "type": "Color",
+        "name": "<V1>"
+      }
+    ],
+    "property_focus": "color"
+  },
+  {
+    "asp_template_file": "constraint_templates_C1_forbid.txt",
+    "constraint_family": "forbid",
+    "text": [
+      "Region <R1> contains no <V1> object.",
+      "No object in region <R1> is <V1>.",
+      "Region <R1> has zero <V1> objects."
+    ],
+    "params": [
+      {
+        "type": "Region",
+        "name": "<R1>"
+      },
+      {
+        "type": "Material",
+        "name": "<V1>"
+      }
+    ],
+    "property_focus": "material"
+  },
+  {
+    "asp_template_file": "constraint_templates_C1_forbid.txt",
+    "constraint_family": "forbid",
+    "text": [
+      "Region <R1> contains no <V1> object.",
+      "No object in region <R1> is <V1>.",
+      "Region <R1> has zero <V1> objects."
+    ],
+    "params": [
+      {
+        "type": "Region",
+        "name": "<R1>"
+      },
+      {
+        "type": "Shape",
+        "name": "<V1>"
+      }
+    ],
+    "property_focus": "shape"
+  },
+  {
+    "asp_template_file": "constraint_templates_C1_forbid.txt",
+    "constraint_family": "forbid",
+    "text": [
+      "Region <R1> contains no <V1> object.",
+      "No object in region <R1> is <V1>.",
+      "Region <R1> has zero <V1> objects."
+    ],
+    "params": [
+      {
+        "type": "Region",
+        "name": "<R1>"
+      },
+      {
+        "type": "Size",
+        "name": "<V1>"
+      }
+    ],
+    "property_focus": "size"
+  }
+]

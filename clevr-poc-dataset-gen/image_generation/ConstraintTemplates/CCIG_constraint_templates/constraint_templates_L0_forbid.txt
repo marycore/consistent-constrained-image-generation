@@ -1,2 +1,0 @@
-% This forbids any object in region R1 from having property P1=V1.
-:- object(X), at(X, R1'), hasProperty(X, P1', V1').

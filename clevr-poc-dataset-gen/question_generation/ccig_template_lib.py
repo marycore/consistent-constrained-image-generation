@@ -107,20 +107,28 @@ def load_background(*paths: Path) -> str:
 
 
 def parse_constraint_file(path: Path) -> list[tuple[str, str]]:
-    entries: list[tuple[str, str]] = []
-    pending_comment = ""
+    """Parse a CCIG constraint template file into (comment, rule_block) entries.
+
+    Each file holds exactly one logical rule block: zero or more leading "%"
+    comment lines, followed by one or more ASP statements (helper rules
+    defining auxiliary predicates, e.g. for the C6/C9 saturation/coupling
+    patterns, plus a final integrity constraint). All rule lines are joined
+    so helper rules are not silently dropped.
+    """
+    comments: list[str] = []
+    rule_lines: list[str] = []
     with path.open("r", encoding="utf-8") as f:
         for raw in f:
             line = raw.strip()
             if not line:
                 continue
             if line.startswith("%"):
-                pending_comment = line.lstrip("%").strip()
+                comments.append(line.lstrip("%").strip())
                 continue
-            if line.startswith(":-"):
-                entries.append((pending_comment, line))
-                pending_comment = ""
-    return entries
+            rule_lines.append(line)
+    if not rule_lines:
+        return []
+    return [(" ".join(comments), "\n".join(rule_lines))]
 
 
 def value_space_for_placeholder(ph: str) -> list[str]:
@@ -237,6 +245,23 @@ def naturalize_constraint_text(text: str, param_assignment: dict[str, str]) -> s
     out = re.sub(r"\bto be front of\b", "to be in front of", out, flags=re.IGNORECASE)
     out = re.sub(r"\bmust have the (\w+) relation\b", r"must be \1 of", out, flags=re.IGNORECASE)
     out = re.sub(r"\bsatisfy relation (\w+)\b", r"be \1-related", out, flags=re.IGNORECASE)
+
+    # General bare "<relation> of" -> natural phrase, regardless of surrounding verb
+    # tense (covers "is behind of", "stands left of", etc., not just "to be ... of").
+    # Negative lookbehind avoids double-wrapping phrases already in final form
+    # (e.g. "to the left of" already contains "left of").
+    for rel, phrase in rel_phrase.items():
+        prefix = phrase[: -len(f"{rel} of")] if phrase.endswith(f"{rel} of") else phrase
+        lookbehind = f"(?<!{re.escape(prefix)})" if prefix and prefix != phrase else ""
+        out = re.sub(rf"{lookbehind}\b{rel} of\b", phrase, out, flags=re.IGNORECASE)
+
+    # Singular/plural + verb agreement for the common count=1 case, e.g.
+    # "Exactly 1 red objects are behind ..." -> "Exactly 1 red object is behind ...".
+    out = re.sub(r"\b1 (\w+ )?objects\b", lambda m: f"1 {m.group(1) or ''}object", out, flags=re.IGNORECASE)
+    out = re.sub(r"\b(1 (?:\w+ )?object) are\b", r"\1 is", out, flags=re.IGNORECASE)
+    out = re.sub(r"\b(1 (?:\w+ )?object) that are\b", r"\1 that is", out, flags=re.IGNORECASE)
+    out = re.sub(r"\bThere are exactly 1\b", "There is exactly 1", out, flags=re.IGNORECASE)
+
     out = re.sub(r"\s+", " ", out).strip()
     return out
 

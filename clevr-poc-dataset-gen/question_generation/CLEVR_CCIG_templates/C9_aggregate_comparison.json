@@ -1,0 +1,126 @@
+[
+  {
+    "asp_template_file": "constraint_templates_C9_count_coupling.txt",
+    "constraint_family": "count_coupling",
+    "text": [
+      "The number of <V1> objects in region <R1> equals the number of <V2> objects in region <R2>.",
+      "Region <R1> has exactly as many <V1> objects as region <R2> has <V2> objects."
+    ],
+    "params": [
+      {
+        "type": "Region",
+        "name": "<R1>"
+      },
+      {
+        "type": "Color",
+        "name": "<V1>"
+      },
+      {
+        "type": "Region",
+        "name": "<R2>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      }
+    ],
+    "property_focus": "color"
+  },
+  {
+    "asp_template_file": "constraint_templates_C9_count_coupling.txt",
+    "constraint_family": "count_coupling",
+    "text": [
+      "The number of <V1> objects in region <R1> equals the number of <V2> objects in region <R2>.",
+      "Region <R1> has exactly as many <V1> objects as region <R2> has <V2> objects."
+    ],
+    "params": [
+      {
+        "type": "Region",
+        "name": "<R1>"
+      },
+      {
+        "type": "Material",
+        "name": "<V1>"
+      },
+      {
+        "type": "Region",
+        "name": "<R2>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      }
+    ],
+    "property_focus": "material"
+  },
+  {
+    "asp_template_file": "constraint_templates_C9_count_coupling.txt",
+    "constraint_family": "count_coupling",
+    "text": [
+      "The number of <V1> objects in region <R1> equals the number of <V2> objects in region <R2>.",
+      "Region <R1> has exactly as many <V1> objects as region <R2> has <V2> objects."
+    ],
+    "params": [
+      {
+        "type": "Region",
+        "name": "<R1>"
+      },
+      {
+        "type": "Shape",
+        "name": "<V1>"
+      },
+      {
+        "type": "Region",
+        "name": "<R2>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      }
+    ],
+    "property_focus": "shape"
+  },
+  {
+    "asp_template_file": "constraint_templates_C9_count_coupling.txt",
+    "constraint_family": "count_coupling",
+    "text": [
+      "The number of <V1> objects in region <R1> equals the number of <V2> objects in region <R2>.",
+      "Region <R1> has exactly as many <V1> objects as region <R2> has <V2> objects."
+    ],
+    "params": [
+      {
+        "type": "Region",
+        "name": "<R1>"
+      },
+      {
+        "type": "Size",
+        "name": "<V1>"
+      },
+      {
+        "type": "Region",
+        "name": "<R2>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      }
+    ],
+    "property_focus": "size"
+  }
+]

@@ -1,0 +1,218 @@
+[
+  {
+    "asp_template_file": "constraint_templates_C3_conditional.txt",
+    "constraint_family": "conditional",
+    "text": [
+      "Every <V1> object in region <R1> is also <V2>.",
+      "All <V1> objects in region <R1> are also <V2>."
+    ],
+    "params": [
+      {
+        "type": "Region",
+        "name": "<R1>"
+      },
+      {
+        "type": "Color",
+        "name": "<V1>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      }
+    ],
+    "property_focus": "color"
+  },
+  {
+    "asp_template_file": "constraint_templates_C3_conditional.txt",
+    "constraint_family": "conditional",
+    "text": [
+      "Every <V1> object in region <R1> is also <V2>.",
+      "All <V1> objects in region <R1> are also <V2>."
+    ],
+    "params": [
+      {
+        "type": "Region",
+        "name": "<R1>"
+      },
+      {
+        "type": "Material",
+        "name": "<V1>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      }
+    ],
+    "property_focus": "material"
+  },
+  {
+    "asp_template_file": "constraint_templates_C3_conditional.txt",
+    "constraint_family": "conditional",
+    "text": [
+      "Every <V1> object in region <R1> is also <V2>.",
+      "All <V1> objects in region <R1> are also <V2>."
+    ],
+    "params": [
+      {
+        "type": "Region",
+        "name": "<R1>"
+      },
+      {
+        "type": "Shape",
+        "name": "<V1>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      }
+    ],
+    "property_focus": "shape"
+  },
+  {
+    "asp_template_file": "constraint_templates_C3_conditional.txt",
+    "constraint_family": "conditional",
+    "text": [
+      "Every <V1> object in region <R1> is also <V2>.",
+      "All <V1> objects in region <R1> are also <V2>."
+    ],
+    "params": [
+      {
+        "type": "Region",
+        "name": "<R1>"
+      },
+      {
+        "type": "Size",
+        "name": "<V1>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      }
+    ],
+    "property_focus": "size"
+  },
+  {
+    "asp_template_file": "constraint_templates_C3_conditional_negated.txt",
+    "constraint_family": "conditional_negated",
+    "text": [
+      "Every <V1> object in region <R1> is never <V2>.",
+      "No <V1> object in region <R1> is <V2>."
+    ],
+    "params": [
+      {
+        "type": "Region",
+        "name": "<R1>"
+      },
+      {
+        "type": "Color",
+        "name": "<V1>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      }
+    ],
+    "property_focus": "color"
+  },
+  {
+    "asp_template_file": "constraint_templates_C3_conditional_negated.txt",
+    "constraint_family": "conditional_negated",
+    "text": [
+      "Every <V1> object in region <R1> is never <V2>.",
+      "No <V1> object in region <R1> is <V2>."
+    ],
+    "params": [
+      {
+        "type": "Region",
+        "name": "<R1>"
+      },
+      {
+        "type": "Material",
+        "name": "<V1>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      }
+    ],
+    "property_focus": "material"
+  },
+  {
+    "asp_template_file": "constraint_templates_C3_conditional_negated.txt",
+    "constraint_family": "conditional_negated",
+    "text": [
+      "Every <V1> object in region <R1> is never <V2>.",
+      "No <V1> object in region <R1> is <V2>."
+    ],
+    "params": [
+      {
+        "type": "Region",
+        "name": "<R1>"
+      },
+      {
+        "type": "Shape",
+        "name": "<V1>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      }
+    ],
+    "property_focus": "shape"
+  },
+  {
+    "asp_template_file": "constraint_templates_C3_conditional_negated.txt",
+    "constraint_family": "conditional_negated",
+    "text": [
+      "Every <V1> object in region <R1> is never <V2>.",
+      "No <V1> object in region <R1> is <V2>."
+    ],
+    "params": [
+      {
+        "type": "Region",
+        "name": "<R1>"
+      },
+      {
+        "type": "Size",
+        "name": "<V1>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      }
+    ],
+    "property_focus": "size"
+  }
+]

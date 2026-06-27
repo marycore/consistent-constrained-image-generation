@@ -1,4 +1,4 @@
-# CLEVR CCIG Constraint Templates (L0–L8)
+# CLEVR CCIG Constraint Templates (C1-C9)
 
 POC-compatible JSON templates for **constraint-only** image-generation prompts.
 
@@ -8,35 +8,37 @@ Full pipeline (generation, clingo validation, output schema): [`../README_CCIG_A
 
 ## Template entry structure
 
-Each `L*.json` file is a JSON **array**. Each entry contains:
+Each `C*.json` file is a JSON **array**. Each entry contains:
 
 | Field | Description |
 |-------|-------------|
-| `asp_template_file` | Single-rule ASP file (e.g. `constraint_templates_L0_exist.txt`) |
-| `constraint_family` | Logic variant within the level (`exist`, `forbid`, `chain2`, …) |
+| `asp_template_file` | ASP rule file (e.g. `constraint_templates_C1_exist.txt`) |
+| `constraint_family` | Logic variant within the class (`exist`, `forbid`, `chain2`, …) |
 | `property_focus` / `relation_focus` | Which attribute or relation this entry fixes |
-| `text` | **Array** of NL paraphrases (constraint only; placeholders like `<R1>`, `<V1>`) |
-| `nodes`, `params`, `constraints` | POC-style program metadata |
+| `text` | **Array** of declarative scene-description paraphrases (placeholders like `<R1>`, `<V1>`), usable directly as image-generation prompts once placeholders are filled |
+| `params` | Placeholder types/names sampled at instantiation time |
 
-At generation time, placeholders are sampled and **all** `text[]` lines are instantiated into the dataset `text` field (same semantics, different wording). Each JSONL row also includes `asp_rules` and full `asp_code` (background + domain + rules).
+At generation time, placeholders are sampled and **all** `text[]` lines are instantiated into the dataset `text` field (same semantics, different wording), then passed through `naturalize_constraint_text` (in `ccig_template_lib.py`) which converts relation placeholders (`<D1>` etc.) into natural prepositional phrases ("behind", "to the left of", "in front of") and fixes singular/plural agreement for counts. Each JSONL row also includes `asp_rules` and full `asp_code` (background + domain + rules).
 
-ASP source of truth: `image_generation/ConstraintTemplates/CCIG_constraint_templates/` (one rule per `.txt` file). See `README.txt` in that folder.
+ASP source of truth: `image_generation/ConstraintTemplates/CCIG_constraint_templates/` (one rule block — optional helper rules plus exactly one integrity constraint — per `.txt` file). See `README.txt` in that folder for the formal C1-C9 definitions and the L-tier-to-C-class migration table.
+
+**Note on dropped fields**: legacy `L0`-`L7` templates also carried `nodes` and `constraints` fields (CLEVR functional-program metadata). These are not read anywhere downstream of JSON load (verified against `ccig_template_lib.py` and `generate_ccig_asp_dataset.py`) and are intentionally omitted from the `C*.json` files.
 
 ---
 
-## Levels and constraint families
+## Classes and constraint families
 
-| Level | JSON file | `constraint_families` |
+| Class | JSON file | `constraint_families` |
 |-------|-----------|------------------------|
-| L0 | `L0_unary_attribute.json` | `exist`, `forbid` |
-| L1 | `L1_single_relational.json` | `exist_pair`, `forbid_pair` |
-| L2 | `L2_relational_composition.json` | `chain2` |
-| L3 | `L3_conjunctive_relational_binding.json` | `shared_hub` |
-| L4 | `L4_implication_negation_rules.json` | `implication`, `forbid_conditional_pair` |
-| L5 | `L5_universal_dependency.json` | `universal_witness` |
-| L6 | `L6_relational_aggregates.json` | `unary_count`, `relational_count` |
-| L7 | `L7_injective_matching.json` | `witness_exist`, `witness_unique` |
-| L8 | `L8_global_coupling.json` | `count_coupling`, `all_different` |
+| C1 | `C1_existential_object.json` | `exist`, `forbid` |
+| C2 | `C2_universal_object.json` | `universal` |
+| C3 | `C3_conditional_object.json` | `conditional`, `conditional_negated` |
+| C4 | `C4_existential_subgraph.json` | `exist_pair`, `forbid_pair`, `chain2`, `chain3`, `shared_hub` |
+| C5 | `C5_conditional_subgraph.json` | `pair_conditional` |
+| C6 | `C6_existential_universal.json` | `witness_universal` |
+| C7 | `C7_universal_existential.json` | `implication`, `universal_witness`, `unique_witness` |
+| C8 | `C8_cardinality.json` | `unary_count`, `relational_count`, `all_different` |
+| C9 | `C9_aggregate_comparison.json` | `count_coupling` |
 
 Authoritative list: `index.json` → `complexity_levels[].constraint_families`.
 
@@ -50,19 +52,19 @@ Single top-level key: **`combos`**. Each combo merges 2+ constraints.
 {
   "combos": [
     {
-      "id": "2_L0_exist+L2_chain2",
+      "id": "2_C1_exist+C4_chain2",
       "components": [
-        {"level": "L0", "constraint_family": "exist"},
-        {"level": "L2", "constraint_family": "chain2"}
+        {"level": "C1", "constraint_family": "exist"},
+        {"level": "C4", "constraint_family": "chain2"}
       ]
     },
     {
-      "id": "3_L0+L1+L2",
+      "id": "3_C1+C4+C7",
       "instances": 30,
       "components": [
-        {"level": "L0"},
-        {"level": "L1"},
-        {"level": "L2"}
+        {"level": "C1"},
+        {"level": "C4"},
+        {"level": "C7"}
       ]
     }
   ]
@@ -73,8 +75,8 @@ Single top-level key: **`combos`**. Each combo merges 2+ constraints.
 
 | Field | Required | Meaning |
 |-------|----------|---------|
-| `level` | yes | `L0` … `L8` |
-| `constraint_family` | no | Pin variant; omit = random family at that level |
+| `level` | yes | `C1` … `C9` |
+| `constraint_family` | no | Pin variant; omit = random family at that class |
 
 **Per combo (optional)**
 
@@ -89,7 +91,7 @@ Single top-level key: **`combos`**. Each combo merges 2+ constraints.
 
 From `clevr-poc-dataset-gen/`:
 
-### Single-level + ASP consistency (SAT-only output)
+### Single-class + ASP consistency (SAT-only output)
 
 ```bash
 PYTHONUNBUFFERED=1 python3 question_generation/generate_ccig_asp_dataset.py \
@@ -102,7 +104,7 @@ PYTHONUNBUFFERED=1 python3 question_generation/generate_ccig_asp_dataset.py \
   --seed 42
 ```
 
-Progress on stderr; use `--class_filter L0 --instances_per_class 5` for a quick test.
+Progress on stderr; use `--class_filter C1 --instances_per_class 5` for a quick test.
 
 With `--validate_with_clingo`, UNSAT resamples are saved to `ccig_asp_dataset_unsat.jsonl` (same format + `clingo_result`, `for_target_id`).
 
@@ -110,7 +112,7 @@ With `--validate_with_clingo`, UNSAT resamples are saved to `ccig_asp_dataset_un
 - `UNSAT` for true unsatisfiable constraints
 - `ASP_PARSE_ERROR` for parse/syntax errors
 
-### Single-level, balanced families per level
+### Single-class, balanced families per class
 
 ```bash
 python3 question_generation/generate_ccig_asp_dataset.py \
@@ -122,16 +124,16 @@ python3 question_generation/generate_ccig_asp_dataset.py \
   --seed 42
 ```
 
-### Single-level, one family (e.g. L0 exist)
+### Single-class, one family (e.g. C1 exist)
 
 ```bash
 python3 question_generation/generate_ccig_asp_dataset.py \
   --mode single \
-  --class_filter L0 \
+  --class_filter C1 \
   --constraint_family exist \
   --instances_per_class 100 \
   --validate_with_clingo \
-  --output_jsonl question_generation/ccig_asp_dataset_L0_exist.jsonl
+  --output_jsonl question_generation/ccig_asp_dataset_C1_exist.jsonl
 ```
 
 ### Combo + consistency
@@ -170,6 +172,6 @@ python3 question_generation/build_ccig_templates.py
 
 | File | Role |
 |------|------|
-| `index.json` | Level list, template filenames, `constraint_families` |
+| `index.json` | Class list, template filenames, `constraint_families` |
 | `combo_pairs.json` | Fixed multi-constraint benchmarks |
-| `L0_unary_attribute.json` … `L8_global_coupling.json` | NL + metadata per level |
+| `C1_existential_object.json` … `C9_aggregate_comparison.json` | NL + metadata per class |
