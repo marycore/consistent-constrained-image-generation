@@ -1,172 +1,31 @@
 [
   {
-    "asp_template_file": "constraint_templates_C8_unary_count.txt",
-    "constraint_family": "unary_count",
+    "asp_template_file": "C8_1prop_exact.txt",
+    "constraint_family": "1prop_exact",
     "text": [
-      "Exactly <N1> <V1> objects are located in region <R1>.",
-      "Region <R1> contains exactly <N1> <V1> objects."
+      "Exactly <N> objects are in <V1>.",
+      "The scene contains exactly <N> objects in <V1>, no more and no fewer.",
+      "A precise location count is enforced: exactly <N> objects must reside in <V1>; having more or fewer would violate this constraint."
     ],
     "params": [
       {
         "type": "Region",
-        "name": "<R1>"
-      },
-      {
-        "type": "Color",
         "name": "<V1>"
       },
       {
         "type": "Count",
-        "name": "<N1>"
+        "name": "<N>"
       }
     ],
-    "property_focus": "color"
+    "property_focus": "region"
   },
   {
-    "asp_template_file": "constraint_templates_C8_unary_count.txt",
-    "constraint_family": "unary_count",
+    "asp_template_file": "C8_1prop_exact.txt",
+    "constraint_family": "1prop_exact",
     "text": [
-      "Exactly <N1> <V1> objects are located in region <R1>.",
-      "Region <R1> contains exactly <N1> <V1> objects."
-    ],
-    "params": [
-      {
-        "type": "Region",
-        "name": "<R1>"
-      },
-      {
-        "type": "Material",
-        "name": "<V1>"
-      },
-      {
-        "type": "Count",
-        "name": "<N1>"
-      }
-    ],
-    "property_focus": "material"
-  },
-  {
-    "asp_template_file": "constraint_templates_C8_unary_count.txt",
-    "constraint_family": "unary_count",
-    "text": [
-      "Exactly <N1> <V1> objects are located in region <R1>.",
-      "Region <R1> contains exactly <N1> <V1> objects."
-    ],
-    "params": [
-      {
-        "type": "Region",
-        "name": "<R1>"
-      },
-      {
-        "type": "Shape",
-        "name": "<V1>"
-      },
-      {
-        "type": "Count",
-        "name": "<N1>"
-      }
-    ],
-    "property_focus": "shape"
-  },
-  {
-    "asp_template_file": "constraint_templates_C8_unary_count.txt",
-    "constraint_family": "unary_count",
-    "text": [
-      "Exactly <N1> <V1> objects are located in region <R1>.",
-      "Region <R1> contains exactly <N1> <V1> objects."
-    ],
-    "params": [
-      {
-        "type": "Region",
-        "name": "<R1>"
-      },
-      {
-        "type": "Size",
-        "name": "<V1>"
-      },
-      {
-        "type": "Count",
-        "name": "<N1>"
-      }
-    ],
-    "property_focus": "size"
-  },
-  {
-    "asp_template_file": "constraint_templates_C8_relational_count.txt",
-    "constraint_family": "relational_count",
-    "text": [
-      "Exactly <N1> <V1> objects are <D1> of some <V2> object in region <R2>.",
-      "There are exactly <N1> <V1> objects that are <D1> of a <V2> object in region <R2>."
-    ],
-    "params": [
-      {
-        "type": "Color",
-        "name": "<V1>"
-      },
-      {
-        "type": "Count",
-        "name": "<N1>"
-      },
-      {
-        "type": "Region",
-        "name": "<R2>"
-      },
-      {
-        "type": "Property",
-        "name": "<P2>"
-      },
-      {
-        "type": "Value",
-        "name": "<V2>"
-      },
-      {
-        "type": "Relation",
-        "name": "<D1>"
-      }
-    ],
-    "property_focus": "color"
-  },
-  {
-    "asp_template_file": "constraint_templates_C8_relational_count.txt",
-    "constraint_family": "relational_count",
-    "text": [
-      "Exactly <N1> <V1> objects are <D1> of some <V2> object in region <R2>.",
-      "There are exactly <N1> <V1> objects that are <D1> of a <V2> object in region <R2>."
-    ],
-    "params": [
-      {
-        "type": "Material",
-        "name": "<V1>"
-      },
-      {
-        "type": "Count",
-        "name": "<N1>"
-      },
-      {
-        "type": "Region",
-        "name": "<R2>"
-      },
-      {
-        "type": "Property",
-        "name": "<P2>"
-      },
-      {
-        "type": "Value",
-        "name": "<V2>"
-      },
-      {
-        "type": "Relation",
-        "name": "<D1>"
-      }
-    ],
-    "property_focus": "material"
-  },
-  {
-    "asp_template_file": "constraint_templates_C8_relational_count.txt",
-    "constraint_family": "relational_count",
-    "text": [
-      "Exactly <N1> <V1> objects are <D1> of some <V2> object in region <R2>.",
-      "There are exactly <N1> <V1> objects that are <D1> of a <V2> object in region <R2>."
+      "Exactly <N> objects are <V1>.",
+      "The scene contains exactly <N> <V1> objects, no more and no fewer.",
+      "A precise count is enforced: exactly <N> objects in the scene must be <V1>; having more or fewer <V1> objects would violate this constraint."
     ],
     "params": [
       {
@@ -175,33 +34,18 @@
       },
       {
         "type": "Count",
-        "name": "<N1>"
-      },
-      {
-        "type": "Region",
-        "name": "<R2>"
-      },
-      {
-        "type": "Property",
-        "name": "<P2>"
-      },
-      {
-        "type": "Value",
-        "name": "<V2>"
-      },
-      {
-        "type": "Relation",
-        "name": "<D1>"
+        "name": "<N>"
       }
     ],
     "property_focus": "shape"
   },
   {
-    "asp_template_file": "constraint_templates_C8_relational_count.txt",
-    "constraint_family": "relational_count",
+    "asp_template_file": "C8_1prop_exact.txt",
+    "constraint_family": "1prop_exact",
     "text": [
-      "Exactly <N1> <V1> objects are <D1> of some <V2> object in region <R2>.",
-      "There are exactly <N1> <V1> objects that are <D1> of a <V2> object in region <R2>."
+      "Exactly <N> objects are <V1>.",
+      "The scene contains exactly <N> <V1> objects, no more and no fewer.",
+      "A precise count is enforced: exactly <N> objects in the scene must be <V1>; having more or fewer <V1> objects would violate this constraint."
     ],
     "params": [
       {
@@ -210,11 +54,143 @@
       },
       {
         "type": "Count",
-        "name": "<N1>"
-      },
+        "name": "<N>"
+      }
+    ],
+    "property_focus": "size"
+  },
+  {
+    "asp_template_file": "C8_1prop_atleast.txt",
+    "constraint_family": "1prop_atleast",
+    "text": [
+      "At least <N> objects are in <V1>.",
+      "The scene must contain at least <N> objects in <V1>.",
+      "A minimum occupancy is imposed: the scene must include at least <N> objects located in <V1>; having fewer would violate this lower bound."
+    ],
+    "params": [
       {
         "type": "Region",
-        "name": "<R2>"
+        "name": "<V1>"
+      },
+      {
+        "type": "Count",
+        "name": "<N>"
+      }
+    ],
+    "property_focus": "region"
+  },
+  {
+    "asp_template_file": "C8_1prop_atleast.txt",
+    "constraint_family": "1prop_atleast",
+    "text": [
+      "At least <N> objects are <V1>.",
+      "The scene must contain at least <N> <V1> objects.",
+      "A minimum count is imposed: the scene must include at least <N> objects carrying the property <V1>; having fewer would violate this lower bound."
+    ],
+    "params": [
+      {
+        "type": "Shape",
+        "name": "<V1>"
+      },
+      {
+        "type": "Count",
+        "name": "<N>"
+      }
+    ],
+    "property_focus": "shape"
+  },
+  {
+    "asp_template_file": "C8_1prop_atmost.txt",
+    "constraint_family": "1prop_atmost",
+    "text": [
+      "At most <N> objects are in <V1>.",
+      "The scene may contain at most <N> objects in <V1>.",
+      "An upper bound is placed on occupancy: <V1> cannot hold more than <N> objects, though it may hold fewer or none at all."
+    ],
+    "params": [
+      {
+        "type": "Region",
+        "name": "<V1>"
+      },
+      {
+        "type": "Count",
+        "name": "<N>"
+      }
+    ],
+    "property_focus": "region"
+  },
+  {
+    "asp_template_file": "C8_1prop_atmost.txt",
+    "constraint_family": "1prop_atmost",
+    "text": [
+      "At most <N> objects are <V1>.",
+      "The scene may contain at most <N> <V1> objects.",
+      "An upper bound is placed on <V1> objects: the scene cannot have more than <N> of them, though it may have fewer or none at all."
+    ],
+    "params": [
+      {
+        "type": "Shape",
+        "name": "<V1>"
+      },
+      {
+        "type": "Count",
+        "name": "<N>"
+      }
+    ],
+    "property_focus": "shape"
+  },
+  {
+    "asp_template_file": "C8_1prop_exact_neg.txt",
+    "constraint_family": "1prop_exact_neg",
+    "text": [
+      "Exactly <N> objects are not in <V1>.",
+      "The scene contains exactly <N> objects not located in <V1>.",
+      "The count of objects outside <V1> is fixed: exactly <N> objects must reside outside <V1>, regardless of what other properties they carry."
+    ],
+    "params": [
+      {
+        "type": "Region",
+        "name": "<V1>"
+      },
+      {
+        "type": "Count",
+        "name": "<N>"
+      }
+    ],
+    "property_focus": "region"
+  },
+  {
+    "asp_template_file": "C8_1prop_exact_neg.txt",
+    "constraint_family": "1prop_exact_neg",
+    "text": [
+      "Exactly <N> objects are not <V1>.",
+      "The scene contains exactly <N> objects lacking the property <V1>.",
+      "The count of non-<V1> objects is fixed: exactly <N> objects in the scene must lack the property <V1>, regardless of what other properties they carry."
+    ],
+    "params": [
+      {
+        "type": "Shape",
+        "name": "<V1>"
+      },
+      {
+        "type": "Count",
+        "name": "<N>"
+      }
+    ],
+    "property_focus": "shape"
+  },
+  {
+    "asp_template_file": "C8_2prop_exact.txt",
+    "constraint_family": "2prop_exact",
+    "text": [
+      "Exactly <N> objects are in <V1> and are also <V2>.",
+      "The scene contains exactly <N> objects each carrying both <V1> and <V2>.",
+      "A precise joint count is enforced: exactly <N> objects must be in <V1> and also <V2> at the same time; this combined count is fixed."
+    ],
+    "params": [
+      {
+        "type": "Region",
+        "name": "<V1>"
       },
       {
         "type": "Property",
@@ -225,86 +201,630 @@
         "name": "<V2>"
       },
       {
-        "type": "Relation",
-        "name": "<D1>"
+        "type": "Count",
+        "name": "<N>"
       }
     ],
-    "property_focus": "size"
+    "property_focus": "region"
   },
   {
-    "asp_template_file": "constraint_templates_C8_all_different.txt",
-    "constraint_family": "all_different",
+    "asp_template_file": "C8_2prop_exact.txt",
+    "constraint_family": "2prop_exact",
     "text": [
-      "At most one object in region <R1> has color <V1>.",
-      "No two distinct objects in region <R1> both have color <V1>."
+      "Exactly <N> objects are both <V1> and <V2>.",
+      "The scene contains exactly <N> objects each carrying both <V1> and <V2>.",
+      "A precise joint count is enforced: exactly <N> objects must be <V1> and <V2> at the same time; this combined property count is fixed to this specific number."
     ],
     "params": [
-      {
-        "type": "Region",
-        "name": "<R1>"
-      },
-      {
-        "type": "Color",
-        "name": "<V1>"
-      }
-    ],
-    "property_focus": "color"
-  },
-  {
-    "asp_template_file": "constraint_templates_C8_all_different.txt",
-    "constraint_family": "all_different",
-    "text": [
-      "At most one object in region <R1> has material <V1>.",
-      "No two distinct objects in region <R1> both have material <V1>."
-    ],
-    "params": [
-      {
-        "type": "Region",
-        "name": "<R1>"
-      },
-      {
-        "type": "Material",
-        "name": "<V1>"
-      }
-    ],
-    "property_focus": "material"
-  },
-  {
-    "asp_template_file": "constraint_templates_C8_all_different.txt",
-    "constraint_family": "all_different",
-    "text": [
-      "At most one object in region <R1> has shape <V1>.",
-      "No two distinct objects in region <R1> both have shape <V1>."
-    ],
-    "params": [
-      {
-        "type": "Region",
-        "name": "<R1>"
-      },
       {
         "type": "Shape",
         "name": "<V1>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      },
+      {
+        "type": "Count",
+        "name": "<N>"
       }
     ],
     "property_focus": "shape"
   },
   {
-    "asp_template_file": "constraint_templates_C8_all_different.txt",
-    "constraint_family": "all_different",
+    "asp_template_file": "C8_1prop_exact_relational.txt",
+    "constraint_family": "relational_exact",
     "text": [
-      "At most one object in region <R1> has size <V1>.",
-      "No two distinct objects in region <R1> both have size <V1>."
+      "Exactly <N> objects in <V1> are to the left of some <V2> object.",
+      "The scene contains exactly <N> objects in <V1>, each positioned to the left of at least one <V2> object.",
+      "A relational count is fixed: exactly <N> objects in <V1> must each be to the left of at least one <V2> object; not more and not fewer."
     ],
     "params": [
       {
         "type": "Region",
-        "name": "<R1>"
+        "name": "<V1>"
       },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      },
+      {
+        "type": "Count",
+        "name": "<N>"
+      },
+      {
+        "type": "Relation",
+        "name": "<D1>"
+      }
+    ],
+    "property_focus": "region",
+    "relation_focus": "left"
+  },
+  {
+    "asp_template_file": "C8_1prop_exact_relational.txt",
+    "constraint_family": "relational_exact",
+    "text": [
+      "Exactly <N> <V1> objects are behind some <V2> object.",
+      "The scene contains exactly <N> <V1> objects each positioned behind at least one <V2> object.",
+      "A relational count is fixed: exactly <N> <V1> objects must each be behind at least one <V2> object; having more or fewer <V1> objects in this spatial arrangement is forbidden."
+    ],
+    "params": [
+      {
+        "type": "Shape",
+        "name": "<V1>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      },
+      {
+        "type": "Count",
+        "name": "<N>"
+      },
+      {
+        "type": "Relation",
+        "name": "<D1>"
+      }
+    ],
+    "property_focus": "shape",
+    "relation_focus": "behind"
+  },
+  {
+    "asp_template_file": "C8_1prop_atleast_relational.txt",
+    "constraint_family": "relational_atleast",
+    "text": [
+      "At least <N> objects in <V1> are to the left of some <V2> object.",
+      "The scene must contain at least <N> objects in <V1> each positioned to the left of at least one <V2> object.",
+      "A relational lower bound is imposed: at least <N> of the objects in <V1> must each stand to the left of some <V2> object."
+    ],
+    "params": [
+      {
+        "type": "Region",
+        "name": "<V1>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      },
+      {
+        "type": "Count",
+        "name": "<N>"
+      },
+      {
+        "type": "Relation",
+        "name": "<D1>"
+      }
+    ],
+    "property_focus": "region",
+    "relation_focus": "left"
+  },
+  {
+    "asp_template_file": "C8_1prop_atmost_relational.txt",
+    "constraint_family": "relational_atmost",
+    "text": [
+      "At most <N> objects in <V1> are to the left of some <V2> object.",
+      "The scene may contain at most <N> objects in <V1> positioned to the left of any <V2> object.",
+      "A relational upper bound is placed: no more than <N> objects in <V1> may each be positioned to the left of at least one <V2> object."
+    ],
+    "params": [
+      {
+        "type": "Region",
+        "name": "<V1>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      },
+      {
+        "type": "Count",
+        "name": "<N>"
+      },
+      {
+        "type": "Relation",
+        "name": "<D1>"
+      }
+    ],
+    "property_focus": "region",
+    "relation_focus": "left"
+  },
+  {
+    "asp_template_file": "C8_1prop_exact.txt",
+    "constraint_family": "1prop_exact",
+    "text": [
+      "Exactly <N> objects are <V1>.",
+      "The scene contains exactly <N> <V1> objects, no more and no fewer.",
+      "A precise count is enforced: exactly <N> objects in the scene must be <V1>; having more or fewer <V1> objects would violate this constraint."
+    ],
+    "params": [
+      {
+        "type": "Color",
+        "name": "<V1>"
+      },
+      {
+        "type": "Count",
+        "name": "<N>"
+      }
+    ],
+    "property_focus": "color"
+  },
+  {
+    "asp_template_file": "C8_1prop_atleast.txt",
+    "constraint_family": "1prop_atleast",
+    "text": [
+      "At least <N> objects are <V1>.",
+      "The scene must contain at least <N> <V1> objects.",
+      "A minimum count is imposed: the scene must include at least <N> objects carrying the color <V1>; having fewer would violate this lower bound."
+    ],
+    "params": [
+      {
+        "type": "Color",
+        "name": "<V1>"
+      },
+      {
+        "type": "Count",
+        "name": "<N>"
+      }
+    ],
+    "property_focus": "color"
+  },
+  {
+    "asp_template_file": "C8_1prop_atmost.txt",
+    "constraint_family": "1prop_atmost",
+    "text": [
+      "At most <N> objects are <V1>.",
+      "The scene may contain at most <N> <V1> objects.",
+      "An upper bound is placed on <V1> objects: the scene cannot have more than <N> of them, though it may have fewer or none at all."
+    ],
+    "params": [
+      {
+        "type": "Color",
+        "name": "<V1>"
+      },
+      {
+        "type": "Count",
+        "name": "<N>"
+      }
+    ],
+    "property_focus": "color"
+  },
+  {
+    "asp_template_file": "C8_1prop_exact_neg.txt",
+    "constraint_family": "1prop_exact_neg",
+    "text": [
+      "Exactly <N> objects are not <V1>.",
+      "The scene contains exactly <N> objects lacking the color <V1>.",
+      "The count of non-<V1> objects is fixed: exactly <N> objects in the scene must not be <V1>, regardless of what other properties they carry."
+    ],
+    "params": [
+      {
+        "type": "Color",
+        "name": "<V1>"
+      },
+      {
+        "type": "Count",
+        "name": "<N>"
+      }
+    ],
+    "property_focus": "color"
+  },
+  {
+    "asp_template_file": "C8_2prop_exact.txt",
+    "constraint_family": "2prop_exact",
+    "text": [
+      "Exactly <N> objects are both <V1> and <V2>.",
+      "The scene contains exactly <N> objects each carrying both <V1> and <V2>.",
+      "A precise joint count is enforced: exactly <N> objects must be <V1> and <V2> at the same time; this combined property count is fixed."
+    ],
+    "params": [
+      {
+        "type": "Color",
+        "name": "<V1>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      },
+      {
+        "type": "Count",
+        "name": "<N>"
+      }
+    ],
+    "property_focus": "color"
+  },
+  {
+    "asp_template_file": "C8_1prop_exact_relational.txt",
+    "constraint_family": "relational_exact",
+    "text": [
+      "Exactly <N> <V1> objects are to the left of some <V2> object.",
+      "The scene contains exactly <N> <V1> objects, each positioned to the left of at least one <V2> object.",
+      "A relational count is fixed: exactly <N> objects that are <V1> must each be positioned to the left of at least one <V2> object; not more and not fewer may satisfy this spatial relation."
+    ],
+    "params": [
+      {
+        "type": "Color",
+        "name": "<V1>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      },
+      {
+        "type": "Count",
+        "name": "<N>"
+      },
+      {
+        "type": "Relation",
+        "name": "<D1>"
+      }
+    ],
+    "property_focus": "color",
+    "relation_focus": "left"
+  },
+  {
+    "asp_template_file": "C8_1prop_atleast_relational.txt",
+    "constraint_family": "relational_atleast",
+    "text": [
+      "At least <N> <V1> objects are to the left of some <V2> object.",
+      "The scene must contain at least <N> <V1> objects each positioned to the left of at least one <V2> object.",
+      "A relational lower bound is imposed: at least <N> of the <V1> objects in the scene must each stand to the left of some <V2> object."
+    ],
+    "params": [
+      {
+        "type": "Color",
+        "name": "<V1>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      },
+      {
+        "type": "Count",
+        "name": "<N>"
+      },
+      {
+        "type": "Relation",
+        "name": "<D1>"
+      }
+    ],
+    "property_focus": "color",
+    "relation_focus": "left"
+  },
+  {
+    "asp_template_file": "C8_1prop_atmost_relational.txt",
+    "constraint_family": "relational_atmost",
+    "text": [
+      "At most <N> <V1> objects are to the left of some <V2> object.",
+      "The scene may contain at most <N> <V1> objects positioned to the left of any <V2> object.",
+      "A relational upper bound is placed: no more than <N> <V1> objects may each be positioned to the left of at least one <V2> object."
+    ],
+    "params": [
+      {
+        "type": "Color",
+        "name": "<V1>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      },
+      {
+        "type": "Count",
+        "name": "<N>"
+      },
+      {
+        "type": "Relation",
+        "name": "<D1>"
+      }
+    ],
+    "property_focus": "color",
+    "relation_focus": "left"
+  },
+  {
+    "asp_template_file": "C8_1prop_atleast.txt",
+    "constraint_family": "1prop_atleast",
+    "text": [
+      "At least <N> objects are <V1>.",
+      "The scene must contain at least <N> <V1> objects.",
+      "A minimum count is imposed: the scene must include at least <N> objects carrying the color <V1>; having fewer would violate this lower bound."
+    ],
+    "params": [
       {
         "type": "Size",
         "name": "<V1>"
+      },
+      {
+        "type": "Count",
+        "name": "<N>"
       }
     ],
     "property_focus": "size"
+  },
+  {
+    "asp_template_file": "C8_1prop_atmost.txt",
+    "constraint_family": "1prop_atmost",
+    "text": [
+      "At most <N> objects are <V1>.",
+      "The scene may contain at most <N> <V1> objects.",
+      "An upper bound is placed on <V1> objects: the scene cannot have more than <N> of them, though it may have fewer or none at all."
+    ],
+    "params": [
+      {
+        "type": "Size",
+        "name": "<V1>"
+      },
+      {
+        "type": "Count",
+        "name": "<N>"
+      }
+    ],
+    "property_focus": "size"
+  },
+  {
+    "asp_template_file": "C8_1prop_exact_neg.txt",
+    "constraint_family": "1prop_exact_neg",
+    "text": [
+      "Exactly <N> objects are not <V1>.",
+      "The scene contains exactly <N> objects lacking the color <V1>.",
+      "The count of non-<V1> objects is fixed: exactly <N> objects in the scene must not be <V1>, regardless of what other properties they carry."
+    ],
+    "params": [
+      {
+        "type": "Size",
+        "name": "<V1>"
+      },
+      {
+        "type": "Count",
+        "name": "<N>"
+      }
+    ],
+    "property_focus": "size"
+  },
+  {
+    "asp_template_file": "C8_2prop_exact.txt",
+    "constraint_family": "2prop_exact",
+    "text": [
+      "Exactly <N> objects are both <V1> and <V2>.",
+      "The scene contains exactly <N> objects each carrying both <V1> and <V2>.",
+      "A precise joint count is enforced: exactly <N> objects must be <V1> and <V2> at the same time; this combined property count is fixed."
+    ],
+    "params": [
+      {
+        "type": "Size",
+        "name": "<V1>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      },
+      {
+        "type": "Count",
+        "name": "<N>"
+      }
+    ],
+    "property_focus": "size"
+  },
+  {
+    "asp_template_file": "C8_1prop_exact_relational.txt",
+    "constraint_family": "relational_exact",
+    "text": [
+      "Exactly <N> <V1> objects are to the left of some <V2> object.",
+      "The scene contains exactly <N> <V1> objects, each positioned to the left of at least one <V2> object.",
+      "A relational count is fixed: exactly <N> objects that are <V1> must each be positioned to the left of at least one <V2> object; not more and not fewer may satisfy this spatial relation."
+    ],
+    "params": [
+      {
+        "type": "Size",
+        "name": "<V1>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      },
+      {
+        "type": "Count",
+        "name": "<N>"
+      },
+      {
+        "type": "Relation",
+        "name": "<D1>"
+      }
+    ],
+    "property_focus": "size",
+    "relation_focus": "left"
+  },
+  {
+    "asp_template_file": "C8_1prop_atleast_relational.txt",
+    "constraint_family": "relational_atleast",
+    "text": [
+      "At least <N> <V1> objects are to the left of some <V2> object.",
+      "The scene must contain at least <N> <V1> objects each positioned to the left of at least one <V2> object.",
+      "A relational lower bound is imposed: at least <N> of the <V1> objects in the scene must each stand to the left of some <V2> object."
+    ],
+    "params": [
+      {
+        "type": "Shape",
+        "name": "<V1>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      },
+      {
+        "type": "Count",
+        "name": "<N>"
+      },
+      {
+        "type": "Relation",
+        "name": "<D1>"
+      }
+    ],
+    "property_focus": "shape",
+    "relation_focus": "left"
+  },
+  {
+    "asp_template_file": "C8_1prop_atleast_relational.txt",
+    "constraint_family": "relational_atleast",
+    "text": [
+      "At least <N> <V1> objects are to the left of some <V2> object.",
+      "The scene must contain at least <N> <V1> objects each positioned to the left of at least one <V2> object.",
+      "A relational lower bound is imposed: at least <N> of the <V1> objects in the scene must each stand to the left of some <V2> object."
+    ],
+    "params": [
+      {
+        "type": "Size",
+        "name": "<V1>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      },
+      {
+        "type": "Count",
+        "name": "<N>"
+      },
+      {
+        "type": "Relation",
+        "name": "<D1>"
+      }
+    ],
+    "property_focus": "size",
+    "relation_focus": "left"
+  },
+  {
+    "asp_template_file": "C8_1prop_atmost_relational.txt",
+    "constraint_family": "relational_atmost",
+    "text": [
+      "At most <N> <V1> objects are to the left of some <V2> object.",
+      "The scene may contain at most <N> <V1> objects positioned to the left of any <V2> object.",
+      "A relational upper bound is placed: no more than <N> <V1> objects may each be positioned to the left of at least one <V2> object."
+    ],
+    "params": [
+      {
+        "type": "Shape",
+        "name": "<V1>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      },
+      {
+        "type": "Count",
+        "name": "<N>"
+      },
+      {
+        "type": "Relation",
+        "name": "<D1>"
+      }
+    ],
+    "property_focus": "shape",
+    "relation_focus": "left"
+  },
+  {
+    "asp_template_file": "C8_1prop_atmost_relational.txt",
+    "constraint_family": "relational_atmost",
+    "text": [
+      "At most <N> <V1> objects are to the left of some <V2> object.",
+      "The scene may contain at most <N> <V1> objects positioned to the left of any <V2> object.",
+      "A relational upper bound is placed: no more than <N> <V1> objects may each be positioned to the left of at least one <V2> object."
+    ],
+    "params": [
+      {
+        "type": "Size",
+        "name": "<V1>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      },
+      {
+        "type": "Count",
+        "name": "<N>"
+      },
+      {
+        "type": "Relation",
+        "name": "<D1>"
+      }
+    ],
+    "property_focus": "size",
+    "relation_focus": "left"
   }
 ]

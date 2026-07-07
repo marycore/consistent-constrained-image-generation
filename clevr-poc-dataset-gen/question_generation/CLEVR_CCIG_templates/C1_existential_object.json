@@ -1,57 +1,29 @@
 [
   {
-    "asp_template_file": "constraint_templates_C1_exist.txt",
-    "constraint_family": "exist",
+    "asp_template_file": "C1_1prop.txt",
+    "constraint_family": "1prop",
     "text": [
-      "Region <R1> contains at least one <V1> object.",
-      "At least one <V1> object appears in region <R1>.",
-      "There is a <V1> object somewhere in region <R1>."
+      "An object is in <V1>.",
+      "The scene contains at least one object located in <V1>.",
+      "Among all the objects placed in the scene, at least one of them must be situated in <V1>; no restriction is placed on the other objects."
     ],
     "params": [
       {
         "type": "Region",
-        "name": "<R1>"
-      },
-      {
-        "type": "Color",
         "name": "<V1>"
       }
     ],
-    "property_focus": "color"
+    "property_focus": "region"
   },
   {
-    "asp_template_file": "constraint_templates_C1_exist.txt",
-    "constraint_family": "exist",
+    "asp_template_file": "C1_1prop.txt",
+    "constraint_family": "1prop",
     "text": [
-      "Region <R1> contains at least one <V1> object.",
-      "At least one <V1> object appears in region <R1>.",
-      "There is a <V1> object somewhere in region <R1>."
+      "A <V1> object is in the scene.",
+      "The scene contains at least one <V1> object.",
+      "Among all the objects placed in the scene, at least one of them must be <V1>; no restriction is placed on any of the other objects."
     ],
     "params": [
-      {
-        "type": "Region",
-        "name": "<R1>"
-      },
-      {
-        "type": "Material",
-        "name": "<V1>"
-      }
-    ],
-    "property_focus": "material"
-  },
-  {
-    "asp_template_file": "constraint_templates_C1_exist.txt",
-    "constraint_family": "exist",
-    "text": [
-      "Region <R1> contains at least one <V1> object.",
-      "At least one <V1> object appears in region <R1>.",
-      "There is a <V1> object somewhere in region <R1>."
-    ],
-    "params": [
-      {
-        "type": "Region",
-        "name": "<R1>"
-      },
       {
         "type": "Shape",
         "name": "<V1>"
@@ -60,18 +32,14 @@
     "property_focus": "shape"
   },
   {
-    "asp_template_file": "constraint_templates_C1_exist.txt",
-    "constraint_family": "exist",
+    "asp_template_file": "C1_1prop.txt",
+    "constraint_family": "1prop",
     "text": [
-      "Region <R1> contains at least one <V1> object.",
-      "At least one <V1> object appears in region <R1>.",
-      "There is a <V1> object somewhere in region <R1>."
+      "A <V1> object is in the scene.",
+      "The scene contains at least one <V1> object.",
+      "Among all the objects placed in the scene, at least one of them must be <V1>; no restriction is placed on any of the other objects."
     ],
     "params": [
-      {
-        "type": "Region",
-        "name": "<R1>"
-      },
       {
         "type": "Size",
         "name": "<V1>"
@@ -80,58 +48,102 @@
     "property_focus": "size"
   },
   {
-    "asp_template_file": "constraint_templates_C1_forbid.txt",
-    "constraint_family": "forbid",
+    "asp_template_file": "C1_2prop.txt",
+    "constraint_family": "2prop",
     "text": [
-      "Region <R1> contains no <V1> object.",
-      "No object in region <R1> is <V1>.",
-      "Region <R1> has zero <V1> objects."
+      "An object in <V1> that is <V2> is present.",
+      "The scene must contain at least one object that is in <V1> and is also <V2>.",
+      "Somewhere in the scene there is an object both located in <V1> and carrying the property <V2> at the same time."
     ],
     "params": [
       {
         "type": "Region",
-        "name": "<R1>"
+        "name": "<V1>"
       },
       {
-        "type": "Color",
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      }
+    ],
+    "property_focus": "region"
+  },
+  {
+    "asp_template_file": "C1_2prop.txt",
+    "constraint_family": "2prop",
+    "text": [
+      "A <V1>, <V2> object is in the scene.",
+      "The scene must contain at least one object that is both <V1> and <V2>.",
+      "Somewhere in the scene there is an object carrying two simultaneous properties: it is <V1> and also <V2> at the same time."
+    ],
+    "params": [
+      {
+        "type": "Shape",
+        "name": "<V1>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      }
+    ],
+    "property_focus": "shape"
+  },
+  {
+    "asp_template_file": "C1_4prop.txt",
+    "constraint_family": "4prop",
+    "text": [
+      "An object in <V1> satisfying three additional property constraints exists in the scene.",
+      "The scene includes at least one object in <V1> that also matches three further specified attributes.",
+      "There exists in the scene an object in <V1> that simultaneously satisfies two further property requirements beyond its location."
+    ],
+    "params": [
+      {
+        "type": "Region",
+        "name": "<V1>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      }
+    ],
+    "property_focus": "region"
+  },
+  {
+    "asp_template_file": "C1_1prop_neg.txt",
+    "constraint_family": "1prop_neg",
+    "text": [
+      "Some object is not in <V1>.",
+      "The scene includes at least one object that is not located in <V1>.",
+      "Not all objects in the scene need to be in <V1>; at least one must reside in a different region."
+    ],
+    "params": [
+      {
+        "type": "Region",
         "name": "<V1>"
       }
     ],
-    "property_focus": "color"
+    "property_focus": "region"
   },
   {
-    "asp_template_file": "constraint_templates_C1_forbid.txt",
-    "constraint_family": "forbid",
+    "asp_template_file": "C1_1prop_neg.txt",
+    "constraint_family": "1prop_neg",
     "text": [
-      "Region <R1> contains no <V1> object.",
-      "No object in region <R1> is <V1>.",
-      "Region <R1> has zero <V1> objects."
+      "Some object is not <V1>.",
+      "The scene includes at least one object that is not <V1>.",
+      "Not all objects in the scene are required to be <V1>; at least one object must have a different value for this property."
     ],
     "params": [
-      {
-        "type": "Region",
-        "name": "<R1>"
-      },
-      {
-        "type": "Material",
-        "name": "<V1>"
-      }
-    ],
-    "property_focus": "material"
-  },
-  {
-    "asp_template_file": "constraint_templates_C1_forbid.txt",
-    "constraint_family": "forbid",
-    "text": [
-      "Region <R1> contains no <V1> object.",
-      "No object in region <R1> is <V1>.",
-      "Region <R1> has zero <V1> objects."
-    ],
-    "params": [
-      {
-        "type": "Region",
-        "name": "<R1>"
-      },
       {
         "type": "Shape",
         "name": "<V1>"
@@ -140,21 +152,441 @@
     "property_focus": "shape"
   },
   {
-    "asp_template_file": "constraint_templates_C1_forbid.txt",
-    "constraint_family": "forbid",
+    "asp_template_file": "C1_1prop_neg.txt",
+    "constraint_family": "1prop_neg",
     "text": [
-      "Region <R1> contains no <V1> object.",
-      "No object in region <R1> is <V1>.",
-      "Region <R1> has zero <V1> objects."
+      "Some object is not <V1>.",
+      "The scene includes at least one object that is not <V1>.",
+      "Not all objects in the scene are required to be <V1>; at least one object must have a different value for this property."
+    ],
+    "params": [
+      {
+        "type": "Size",
+        "name": "<V1>"
+      }
+    ],
+    "property_focus": "size"
+  },
+  {
+    "asp_template_file": "C1_1prop_2val_neg.txt",
+    "constraint_family": "1prop_2val_neg",
+    "text": [
+      "Some object is in neither <V1> nor <V2>.",
+      "The scene includes at least one object not in <V1> and not in <V2>.",
+      "Among all the objects, at least one must be situated in a region other than both <V1> and <V2>; some third region holds an object."
     ],
     "params": [
       {
         "type": "Region",
-        "name": "<R1>"
+        "name": "<V1>"
       },
+      {
+        "type": "Region",
+        "name": "<V2>"
+      }
+    ],
+    "property_focus": "region"
+  },
+  {
+    "asp_template_file": "C1_1prop_2val_neg.txt",
+    "constraint_family": "1prop_2val_neg",
+    "text": [
+      "Some object has a shape that is neither <V1> nor <V2>.",
+      "The scene includes at least one object whose shape is not <V1> and not <V2>.",
+      "Among all the objects, at least one must have a shape other than <V1> and <V2>; some different shape appears in the scene."
+    ],
+    "params": [
+      {
+        "type": "Shape",
+        "name": "<V1>"
+      },
+      {
+        "type": "Shape",
+        "name": "<V2>"
+      }
+    ],
+    "property_focus": "shape"
+  },
+  {
+    "asp_template_file": "C1_2prop_neg.txt",
+    "constraint_family": "2prop_neg",
+    "text": [
+      "Some object is not in <V1> and not <V2>.",
+      "The scene includes at least one object that is neither in <V1> nor <V2>.",
+      "At least one object in the scene avoids two properties at once: it is not in <V1> and not <V2>, though its other attributes are unconstrained."
+    ],
+    "params": [
+      {
+        "type": "Region",
+        "name": "<V1>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      }
+    ],
+    "property_focus": "region"
+  },
+  {
+    "asp_template_file": "C1_2prop_neg.txt",
+    "constraint_family": "2prop_neg",
+    "text": [
+      "Some object is neither <V1> nor <V2>.",
+      "The scene includes at least one object that is not <V1> and also not <V2>.",
+      "At least one object in the scene avoids two distinct specified properties at once: it is not <V1> and not <V2>, though its other attributes are unconstrained."
+    ],
+    "params": [
+      {
+        "type": "Shape",
+        "name": "<V1>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      }
+    ],
+    "property_focus": "shape"
+  },
+  {
+    "asp_template_file": "C1_2prop_mix_neg.txt",
+    "constraint_family": "2prop_mix_neg",
+    "text": [
+      "An object in <V1> that is not <V2> is present.",
+      "The scene must include at least one object that is in <V1> while not being <V2>.",
+      "At least one object is specifically located in <V1> and at the same time lacks <V2>; both conditions must hold together."
+    ],
+    "params": [
+      {
+        "type": "Region",
+        "name": "<V1>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      }
+    ],
+    "property_focus": "region"
+  },
+  {
+    "asp_template_file": "C1_2prop_mix_neg.txt",
+    "constraint_family": "2prop_mix_neg",
+    "text": [
+      "A <V1> but not <V2> object is in the scene.",
+      "The scene must include at least one object that is <V1> while not being <V2>.",
+      "At least one object in the scene is specifically <V1> and at the same time lacks <V2>; both conditions must be satisfied together by that single object."
+    ],
+    "params": [
+      {
+        "type": "Shape",
+        "name": "<V1>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      }
+    ],
+    "property_focus": "shape"
+  },
+  {
+    "asp_template_file": "C1_1prop.txt",
+    "constraint_family": "1prop",
+    "text": [
+      "A <V1> object is in the scene.",
+      "The scene contains at least one <V1> object.",
+      "Among all the objects placed in the scene, at least one of them must be <V1>; no restriction is placed on any of the other objects."
+    ],
+    "params": [
+      {
+        "type": "Color",
+        "name": "<V1>"
+      }
+    ],
+    "property_focus": "color"
+  },
+  {
+    "asp_template_file": "C1_2prop.txt",
+    "constraint_family": "2prop",
+    "text": [
+      "A <V1>, <V2> object is in the scene.",
+      "The scene contains at least one object that is both <V1> and <V2>.",
+      "Somewhere in the scene there is an object that is simultaneously <V1> and <V2>; at least one such object must appear."
+    ],
+    "params": [
+      {
+        "type": "Color",
+        "name": "<V1>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      }
+    ],
+    "property_focus": "color"
+  },
+  {
+    "asp_template_file": "C1_1prop_neg.txt",
+    "constraint_family": "1prop_neg",
+    "text": [
+      "Some object is not <V1>.",
+      "The scene includes at least one object that is not <V1>.",
+      "Not all objects in the scene are required to be <V1>; at least one must carry a different color."
+    ],
+    "params": [
+      {
+        "type": "Color",
+        "name": "<V1>"
+      }
+    ],
+    "property_focus": "color"
+  },
+  {
+    "asp_template_file": "C1_1prop_2val_neg.txt",
+    "constraint_family": "1prop_2val_neg",
+    "text": [
+      "Some object is neither <V1> nor <V2>.",
+      "The scene includes at least one object that is not <V1> and not <V2>.",
+      "Among all the objects, at least one must be a color other than both <V1> and <V2>; some third color must appear."
+    ],
+    "params": [
+      {
+        "type": "Color",
+        "name": "<V1>"
+      },
+      {
+        "type": "Color",
+        "name": "<V2>"
+      }
+    ],
+    "property_focus": "color"
+  },
+  {
+    "asp_template_file": "C1_2prop_neg.txt",
+    "constraint_family": "2prop_neg",
+    "text": [
+      "Some object is not <V1> and not <V2>.",
+      "The scene includes at least one object that is neither <V1> nor <V2>.",
+      "At least one object in the scene avoids two properties at once: it is not <V1> and not <V2>, though its other attributes are unconstrained."
+    ],
+    "params": [
+      {
+        "type": "Color",
+        "name": "<V1>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      }
+    ],
+    "property_focus": "color"
+  },
+  {
+    "asp_template_file": "C1_2prop_mix_neg.txt",
+    "constraint_family": "2prop_mix_neg",
+    "text": [
+      "A <V1> object that is not <V2> is present.",
+      "The scene must include at least one <V1> object that is not <V2>.",
+      "At least one object is specifically <V1> and at the same time lacks <V2>; both conditions must hold together."
+    ],
+    "params": [
+      {
+        "type": "Color",
+        "name": "<V1>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      }
+    ],
+    "property_focus": "color"
+  },
+  {
+    "asp_template_file": "C1_2prop.txt",
+    "constraint_family": "2prop",
+    "text": [
+      "A <V1>, <V2> object is in the scene.",
+      "The scene contains at least one object that is both <V1> and <V2>.",
+      "Somewhere in the scene there is an object that is simultaneously <V1> and <V2>; at least one such object must appear."
+    ],
+    "params": [
       {
         "type": "Size",
         "name": "<V1>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      }
+    ],
+    "property_focus": "size"
+  },
+  {
+    "asp_template_file": "C1_1prop_2val_neg.txt",
+    "constraint_family": "1prop_2val_neg",
+    "text": [
+      "Some object is neither <V1> nor <V2>.",
+      "The scene includes at least one object that is not <V1> and not <V2>.",
+      "Among all the objects, at least one must be a color other than both <V1> and <V2>; some third color must appear."
+    ],
+    "params": [
+      {
+        "type": "Size",
+        "name": "<V1>"
+      },
+      {
+        "type": "Color",
+        "name": "<V2>"
+      }
+    ],
+    "property_focus": "size"
+  },
+  {
+    "asp_template_file": "C1_2prop_neg.txt",
+    "constraint_family": "2prop_neg",
+    "text": [
+      "Some object is not <V1> and not <V2>.",
+      "The scene includes at least one object that is neither <V1> nor <V2>.",
+      "At least one object in the scene avoids two properties at once: it is not <V1> and not <V2>, though its other attributes are unconstrained."
+    ],
+    "params": [
+      {
+        "type": "Size",
+        "name": "<V1>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      }
+    ],
+    "property_focus": "size"
+  },
+  {
+    "asp_template_file": "C1_2prop_mix_neg.txt",
+    "constraint_family": "2prop_mix_neg",
+    "text": [
+      "A <V1> object that is not <V2> is present.",
+      "The scene must include at least one <V1> object that is not <V2>.",
+      "At least one object is specifically <V1> and at the same time lacks <V2>; both conditions must hold together."
+    ],
+    "params": [
+      {
+        "type": "Size",
+        "name": "<V1>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      }
+    ],
+    "property_focus": "size"
+  },
+  {
+    "asp_template_file": "C1_4prop.txt",
+    "constraint_family": "4prop",
+    "text": [
+      "An object in <V1> satisfying three additional property constraints exists in the scene.",
+      "The scene includes at least one object in <V1> that also matches three further specified attributes.",
+      "There exists in the scene an object in <V1> that simultaneously satisfies two further property requirements beyond its location."
+    ],
+    "params": [
+      {
+        "type": "Color",
+        "name": "<V1>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      }
+    ],
+    "property_focus": "color"
+  },
+  {
+    "asp_template_file": "C1_4prop.txt",
+    "constraint_family": "4prop",
+    "text": [
+      "An object in <V1> satisfying three additional property constraints exists in the scene.",
+      "The scene includes at least one object in <V1> that also matches three further specified attributes.",
+      "There exists in the scene an object in <V1> that simultaneously satisfies two further property requirements beyond its location."
+    ],
+    "params": [
+      {
+        "type": "Shape",
+        "name": "<V1>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      }
+    ],
+    "property_focus": "shape"
+  },
+  {
+    "asp_template_file": "C1_4prop.txt",
+    "constraint_family": "4prop",
+    "text": [
+      "An object in <V1> satisfying three additional property constraints exists in the scene.",
+      "The scene includes at least one object in <V1> that also matches three further specified attributes.",
+      "There exists in the scene an object in <V1> that simultaneously satisfies two further property requirements beyond its location."
+    ],
+    "params": [
+      {
+        "type": "Size",
+        "name": "<V1>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
       }
     ],
     "property_focus": "size"

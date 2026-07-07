@@ -1,23 +1,66 @@
 [
   {
-    "asp_template_file": "constraint_templates_C5_pair_conditional.txt",
-    "constraint_family": "pair_conditional",
+    "asp_template_file": "C5_pair_propA_relC.txt",
+    "constraint_family": "pair_propA_relC",
     "text": [
-      "Whenever a <V1> object in region <R1> is <D1> of a <V2> object in region <R2>, it is also <D2> of that same object.",
-      "Any <V1> object in region <R1> that is <D1> of a <V2> object in region <R2> must also be <D2> of it."
+      "Whenever an object in <V1> and a <V2> object both appear, the first must be to the left of the second.",
+      "Any pair of an object in <V1> and a <V2> object must have the object in <V1> positioned to the left of the <V2> object.",
+      "The scene enforces that every co-occurring pair of an object in <V1> and a <V2> object must be spatially ordered: the object in <V1> is always to the left."
     ],
     "params": [
       {
         "type": "Region",
-        "name": "<R1>"
-      },
-      {
-        "type": "Color",
         "name": "<V1>"
       },
       {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      }
+    ],
+    "property_focus": "region",
+    "relation_focus": "left"
+  },
+  {
+    "asp_template_file": "C5_pair_propA_relC.txt",
+    "constraint_family": "pair_propA_relC",
+    "text": [
+      "Whenever an object in <V1> and a <V2> object both appear, the first must be to the left of the second.",
+      "Any pair of an object in <V1> and a <V2> object must have the object in <V1> positioned to the left of the <V2> object.",
+      "The scene enforces that every co-occurring pair of an object in <V1> and a <V2> object must be spatially ordered: the object in <V1> is always to the left."
+    ],
+    "params": [
+      {
         "type": "Region",
-        "name": "<R2>"
+        "name": "<V1>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      }
+    ],
+    "property_focus": "region",
+    "relation_focus": "front"
+  },
+  {
+    "asp_template_file": "C5_pair_propRelA_RelC.txt",
+    "constraint_family": "pair_propRelA_RelC",
+    "text": [
+      "Every pair of an object in <V1> and a <V2> object that is left-of-related must also satisfy <D2>.",
+      "Any object in <V1> that is to the left of a <V2> object must additionally satisfy <D2> with that <V2> object.",
+      "For every pair where an object in <V1> is to the left of a <V2> object, a second spatial relation <D2> must also hold between them."
+    ],
+    "params": [
+      {
+        "type": "Region",
+        "name": "<V1>"
       },
       {
         "type": "Property",
@@ -29,7 +72,272 @@
       },
       {
         "type": "Relation",
-        "name": "<D1>"
+        "name": "<D2>"
+      }
+    ],
+    "property_focus": "region",
+    "relation_focus": "left"
+  },
+  {
+    "asp_template_file": "C5_pair_propRelA_RelC.txt",
+    "constraint_family": "pair_propRelA_RelC",
+    "text": [
+      "Every pair of an object in <V1> and a <V2> object that is left-of-related must also satisfy <D2>.",
+      "Any object in <V1> that is to the left of a <V2> object must additionally satisfy <D2> with that <V2> object.",
+      "For every pair where an object in <V1> is to the left of a <V2> object, a second spatial relation <D2> must also hold between them."
+    ],
+    "params": [
+      {
+        "type": "Region",
+        "name": "<V1>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      },
+      {
+        "type": "Relation",
+        "name": "<D2>"
+      }
+    ],
+    "property_focus": "region",
+    "relation_focus": "behind"
+  },
+  {
+    "asp_template_file": "C5_pair_propRelA_propC.txt",
+    "constraint_family": "pair_propRelA_propC",
+    "text": [
+      "Any object in <V1> to the left of a <V2> object requires that <V2> object to also be <V3>.",
+      "Whenever an object in <V1> is to the left of a <V2> object, the <V2> object must additionally have the property <V3>.",
+      "The scene requires that in every pair where an object in <V1> is to the left of a <V2> object, the <V2> object must also carry <V3>."
+    ],
+    "params": [
+      {
+        "type": "Region",
+        "name": "<V1>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V3>"
+      }
+    ],
+    "property_focus": "region",
+    "relation_focus": "left"
+  },
+  {
+    "asp_template_file": "C5_pair_propRelA_propC.txt",
+    "constraint_family": "pair_propRelA_propC",
+    "text": [
+      "Any object in <V1> to the left of a <V2> object requires that <V2> object to also be <V3>.",
+      "Whenever an object in <V1> is to the left of a <V2> object, the <V2> object must additionally have the property <V3>.",
+      "The scene requires that in every pair where an object in <V1> is to the left of a <V2> object, the <V2> object must also carry <V3>."
+    ],
+    "params": [
+      {
+        "type": "Region",
+        "name": "<V1>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V3>"
+      }
+    ],
+    "property_focus": "region",
+    "relation_focus": "front"
+  },
+  {
+    "asp_template_file": "C5_pair_relA_propC.txt",
+    "constraint_family": "pair_relA_propC",
+    "text": [
+      "Any object to the left of another must be in <V1>.",
+      "Every object positioned to the left of some other object must be in <V1>.",
+      "The scene enforces that whichever object occupies a left-of position relative to any other must be located in <V1>."
+    ],
+    "params": [
+      {
+        "type": "Region",
+        "name": "<V1>"
+      }
+    ],
+    "property_focus": "region",
+    "relation_focus": "left"
+  },
+  {
+    "asp_template_file": "C5_pair_relA_propC.txt",
+    "constraint_family": "pair_relA_propC",
+    "text": [
+      "Any object in front of another must be <V1>.",
+      "Every object positioned in front of some other object must be <V1>.",
+      "The scene enforces that whichever object is positioned in front of any other object is required to carry the property <V1>."
+    ],
+    "params": [
+      {
+        "type": "Shape",
+        "name": "<V1>"
+      }
+    ],
+    "property_focus": "shape",
+    "relation_focus": "front"
+  },
+  {
+    "asp_template_file": "C5_triple_propA_RelC.txt",
+    "constraint_family": "triple_propA_RelC",
+    "text": [
+      "Any triple of objects in <V1>, <V2>, and <V3> must have the first to the left of the second and the second <D2> of the third.",
+      "Whenever three objects in <V1>, <V2>, and <V3> are present, they must form a chain: the first to the left of the second, and the second <D2> of the third.",
+      "The scene enforces that every triple of objects in <V1>, <V2>, and <V3> must be chained: the object in <V1> to the left of the one in <V2>, which is <D2> of the one in <V3>."
+    ],
+    "params": [
+      {
+        "type": "Region",
+        "name": "<V1>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V3>"
+      },
+      {
+        "type": "Relation",
+        "name": "<D2>"
+      }
+    ],
+    "property_focus": "region",
+    "relation_focus": "left"
+  },
+  {
+    "asp_template_file": "C5_triple_propRelA_relC.txt",
+    "constraint_family": "triple_propRelA_relC",
+    "text": [
+      "Any object in <V1> to the left of a <V2> object must extend into a chain: the <V2> object must also be <D2> of some third object.",
+      "Whenever an object in <V1> is to the left of a <V2> object, there must be a third object such that the <V2> object is also <D2> of it.",
+      "The scene requires that every pair where an object in <V1> is to the left of a <V2> object extends into a three-object chain: the <V2> object must also be <D2> of some third distinct object."
+    ],
+    "params": [
+      {
+        "type": "Region",
+        "name": "<V1>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      },
+      {
+        "type": "Relation",
+        "name": "<D2>"
+      }
+    ],
+    "property_focus": "region",
+    "relation_focus": "left"
+  },
+  {
+    "asp_template_file": "C5_triple_propRelA_propC.txt",
+    "constraint_family": "triple_propRelA_propC",
+    "text": [
+      "Whenever an object in <V1> is to the left of a <V2> object and that object is <D2> of a third, the third must be <V3>.",
+      "Any sequence where an object in <V1> is to the left of a <V2> object and the <V2> object is <D2> of a third requires that third to be <V3>.",
+      "The scene chains a conditional through three objects: whenever an object in <V1> is to the left of a <V2> object and the <V2> object is <D2> of a third, that third must be <V3>."
+    ],
+    "params": [
+      {
+        "type": "Region",
+        "name": "<V1>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V3>"
+      },
+      {
+        "type": "Relation",
+        "name": "<D2>"
+      }
+    ],
+    "property_focus": "region",
+    "relation_focus": "left"
+  },
+  {
+    "asp_template_file": "C5_pair_propA_relC.txt",
+    "constraint_family": "pair_propA_relC",
+    "text": [
+      "Whenever a <V1> object and a <V2> object both appear, the <V1> must be to the left of the <V2>.",
+      "Any pair of a <V1> object and a <V2> object must have the <V1> positioned to the left of the <V2>.",
+      "The scene enforces that every co-occurring pair of a <V1> object and a <V2> object must be spatially ordered: the <V1> is always to the left."
+    ],
+    "params": [
+      {
+        "type": "Color",
+        "name": "<V1>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      }
+    ],
+    "property_focus": "color"
+  },
+  {
+    "asp_template_file": "C5_pair_propRelA_RelC.txt",
+    "constraint_family": "pair_propRelA_RelC",
+    "text": [
+      "Every <V1>-<V2> pair that is left-of-related must also satisfy <D2>.",
+      "Any <V1> object that is to the left of a <V2> object must additionally satisfy <D2> with that <V2> object.",
+      "For every pair where a <V1> object is to the left of a <V2> object, a second spatial relation <D2> must also hold between them."
+    ],
+    "params": [
+      {
+        "type": "Color",
+        "name": "<V1>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
       },
       {
         "type": "Relation",
@@ -39,24 +347,17 @@
     "property_focus": "color"
   },
   {
-    "asp_template_file": "constraint_templates_C5_pair_conditional.txt",
-    "constraint_family": "pair_conditional",
+    "asp_template_file": "C5_pair_propRelA_propC.txt",
+    "constraint_family": "pair_propRelA_propC",
     "text": [
-      "Whenever a <V1> object in region <R1> is <D1> of a <V2> object in region <R2>, it is also <D2> of that same object.",
-      "Any <V1> object in region <R1> that is <D1> of a <V2> object in region <R2> must also be <D2> of it."
+      "Any <V1> object to the left of a <V2> object requires that <V2> object to also be <V3>.",
+      "Whenever a <V1> object is to the left of a <V2> object, the <V2> must additionally have the property <V3>.",
+      "The scene requires that in every pair where a <V1> object is to the left of a <V2> object, the <V2> object must also carry <V3>."
     ],
     "params": [
       {
-        "type": "Region",
-        "name": "<R1>"
-      },
-      {
-        "type": "Material",
+        "type": "Color",
         "name": "<V1>"
-      },
-      {
-        "type": "Region",
-        "name": "<R2>"
       },
       {
         "type": "Property",
@@ -67,35 +368,72 @@
         "name": "<V2>"
       },
       {
-        "type": "Relation",
-        "name": "<D1>"
+        "type": "Value",
+        "name": "<V3>"
+      }
+    ],
+    "property_focus": "color"
+  },
+  {
+    "asp_template_file": "C5_pair_relA_propC.txt",
+    "constraint_family": "pair_relA_propC",
+    "text": [
+      "Any object to the left of another must be <V1>.",
+      "Every object positioned to the left of some other object must be <V1>.",
+      "The scene enforces that whichever object occupies a left-of position relative to any other must be <V1>."
+    ],
+    "params": [
+      {
+        "type": "Color",
+        "name": "<V1>"
+      }
+    ],
+    "property_focus": "color"
+  },
+  {
+    "asp_template_file": "C5_triple_propA_RelC.txt",
+    "constraint_family": "triple_propA_RelC",
+    "text": [
+      "Any triple of <V1>, <V2>, and <V3> objects must have the first to the left of the second and the second <D2> of the third.",
+      "Whenever three objects that are <V1>, <V2>, and <V3> are present, they must form a chain: first to the left of second, and second <D2> of third.",
+      "The scene enforces that every triple of <V1>, <V2>, and <V3> objects must be chained: the <V1> to the left of the <V2>, which is <D2> of the <V3>."
+    ],
+    "params": [
+      {
+        "type": "Color",
+        "name": "<V1>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V3>"
       },
       {
         "type": "Relation",
         "name": "<D2>"
       }
     ],
-    "property_focus": "material"
+    "property_focus": "color"
   },
   {
-    "asp_template_file": "constraint_templates_C5_pair_conditional.txt",
-    "constraint_family": "pair_conditional",
+    "asp_template_file": "C5_triple_propRelA_relC.txt",
+    "constraint_family": "triple_propRelA_relC",
     "text": [
-      "Whenever a <V1> object in region <R1> is <D1> of a <V2> object in region <R2>, it is also <D2> of that same object.",
-      "Any <V1> object in region <R1> that is <D1> of a <V2> object in region <R2> must also be <D2> of it."
+      "Any <V1> object to the left of a <V2> object must extend into a chain: the <V2> must also be <D2> of some third object.",
+      "Whenever a <V1> object is to the left of a <V2> object, there must be a third object such that the <V2> is also <D2> of it.",
+      "The scene requires that every pair where a <V1> object is to the left of a <V2> object extends into a three-object chain: the <V2> must also be <D2> of some third distinct object."
     ],
     "params": [
       {
-        "type": "Region",
-        "name": "<R1>"
-      },
-      {
-        "type": "Shape",
+        "type": "Color",
         "name": "<V1>"
-      },
-      {
-        "type": "Region",
-        "name": "<R2>"
       },
       {
         "type": "Property",
@@ -107,7 +445,111 @@
       },
       {
         "type": "Relation",
-        "name": "<D1>"
+        "name": "<D2>"
+      }
+    ],
+    "property_focus": "color"
+  },
+  {
+    "asp_template_file": "C5_triple_propRelA_propC.txt",
+    "constraint_family": "triple_propRelA_propC",
+    "text": [
+      "Whenever a <V1> object is to the left of a <V2> object and that <V2> is <D2> of a third, the third must be <V3>.",
+      "Any sequence where a <V1> object is to the left of a <V2> object and the <V2> is <D2> of a third requires that third to be <V3>.",
+      "The scene chains a conditional through three objects: whenever a <V1> object is to the left of a <V2> object and the <V2> is <D2> of a third, that third must be <V3>."
+    ],
+    "params": [
+      {
+        "type": "Color",
+        "name": "<V1>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V3>"
+      },
+      {
+        "type": "Relation",
+        "name": "<D2>"
+      }
+    ],
+    "property_focus": "color"
+  },
+  {
+    "asp_template_file": "C5_pair_propA_relC.txt",
+    "constraint_family": "pair_propA_relC",
+    "text": [
+      "Whenever a <V1> object and a <V2> object both appear, the <V1> must be to the left of the <V2>.",
+      "Any pair of a <V1> object and a <V2> object must have the <V1> positioned to the left of the <V2>.",
+      "The scene enforces that every co-occurring pair of a <V1> object and a <V2> object must be spatially ordered: the <V1> is always to the left."
+    ],
+    "params": [
+      {
+        "type": "Shape",
+        "name": "<V1>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      }
+    ],
+    "property_focus": "shape"
+  },
+  {
+    "asp_template_file": "C5_pair_propA_relC.txt",
+    "constraint_family": "pair_propA_relC",
+    "text": [
+      "Whenever a <V1> object and a <V2> object both appear, the <V1> must be to the left of the <V2>.",
+      "Any pair of a <V1> object and a <V2> object must have the <V1> positioned to the left of the <V2>.",
+      "The scene enforces that every co-occurring pair of a <V1> object and a <V2> object must be spatially ordered: the <V1> is always to the left."
+    ],
+    "params": [
+      {
+        "type": "Size",
+        "name": "<V1>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      }
+    ],
+    "property_focus": "size"
+  },
+  {
+    "asp_template_file": "C5_pair_propRelA_RelC.txt",
+    "constraint_family": "pair_propRelA_RelC",
+    "text": [
+      "Every <V1>-<V2> pair that is left-of-related must also satisfy <D2>.",
+      "Any <V1> object that is to the left of a <V2> object must additionally satisfy <D2> with that <V2> object.",
+      "For every pair where a <V1> object is to the left of a <V2> object, a second spatial relation <D2> must also hold between them."
+    ],
+    "params": [
+      {
+        "type": "Shape",
+        "name": "<V1>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
       },
       {
         "type": "Relation",
@@ -117,24 +559,17 @@
     "property_focus": "shape"
   },
   {
-    "asp_template_file": "constraint_templates_C5_pair_conditional.txt",
-    "constraint_family": "pair_conditional",
+    "asp_template_file": "C5_pair_propRelA_RelC.txt",
+    "constraint_family": "pair_propRelA_RelC",
     "text": [
-      "Whenever a <V1> object in region <R1> is <D1> of a <V2> object in region <R2>, it is also <D2> of that same object.",
-      "Any <V1> object in region <R1> that is <D1> of a <V2> object in region <R2> must also be <D2> of it."
+      "Every <V1>-<V2> pair that is left-of-related must also satisfy <D2>.",
+      "Any <V1> object that is to the left of a <V2> object must additionally satisfy <D2> with that <V2> object.",
+      "For every pair where a <V1> object is to the left of a <V2> object, a second spatial relation <D2> must also hold between them."
     ],
     "params": [
       {
-        "type": "Region",
-        "name": "<R1>"
-      },
-      {
         "type": "Size",
         "name": "<V1>"
-      },
-      {
-        "type": "Region",
-        "name": "<R2>"
       },
       {
         "type": "Property",
@@ -146,7 +581,259 @@
       },
       {
         "type": "Relation",
-        "name": "<D1>"
+        "name": "<D2>"
+      }
+    ],
+    "property_focus": "size"
+  },
+  {
+    "asp_template_file": "C5_pair_propRelA_propC.txt",
+    "constraint_family": "pair_propRelA_propC",
+    "text": [
+      "Any <V1> object to the left of a <V2> object requires that <V2> object to also be <V3>.",
+      "Whenever a <V1> object is to the left of a <V2> object, the <V2> must additionally have the property <V3>.",
+      "The scene requires that in every pair where a <V1> object is to the left of a <V2> object, the <V2> object must also carry <V3>."
+    ],
+    "params": [
+      {
+        "type": "Shape",
+        "name": "<V1>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V3>"
+      }
+    ],
+    "property_focus": "shape"
+  },
+  {
+    "asp_template_file": "C5_pair_propRelA_propC.txt",
+    "constraint_family": "pair_propRelA_propC",
+    "text": [
+      "Any <V1> object to the left of a <V2> object requires that <V2> object to also be <V3>.",
+      "Whenever a <V1> object is to the left of a <V2> object, the <V2> must additionally have the property <V3>.",
+      "The scene requires that in every pair where a <V1> object is to the left of a <V2> object, the <V2> object must also carry <V3>."
+    ],
+    "params": [
+      {
+        "type": "Size",
+        "name": "<V1>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V3>"
+      }
+    ],
+    "property_focus": "size"
+  },
+  {
+    "asp_template_file": "C5_pair_relA_propC.txt",
+    "constraint_family": "pair_relA_propC",
+    "text": [
+      "Any object to the left of another must be <V1>.",
+      "Every object positioned to the left of some other object must be <V1>.",
+      "The scene enforces that whichever object occupies a left-of position relative to any other must be <V1>."
+    ],
+    "params": [
+      {
+        "type": "Size",
+        "name": "<V1>"
+      }
+    ],
+    "property_focus": "size"
+  },
+  {
+    "asp_template_file": "C5_triple_propA_RelC.txt",
+    "constraint_family": "triple_propA_RelC",
+    "text": [
+      "Any triple of <V1>, <V2>, and <V3> objects must have the first to the left of the second and the second <D2> of the third.",
+      "Whenever three objects that are <V1>, <V2>, and <V3> are present, they must form a chain: first to the left of second, and second <D2> of third.",
+      "The scene enforces that every triple of <V1>, <V2>, and <V3> objects must be chained: the <V1> to the left of the <V2>, which is <D2> of the <V3>."
+    ],
+    "params": [
+      {
+        "type": "Shape",
+        "name": "<V1>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V3>"
+      },
+      {
+        "type": "Relation",
+        "name": "<D2>"
+      }
+    ],
+    "property_focus": "shape"
+  },
+  {
+    "asp_template_file": "C5_triple_propA_RelC.txt",
+    "constraint_family": "triple_propA_RelC",
+    "text": [
+      "Any triple of <V1>, <V2>, and <V3> objects must have the first to the left of the second and the second <D2> of the third.",
+      "Whenever three objects that are <V1>, <V2>, and <V3> are present, they must form a chain: first to the left of second, and second <D2> of third.",
+      "The scene enforces that every triple of <V1>, <V2>, and <V3> objects must be chained: the <V1> to the left of the <V2>, which is <D2> of the <V3>."
+    ],
+    "params": [
+      {
+        "type": "Size",
+        "name": "<V1>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V3>"
+      },
+      {
+        "type": "Relation",
+        "name": "<D2>"
+      }
+    ],
+    "property_focus": "size"
+  },
+  {
+    "asp_template_file": "C5_triple_propRelA_relC.txt",
+    "constraint_family": "triple_propRelA_relC",
+    "text": [
+      "Any <V1> object to the left of a <V2> object must extend into a chain: the <V2> must also be <D2> of some third object.",
+      "Whenever a <V1> object is to the left of a <V2> object, there must be a third object such that the <V2> is also <D2> of it.",
+      "The scene requires that every pair where a <V1> object is to the left of a <V2> object extends into a three-object chain: the <V2> must also be <D2> of some third distinct object."
+    ],
+    "params": [
+      {
+        "type": "Shape",
+        "name": "<V1>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      },
+      {
+        "type": "Relation",
+        "name": "<D2>"
+      }
+    ],
+    "property_focus": "shape"
+  },
+  {
+    "asp_template_file": "C5_triple_propRelA_relC.txt",
+    "constraint_family": "triple_propRelA_relC",
+    "text": [
+      "Any <V1> object to the left of a <V2> object must extend into a chain: the <V2> must also be <D2> of some third object.",
+      "Whenever a <V1> object is to the left of a <V2> object, there must be a third object such that the <V2> is also <D2> of it.",
+      "The scene requires that every pair where a <V1> object is to the left of a <V2> object extends into a three-object chain: the <V2> must also be <D2> of some third distinct object."
+    ],
+    "params": [
+      {
+        "type": "Size",
+        "name": "<V1>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      },
+      {
+        "type": "Relation",
+        "name": "<D2>"
+      }
+    ],
+    "property_focus": "size"
+  },
+  {
+    "asp_template_file": "C5_triple_propRelA_propC.txt",
+    "constraint_family": "triple_propRelA_propC",
+    "text": [
+      "Whenever a <V1> object is to the left of a <V2> object and that <V2> is <D2> of a third, the third must be <V3>.",
+      "Any sequence where a <V1> object is to the left of a <V2> object and the <V2> is <D2> of a third requires that third to be <V3>.",
+      "The scene chains a conditional through three objects: whenever a <V1> object is to the left of a <V2> object and the <V2> is <D2> of a third, that third must be <V3>."
+    ],
+    "params": [
+      {
+        "type": "Shape",
+        "name": "<V1>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V3>"
+      },
+      {
+        "type": "Relation",
+        "name": "<D2>"
+      }
+    ],
+    "property_focus": "shape"
+  },
+  {
+    "asp_template_file": "C5_triple_propRelA_propC.txt",
+    "constraint_family": "triple_propRelA_propC",
+    "text": [
+      "Whenever a <V1> object is to the left of a <V2> object and that <V2> is <D2> of a third, the third must be <V3>.",
+      "Any sequence where a <V1> object is to the left of a <V2> object and the <V2> is <D2> of a third requires that third to be <V3>.",
+      "The scene chains a conditional through three objects: whenever a <V1> object is to the left of a <V2> object and the <V2> is <D2> of a third, that third must be <V3>."
+    ],
+    "params": [
+      {
+        "type": "Size",
+        "name": "<V1>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V3>"
       },
       {
         "type": "Relation",

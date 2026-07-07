@@ -1,23 +1,16 @@
 [
   {
-    "asp_template_file": "constraint_templates_C6_witness_universal.txt",
-    "constraint_family": "witness_universal",
+    "asp_template_file": "C6_1prop.txt",
+    "constraint_family": "witness_1prop",
     "text": [
-      "Some <V1> object in region <R1> is <D1> of every <V2> object in region <R2>.",
-      "At least one <V1> object in region <R1> is <D1> of all <V2> objects in region <R2>."
+      "Some object in <V1> is to the left of every <V2> object.",
+      "The scene must contain an object in <V1> positioned to the left of each and every <V2> object.",
+      "There exists at least one object in <V1> that stands to the left of all <V2> objects simultaneously; it serves as a universal left-side reference for all <V2> objects."
     ],
     "params": [
       {
         "type": "Region",
-        "name": "<R1>"
-      },
-      {
-        "type": "Color",
         "name": "<V1>"
-      },
-      {
-        "type": "Region",
-        "name": "<R2>"
       },
       {
         "type": "Property",
@@ -26,33 +19,23 @@
       {
         "type": "Value",
         "name": "<V2>"
-      },
-      {
-        "type": "Relation",
-        "name": "<D1>"
       }
     ],
-    "property_focus": "color"
+    "property_focus": "region",
+    "relation_focus": "left"
   },
   {
-    "asp_template_file": "constraint_templates_C6_witness_universal.txt",
-    "constraint_family": "witness_universal",
+    "asp_template_file": "C6_1prop.txt",
+    "constraint_family": "witness_1prop",
     "text": [
-      "Some <V1> object in region <R1> is <D1> of every <V2> object in region <R2>.",
-      "At least one <V1> object in region <R1> is <D1> of all <V2> objects in region <R2>."
+      "Some object in <V1> is to the left of every <V2> object.",
+      "The scene must contain an object in <V1> positioned to the left of each and every <V2> object.",
+      "There exists at least one object in <V1> that stands to the left of all <V2> objects simultaneously; it serves as a universal left-side reference for all <V2> objects."
     ],
     "params": [
       {
         "type": "Region",
-        "name": "<R1>"
-      },
-      {
-        "type": "Material",
         "name": "<V1>"
-      },
-      {
-        "type": "Region",
-        "name": "<R2>"
       },
       {
         "type": "Property",
@@ -61,33 +44,98 @@
       {
         "type": "Value",
         "name": "<V2>"
-      },
-      {
-        "type": "Relation",
-        "name": "<D1>"
       }
     ],
-    "property_focus": "material"
+    "property_focus": "region",
+    "relation_focus": "front"
   },
   {
-    "asp_template_file": "constraint_templates_C6_witness_universal.txt",
-    "constraint_family": "witness_universal",
+    "asp_template_file": "C6_1prop.txt",
+    "constraint_family": "witness_1prop",
     "text": [
-      "Some <V1> object in region <R1> is <D1> of every <V2> object in region <R2>.",
-      "At least one <V1> object in region <R1> is <D1> of all <V2> objects in region <R2>."
+      "Some <V1> object is to the right of every <V2> object.",
+      "The scene must contain a <V1> object positioned to the right of all <V2> objects.",
+      "At least one <V1> object exists in the scene from which every <V2> object is reachable on the left; this <V1> object is to the right of all of them."
     ],
     "params": [
-      {
-        "type": "Region",
-        "name": "<R1>"
-      },
       {
         "type": "Shape",
         "name": "<V1>"
       },
       {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      }
+    ],
+    "property_focus": "shape",
+    "relation_focus": "right"
+  },
+  {
+    "asp_template_file": "C6_1prop_neg.txt",
+    "constraint_family": "witness_1prop_neg",
+    "text": [
+      "Some object in <V1> is to the left of every non-<V2> object.",
+      "The scene contains an object in <V1> positioned to the left of every object that is not <V2>.",
+      "There exists an object in <V1> that stands to the left of all objects whose property is not <V2>; every non-<V2> object has this witness in <V1> to its left."
+    ],
+    "params": [
+      {
         "type": "Region",
-        "name": "<R2>"
+        "name": "<V1>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      }
+    ],
+    "property_focus": "region",
+    "relation_focus": "left"
+  },
+  {
+    "asp_template_file": "C6_1prop_neg.txt",
+    "constraint_family": "witness_1prop_neg",
+    "text": [
+      "Some <V1> object is in front of every non-<V2> object.",
+      "The scene contains a <V1> object that is in front of every object that is not <V2>.",
+      "There exists a <V1> object in the scene that is positioned in front of all non-<V2> objects; it serves as a universal front-side reference for all objects lacking <V2>."
+    ],
+    "params": [
+      {
+        "type": "Shape",
+        "name": "<V1>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      }
+    ],
+    "property_focus": "shape",
+    "relation_focus": "front"
+  },
+  {
+    "asp_template_file": "C6_2prop.txt",
+    "constraint_family": "witness_2prop",
+    "text": [
+      "Some object in <V1> that is <V2> is to the left of every <V3> that is <V4>.",
+      "The scene must contain an object that is in <V1> and is <V2>, positioned to the left of every object that is in <V3> and is <V4>.",
+      "There exists a single object in <V1> that is also <V2>, and this object is to the left of every object that is in <V3> and also <V4>."
+    ],
+    "params": [
+      {
+        "type": "Region",
+        "name": "<V1>"
       },
       {
         "type": "Property",
@@ -98,31 +146,157 @@
         "name": "<V2>"
       },
       {
-        "type": "Relation",
-        "name": "<D1>"
+        "type": "Value",
+        "name": "<V3>"
+      },
+      {
+        "type": "Value",
+        "name": "<V4>"
       }
     ],
-    "property_focus": "shape"
+    "property_focus": "region",
+    "relation_focus": "left"
   },
   {
-    "asp_template_file": "constraint_templates_C6_witness_universal.txt",
-    "constraint_family": "witness_universal",
+    "asp_template_file": "C6_1prop.txt",
+    "constraint_family": "witness_1prop",
     "text": [
-      "Some <V1> object in region <R1> is <D1> of every <V2> object in region <R2>.",
-      "At least one <V1> object in region <R1> is <D1> of all <V2> objects in region <R2>."
+      "Some <V1> object is to the left of every <V2> object.",
+      "The scene must contain a <V1> object positioned to the left of each and every <V2> object.",
+      "There exists at least one <V1> object that stands to the left of all <V2> objects simultaneously; it serves as a universal left-side reference for all <V2> objects."
     ],
     "params": [
       {
-        "type": "Region",
-        "name": "<R1>"
+        "type": "Color",
+        "name": "<V1>"
       },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      }
+    ],
+    "property_focus": "color"
+  },
+  {
+    "asp_template_file": "C6_1prop_neg.txt",
+    "constraint_family": "witness_1prop_neg",
+    "text": [
+      "Some <V1> object is to the left of every non-<V2> object.",
+      "The scene contains a <V1> object positioned to the left of every object that is not <V2>.",
+      "There exists a <V1> object that stands to the left of all objects whose property is not <V2>; every non-<V2> object has this <V1> witness to its left."
+    ],
+    "params": [
+      {
+        "type": "Color",
+        "name": "<V1>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      }
+    ],
+    "property_focus": "color"
+  },
+  {
+    "asp_template_file": "C6_2prop.txt",
+    "constraint_family": "witness_2prop",
+    "text": [
+      "Some <V1>, <V2> object is to the left of every <V3>, <V4> object.",
+      "The scene must contain an object that is both <V1> and <V2>, positioned to the left of every object that is both <V3> and <V4>.",
+      "There exists a single <V1> and <V2> object, and this object is to the left of every object that is also <V3> and <V4>."
+    ],
+    "params": [
+      {
+        "type": "Color",
+        "name": "<V1>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V3>"
+      },
+      {
+        "type": "Value",
+        "name": "<V4>"
+      }
+    ],
+    "property_focus": "color"
+  },
+  {
+    "asp_template_file": "C6_1prop.txt",
+    "constraint_family": "witness_1prop",
+    "text": [
+      "Some <V1> object is to the left of every <V2> object.",
+      "The scene must contain a <V1> object positioned to the left of each and every <V2> object.",
+      "There exists at least one <V1> object that stands to the left of all <V2> objects simultaneously; it serves as a universal left-side reference for all <V2> objects."
+    ],
+    "params": [
       {
         "type": "Size",
         "name": "<V1>"
       },
       {
-        "type": "Region",
-        "name": "<R2>"
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      }
+    ],
+    "property_focus": "size"
+  },
+  {
+    "asp_template_file": "C6_1prop_neg.txt",
+    "constraint_family": "witness_1prop_neg",
+    "text": [
+      "Some <V1> object is to the left of every non-<V2> object.",
+      "The scene contains a <V1> object positioned to the left of every object that is not <V2>.",
+      "There exists a <V1> object that stands to the left of all objects whose property is not <V2>; every non-<V2> object has this <V1> witness to its left."
+    ],
+    "params": [
+      {
+        "type": "Size",
+        "name": "<V1>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      }
+    ],
+    "property_focus": "size"
+  },
+  {
+    "asp_template_file": "C6_2prop.txt",
+    "constraint_family": "witness_2prop",
+    "text": [
+      "Some <V1>, <V2> object is to the left of every <V3>, <V4> object.",
+      "The scene must contain an object that is both <V1> and <V2>, positioned to the left of every object that is both <V3> and <V4>.",
+      "There exists a single <V1> and <V2> object, and this object is to the left of every object that is also <V3> and <V4>."
+    ],
+    "params": [
+      {
+        "type": "Shape",
+        "name": "<V1>"
       },
       {
         "type": "Property",
@@ -133,8 +307,44 @@
         "name": "<V2>"
       },
       {
-        "type": "Relation",
-        "name": "<D1>"
+        "type": "Value",
+        "name": "<V3>"
+      },
+      {
+        "type": "Value",
+        "name": "<V4>"
+      }
+    ],
+    "property_focus": "shape"
+  },
+  {
+    "asp_template_file": "C6_2prop.txt",
+    "constraint_family": "witness_2prop",
+    "text": [
+      "Some <V1>, <V2> object is to the left of every <V3>, <V4> object.",
+      "The scene must contain an object that is both <V1> and <V2>, positioned to the left of every object that is both <V3> and <V4>.",
+      "There exists a single <V1> and <V2> object, and this object is to the left of every object that is also <V3> and <V4>."
+    ],
+    "params": [
+      {
+        "type": "Size",
+        "name": "<V1>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V3>"
+      },
+      {
+        "type": "Value",
+        "name": "<V4>"
       }
     ],
     "property_focus": "size"

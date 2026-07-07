@@ -1,18 +1,15 @@
 [
   {
-    "asp_template_file": "constraint_templates_C3_conditional.txt",
-    "constraint_family": "conditional",
+    "asp_template_file": "C3_1propA_1propC.txt",
+    "constraint_family": "1propA_1propC",
     "text": [
-      "Every <V1> object in region <R1> is also <V2>.",
-      "All <V1> objects in region <R1> are also <V2>."
+      "Every object in <V1> is also <V2>.",
+      "Any object located in <V1> must also be <V2>.",
+      "The scene enforces a conditional rule: if an object is in <V1>, it is required to also have the property <V2>; objects elsewhere are free from this restriction."
     ],
     "params": [
       {
         "type": "Region",
-        "name": "<R1>"
-      },
-      {
-        "type": "Color",
         "name": "<V1>"
       },
       {
@@ -24,47 +21,17 @@
         "name": "<V2>"
       }
     ],
-    "property_focus": "color"
+    "property_focus": "region"
   },
   {
-    "asp_template_file": "constraint_templates_C3_conditional.txt",
-    "constraint_family": "conditional",
+    "asp_template_file": "C3_1propA_1propC.txt",
+    "constraint_family": "1propA_1propC",
     "text": [
-      "Every <V1> object in region <R1> is also <V2>.",
-      "All <V1> objects in region <R1> are also <V2>."
+      "Every <V1> object is also <V2>.",
+      "Any object in the scene that is <V1> must also be <V2>.",
+      "The scene enforces a conditional rule: if an object is <V1>, it is required to also have the property <V2>; objects that are not <V1> are free from this restriction."
     ],
     "params": [
-      {
-        "type": "Region",
-        "name": "<R1>"
-      },
-      {
-        "type": "Material",
-        "name": "<V1>"
-      },
-      {
-        "type": "Property",
-        "name": "<P2>"
-      },
-      {
-        "type": "Value",
-        "name": "<V2>"
-      }
-    ],
-    "property_focus": "material"
-  },
-  {
-    "asp_template_file": "constraint_templates_C3_conditional.txt",
-    "constraint_family": "conditional",
-    "text": [
-      "Every <V1> object in region <R1> is also <V2>.",
-      "All <V1> objects in region <R1> are also <V2>."
-    ],
-    "params": [
-      {
-        "type": "Region",
-        "name": "<R1>"
-      },
       {
         "type": "Shape",
         "name": "<V1>"
@@ -81,17 +48,14 @@
     "property_focus": "shape"
   },
   {
-    "asp_template_file": "constraint_templates_C3_conditional.txt",
-    "constraint_family": "conditional",
+    "asp_template_file": "C3_1propA_1propC.txt",
+    "constraint_family": "1propA_1propC",
     "text": [
-      "Every <V1> object in region <R1> is also <V2>.",
-      "All <V1> objects in region <R1> are also <V2>."
+      "Every <V1> object is also <V2>.",
+      "Any object in the scene that is <V1> must also be <V2>.",
+      "The scene enforces a conditional rule: if an object is <V1>, it is required to also have the property <V2>; objects that are not <V1> are free from this restriction."
     ],
     "params": [
-      {
-        "type": "Region",
-        "name": "<R1>"
-      },
       {
         "type": "Size",
         "name": "<V1>"
@@ -108,19 +72,16 @@
     "property_focus": "size"
   },
   {
-    "asp_template_file": "constraint_templates_C3_conditional_negated.txt",
-    "constraint_family": "conditional_negated",
+    "asp_template_file": "C3_1propA_1prop_neg.txt",
+    "constraint_family": "1propA_1prop_neg",
     "text": [
-      "Every <V1> object in region <R1> is never <V2>.",
-      "No <V1> object in region <R1> is <V2>."
+      "Every object in <V1> is not <V2>.",
+      "Any object located in <V1> must not be <V2>.",
+      "The scene enforces an incompatibility: any object in <V1> is explicitly forbidden from also being <V2>."
     ],
     "params": [
       {
         "type": "Region",
-        "name": "<R1>"
-      },
-      {
-        "type": "Color",
         "name": "<V1>"
       },
       {
@@ -132,47 +93,17 @@
         "name": "<V2>"
       }
     ],
-    "property_focus": "color"
+    "property_focus": "region"
   },
   {
-    "asp_template_file": "constraint_templates_C3_conditional_negated.txt",
-    "constraint_family": "conditional_negated",
+    "asp_template_file": "C3_1propA_1prop_neg.txt",
+    "constraint_family": "1propA_1prop_neg",
     "text": [
-      "Every <V1> object in region <R1> is never <V2>.",
-      "No <V1> object in region <R1> is <V2>."
+      "Every <V1> object is not <V2>.",
+      "Any object that is <V1> in the scene must not be <V2>.",
+      "The scene enforces an incompatibility: any object carrying the property <V1> is explicitly forbidden from also being <V2>."
     ],
     "params": [
-      {
-        "type": "Region",
-        "name": "<R1>"
-      },
-      {
-        "type": "Material",
-        "name": "<V1>"
-      },
-      {
-        "type": "Property",
-        "name": "<P2>"
-      },
-      {
-        "type": "Value",
-        "name": "<V2>"
-      }
-    ],
-    "property_focus": "material"
-  },
-  {
-    "asp_template_file": "constraint_templates_C3_conditional_negated.txt",
-    "constraint_family": "conditional_negated",
-    "text": [
-      "Every <V1> object in region <R1> is never <V2>.",
-      "No <V1> object in region <R1> is <V2>."
-    ],
-    "params": [
-      {
-        "type": "Region",
-        "name": "<R1>"
-      },
       {
         "type": "Shape",
         "name": "<V1>"
@@ -189,17 +120,302 @@
     "property_focus": "shape"
   },
   {
-    "asp_template_file": "constraint_templates_C3_conditional_negated.txt",
-    "constraint_family": "conditional_negated",
+    "asp_template_file": "C3_1propA_neg_1propC.txt",
+    "constraint_family": "1propA_neg_1propC",
     "text": [
-      "Every <V1> object in region <R1> is never <V2>.",
-      "No <V1> object in region <R1> is <V2>."
+      "Every object not in <V1> is <V2>.",
+      "Any object not located in <V1> must be <V2>.",
+      "Objects outside <V1> are constrained to be <V2>; only objects in <V1> are free from this secondary requirement."
     ],
     "params": [
       {
         "type": "Region",
-        "name": "<R1>"
+        "name": "<V1>"
       },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      }
+    ],
+    "property_focus": "region"
+  },
+  {
+    "asp_template_file": "C3_1propA_neg_1propC.txt",
+    "constraint_family": "1propA_neg_1propC",
+    "text": [
+      "Every non-<V1> object is <V2>.",
+      "Any object in the scene that is not <V1> must be <V2>.",
+      "Objects that lack the property <V1> are constrained to be <V2>; only <V1> objects are free from this secondary requirement."
+    ],
+    "params": [
+      {
+        "type": "Shape",
+        "name": "<V1>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      }
+    ],
+    "property_focus": "shape"
+  },
+  {
+    "asp_template_file": "C3_2propA_1propC.txt",
+    "constraint_family": "2propA_1propC",
+    "text": [
+      "Every object in <V1> that is also <V2> must additionally be <V3>.",
+      "Any object that is in <V1> and also <V2> must additionally satisfy <V3>.",
+      "The scene enforces that whenever an object is both in <V1> and <V2>, it is also required to be <V3>; objects missing either antecedent are unconstrained."
+    ],
+    "params": [
+      {
+        "type": "Region",
+        "name": "<V1>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V3>"
+      }
+    ],
+    "property_focus": "region"
+  },
+  {
+    "asp_template_file": "C3_2propA_1propC.txt",
+    "constraint_family": "2propA_1propC",
+    "text": [
+      "Every <V1>, <V2> object must also be <V3>.",
+      "Any object that is both <V1> and <V2> must additionally satisfy <V3>.",
+      "The scene enforces that whenever an object is both <V1> and <V2> at the same time, it is also required to be <V3>; objects missing either antecedent are unconstrained by this rule."
+    ],
+    "params": [
+      {
+        "type": "Shape",
+        "name": "<V1>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V3>"
+      }
+    ],
+    "property_focus": "shape"
+  },
+  {
+    "asp_template_file": "C3_1propA_2propC.txt",
+    "constraint_family": "1propA_2propC",
+    "text": [
+      "Every object in <V1> must be both <V2> and <V3>.",
+      "Any object in <V1> must satisfy two additional requirements: it must also be <V2> and <V3>.",
+      "The scene places a compound consequent on objects in <V1>: whenever an object is in <V1>, it must simultaneously be <V2> and <V3>; both secondary properties are required together."
+    ],
+    "params": [
+      {
+        "type": "Region",
+        "name": "<V1>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V3>"
+      }
+    ],
+    "property_focus": "region"
+  },
+  {
+    "asp_template_file": "C3_1propA_2propC.txt",
+    "constraint_family": "1propA_2propC",
+    "text": [
+      "Every <V1> object must be both <V2> and <V3>.",
+      "Any <V1> object in the scene must satisfy two additional requirements: it must also be <V2> and <V3>.",
+      "The scene places a compound consequent on <V1> objects: whenever an object is <V1>, it must simultaneously be <V2> and <V3>; both secondary properties are required together."
+    ],
+    "params": [
+      {
+        "type": "Shape",
+        "name": "<V1>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V3>"
+      }
+    ],
+    "property_focus": "shape"
+  },
+  {
+    "asp_template_file": "C3_1propA_1propC.txt",
+    "constraint_family": "1propA_1propC",
+    "text": [
+      "Every <V1> object is also <V2>.",
+      "Any object in the scene that is <V1> must also be <V2>.",
+      "The scene enforces a conditional rule: if an object is <V1>, it is required to also have the property <V2>; objects that are not <V1> are free from this restriction."
+    ],
+    "params": [
+      {
+        "type": "Color",
+        "name": "<V1>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      }
+    ],
+    "property_focus": "color"
+  },
+  {
+    "asp_template_file": "C3_1propA_1prop_neg.txt",
+    "constraint_family": "1propA_1prop_neg",
+    "text": [
+      "Every <V1> object is not <V2>.",
+      "Any object that is <V1> in the scene must not be <V2>.",
+      "The scene enforces an incompatibility: any object carrying the color <V1> is explicitly forbidden from also being <V2>."
+    ],
+    "params": [
+      {
+        "type": "Color",
+        "name": "<V1>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      }
+    ],
+    "property_focus": "color"
+  },
+  {
+    "asp_template_file": "C3_1propA_neg_1propC.txt",
+    "constraint_family": "1propA_neg_1propC",
+    "text": [
+      "Every non-<V1> object is <V2>.",
+      "Any object in the scene that is not <V1> must be <V2>.",
+      "Objects that lack the color <V1> are constrained to be <V2>; only <V1> objects are free from this secondary requirement."
+    ],
+    "params": [
+      {
+        "type": "Color",
+        "name": "<V1>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      }
+    ],
+    "property_focus": "color"
+  },
+  {
+    "asp_template_file": "C3_2propA_1propC.txt",
+    "constraint_family": "2propA_1propC",
+    "text": [
+      "Every <V1>, <V2> object must also be <V3>.",
+      "Any object that is both <V1> and <V2> must additionally satisfy <V3>.",
+      "The scene enforces that whenever an object is both <V1> and <V2> at the same time, it is also required to be <V3>; objects missing either antecedent are unconstrained by this rule."
+    ],
+    "params": [
+      {
+        "type": "Color",
+        "name": "<V1>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V3>"
+      }
+    ],
+    "property_focus": "color"
+  },
+  {
+    "asp_template_file": "C3_1propA_2propC.txt",
+    "constraint_family": "1propA_2propC",
+    "text": [
+      "Every <V1> object must be both <V2> and <V3>.",
+      "Any <V1> object in the scene must satisfy two additional requirements: it must also be <V2> and <V3>.",
+      "The scene places a compound consequent on <V1> objects: whenever an object is <V1>, it must simultaneously be <V2> and <V3>; both secondary properties are required together."
+    ],
+    "params": [
+      {
+        "type": "Color",
+        "name": "<V1>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V3>"
+      }
+    ],
+    "property_focus": "color"
+  },
+  {
+    "asp_template_file": "C3_1propA_1prop_neg.txt",
+    "constraint_family": "1propA_1prop_neg",
+    "text": [
+      "Every <V1> object is not <V2>.",
+      "Any object that is <V1> in the scene must not be <V2>.",
+      "The scene enforces an incompatibility: any object carrying the color <V1> is explicitly forbidden from also being <V2>."
+    ],
+    "params": [
       {
         "type": "Size",
         "name": "<V1>"
@@ -211,6 +427,86 @@
       {
         "type": "Value",
         "name": "<V2>"
+      }
+    ],
+    "property_focus": "size"
+  },
+  {
+    "asp_template_file": "C3_1propA_neg_1propC.txt",
+    "constraint_family": "1propA_neg_1propC",
+    "text": [
+      "Every non-<V1> object is <V2>.",
+      "Any object in the scene that is not <V1> must be <V2>.",
+      "Objects that lack the color <V1> are constrained to be <V2>; only <V1> objects are free from this secondary requirement."
+    ],
+    "params": [
+      {
+        "type": "Size",
+        "name": "<V1>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      }
+    ],
+    "property_focus": "size"
+  },
+  {
+    "asp_template_file": "C3_2propA_1propC.txt",
+    "constraint_family": "2propA_1propC",
+    "text": [
+      "Every <V1>, <V2> object must also be <V3>.",
+      "Any object that is both <V1> and <V2> must additionally satisfy <V3>.",
+      "The scene enforces that whenever an object is both <V1> and <V2> at the same time, it is also required to be <V3>; objects missing either antecedent are unconstrained by this rule."
+    ],
+    "params": [
+      {
+        "type": "Size",
+        "name": "<V1>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V3>"
+      }
+    ],
+    "property_focus": "size"
+  },
+  {
+    "asp_template_file": "C3_1propA_2propC.txt",
+    "constraint_family": "1propA_2propC",
+    "text": [
+      "Every <V1> object must be both <V2> and <V3>.",
+      "Any <V1> object in the scene must satisfy two additional requirements: it must also be <V2> and <V3>.",
+      "The scene places a compound consequent on <V1> objects: whenever an object is <V1>, it must simultaneously be <V2> and <V3>; both secondary properties are required together."
+    ],
+    "params": [
+      {
+        "type": "Size",
+        "name": "<V1>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V3>"
       }
     ],
     "property_focus": "size"

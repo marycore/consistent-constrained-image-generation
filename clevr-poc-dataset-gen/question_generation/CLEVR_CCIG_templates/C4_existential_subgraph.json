@@ -1,290 +1,11 @@
 [
   {
-    "asp_template_file": "constraint_templates_C4_exist_pair.txt",
-    "constraint_family": "exist_pair",
+    "asp_template_file": "C4_0prop_2hop.txt",
+    "constraint_family": "2hop",
     "text": [
-      "A <V1> object in region <R1> is <D1> of a <V2> object in region <R2>.",
-      "Some <V1> object in region <R1> is <D1> of a <V2> object in region <R2>."
-    ],
-    "params": [
-      {
-        "type": "Region",
-        "name": "<R1>"
-      },
-      {
-        "type": "Color",
-        "name": "<V1>"
-      },
-      {
-        "type": "Region",
-        "name": "<R2>"
-      },
-      {
-        "type": "Property",
-        "name": "<P2>"
-      },
-      {
-        "type": "Value",
-        "name": "<V2>"
-      },
-      {
-        "type": "Relation",
-        "name": "<D1>"
-      }
-    ],
-    "property_focus": "color"
-  },
-  {
-    "asp_template_file": "constraint_templates_C4_exist_pair.txt",
-    "constraint_family": "exist_pair",
-    "text": [
-      "A <V1> object in region <R1> is <D1> of a <V2> object in region <R2>.",
-      "Some <V1> object in region <R1> is <D1> of a <V2> object in region <R2>."
-    ],
-    "params": [
-      {
-        "type": "Region",
-        "name": "<R1>"
-      },
-      {
-        "type": "Material",
-        "name": "<V1>"
-      },
-      {
-        "type": "Region",
-        "name": "<R2>"
-      },
-      {
-        "type": "Property",
-        "name": "<P2>"
-      },
-      {
-        "type": "Value",
-        "name": "<V2>"
-      },
-      {
-        "type": "Relation",
-        "name": "<D1>"
-      }
-    ],
-    "property_focus": "material"
-  },
-  {
-    "asp_template_file": "constraint_templates_C4_exist_pair.txt",
-    "constraint_family": "exist_pair",
-    "text": [
-      "A <V1> object in region <R1> is <D1> of a <V2> object in region <R2>.",
-      "Some <V1> object in region <R1> is <D1> of a <V2> object in region <R2>."
-    ],
-    "params": [
-      {
-        "type": "Region",
-        "name": "<R1>"
-      },
-      {
-        "type": "Shape",
-        "name": "<V1>"
-      },
-      {
-        "type": "Region",
-        "name": "<R2>"
-      },
-      {
-        "type": "Property",
-        "name": "<P2>"
-      },
-      {
-        "type": "Value",
-        "name": "<V2>"
-      },
-      {
-        "type": "Relation",
-        "name": "<D1>"
-      }
-    ],
-    "property_focus": "shape"
-  },
-  {
-    "asp_template_file": "constraint_templates_C4_exist_pair.txt",
-    "constraint_family": "exist_pair",
-    "text": [
-      "A <V1> object in region <R1> is <D1> of a <V2> object in region <R2>.",
-      "Some <V1> object in region <R1> is <D1> of a <V2> object in region <R2>."
-    ],
-    "params": [
-      {
-        "type": "Region",
-        "name": "<R1>"
-      },
-      {
-        "type": "Size",
-        "name": "<V1>"
-      },
-      {
-        "type": "Region",
-        "name": "<R2>"
-      },
-      {
-        "type": "Property",
-        "name": "<P2>"
-      },
-      {
-        "type": "Value",
-        "name": "<V2>"
-      },
-      {
-        "type": "Relation",
-        "name": "<D1>"
-      }
-    ],
-    "property_focus": "size"
-  },
-  {
-    "asp_template_file": "constraint_templates_C4_forbid_pair.txt",
-    "constraint_family": "forbid_pair",
-    "text": [
-      "No <V1> object in region <R1> is ever <D1> of a <V2> object in region <R2>.",
-      "A <V1> object in region <R1> is never <D1> of any <V2> object in region <R2>."
-    ],
-    "params": [
-      {
-        "type": "Region",
-        "name": "<R1>"
-      },
-      {
-        "type": "Color",
-        "name": "<V1>"
-      },
-      {
-        "type": "Region",
-        "name": "<R2>"
-      },
-      {
-        "type": "Property",
-        "name": "<P2>"
-      },
-      {
-        "type": "Value",
-        "name": "<V2>"
-      },
-      {
-        "type": "Relation",
-        "name": "<D1>"
-      }
-    ],
-    "property_focus": "color"
-  },
-  {
-    "asp_template_file": "constraint_templates_C4_forbid_pair.txt",
-    "constraint_family": "forbid_pair",
-    "text": [
-      "No <V1> object in region <R1> is ever <D1> of a <V2> object in region <R2>.",
-      "A <V1> object in region <R1> is never <D1> of any <V2> object in region <R2>."
-    ],
-    "params": [
-      {
-        "type": "Region",
-        "name": "<R1>"
-      },
-      {
-        "type": "Material",
-        "name": "<V1>"
-      },
-      {
-        "type": "Region",
-        "name": "<R2>"
-      },
-      {
-        "type": "Property",
-        "name": "<P2>"
-      },
-      {
-        "type": "Value",
-        "name": "<V2>"
-      },
-      {
-        "type": "Relation",
-        "name": "<D1>"
-      }
-    ],
-    "property_focus": "material"
-  },
-  {
-    "asp_template_file": "constraint_templates_C4_forbid_pair.txt",
-    "constraint_family": "forbid_pair",
-    "text": [
-      "No <V1> object in region <R1> is ever <D1> of a <V2> object in region <R2>.",
-      "A <V1> object in region <R1> is never <D1> of any <V2> object in region <R2>."
-    ],
-    "params": [
-      {
-        "type": "Region",
-        "name": "<R1>"
-      },
-      {
-        "type": "Shape",
-        "name": "<V1>"
-      },
-      {
-        "type": "Region",
-        "name": "<R2>"
-      },
-      {
-        "type": "Property",
-        "name": "<P2>"
-      },
-      {
-        "type": "Value",
-        "name": "<V2>"
-      },
-      {
-        "type": "Relation",
-        "name": "<D1>"
-      }
-    ],
-    "property_focus": "shape"
-  },
-  {
-    "asp_template_file": "constraint_templates_C4_forbid_pair.txt",
-    "constraint_family": "forbid_pair",
-    "text": [
-      "No <V1> object in region <R1> is ever <D1> of a <V2> object in region <R2>.",
-      "A <V1> object in region <R1> is never <D1> of any <V2> object in region <R2>."
-    ],
-    "params": [
-      {
-        "type": "Region",
-        "name": "<R1>"
-      },
-      {
-        "type": "Size",
-        "name": "<V1>"
-      },
-      {
-        "type": "Region",
-        "name": "<R2>"
-      },
-      {
-        "type": "Property",
-        "name": "<P2>"
-      },
-      {
-        "type": "Value",
-        "name": "<V2>"
-      },
-      {
-        "type": "Relation",
-        "name": "<D1>"
-      }
-    ],
-    "property_focus": "size"
-  },
-  {
-    "asp_template_file": "constraint_templates_C4_chain2.txt",
-    "constraint_family": "chain2",
-    "text": [
-      "Three objects form a chain: the first is to the left of the second, and the second is <D2> of the third.",
-      "A chain of three distinct objects exists where the first is to the left of the second and the second is <D2> of the third."
+      "Three objects form a chain where the first is to the left of the second and the second is <D2> of the third.",
+      "The scene contains three distinct objects arranged in a two-hop chain: one is to the left of another, which is in turn <D2> of a third.",
+      "A directional chain of three objects exists in the scene: the first is positioned to the left of the second, and the second is positioned <D2> of the third, forming a sequence of two spatial steps."
     ],
     "params": [
       {
@@ -299,11 +20,12 @@
     "relation_focus": "left"
   },
   {
-    "asp_template_file": "constraint_templates_C4_chain2.txt",
-    "constraint_family": "chain2",
+    "asp_template_file": "C4_0prop_2hop.txt",
+    "constraint_family": "2hop",
     "text": [
-      "Three objects form a chain: the first is to the right of the second, and the second is <D2> of the third.",
-      "A chain of three distinct objects exists where the first is to the right of the second and the second is <D2> of the third."
+      "Three objects form a chain where the first is to the right of the second and the second is <D2> of the third.",
+      "The scene contains three distinct objects in a two-hop chain: one is to the right of another, which is <D2> of a third.",
+      "A directional chain of three objects exists: the first is to the right of the second, and the second is <D2> of the third, forming a two-step spatial sequence."
     ],
     "params": [
       {
@@ -318,11 +40,12 @@
     "relation_focus": "right"
   },
   {
-    "asp_template_file": "constraint_templates_C4_chain2.txt",
-    "constraint_family": "chain2",
+    "asp_template_file": "C4_0prop_2hop.txt",
+    "constraint_family": "2hop",
     "text": [
-      "Three objects form a chain: the first is in front of the second, and the second is <D2> of the third.",
-      "A chain of three distinct objects exists where the first is in front of the second and the second is <D2> of the third."
+      "Three objects form a chain where the first is in front of the second and the second is <D2> of the third.",
+      "The scene contains three distinct objects in a two-hop chain: one is in front of another, which is <D2> of a third.",
+      "A directional chain of three objects exists: the first is in front of the second, and the second is <D2> of the third, creating a two-step spatial sequence."
     ],
     "params": [
       {
@@ -337,11 +60,12 @@
     "relation_focus": "front"
   },
   {
-    "asp_template_file": "constraint_templates_C4_chain2.txt",
-    "constraint_family": "chain2",
+    "asp_template_file": "C4_0prop_2hop.txt",
+    "constraint_family": "2hop",
     "text": [
-      "Three objects form a chain: the first is behind the second, and the second is <D2> of the third.",
-      "A chain of three distinct objects exists where the first is behind the second and the second is <D2> of the third."
+      "Three objects form a chain where the first is behind the second and the second is <D2> of the third.",
+      "The scene contains three distinct objects in a two-hop chain: one is behind another, which is <D2> of a third.",
+      "A directional chain of three objects exists: the first is behind the second, and the second is <D2> of the third, creating a two-step spatial sequence."
     ],
     "params": [
       {
@@ -356,11 +80,12 @@
     "relation_focus": "behind"
   },
   {
-    "asp_template_file": "constraint_templates_C4_chain3.txt",
-    "constraint_family": "chain3",
+    "asp_template_file": "C4_0prop_3hop.txt",
+    "constraint_family": "3hop",
     "text": [
       "Four objects form a chain: the first is to the left of the second, the second is <D2> of the third, and the third is <D3> of the fourth.",
-      "A chain of four distinct objects exists where the first is to the left of the second, the second is <D2> of the third, and the third is <D3> of the fourth."
+      "The scene contains four distinct objects linked in a three-step spatial chain: to the left, then <D2>, then <D3>.",
+      "A spatial chain of four objects runs through the scene: the first is to the left of the second, the second is <D2> of the third, and the third is <D3> of the fourth, linking all four in sequence."
     ],
     "params": [
       {
@@ -379,11 +104,12 @@
     "relation_focus": "left"
   },
   {
-    "asp_template_file": "constraint_templates_C4_chain3.txt",
-    "constraint_family": "chain3",
+    "asp_template_file": "C4_0prop_3hop.txt",
+    "constraint_family": "3hop",
     "text": [
       "Four objects form a chain: the first is to the right of the second, the second is <D2> of the third, and the third is <D3> of the fourth.",
-      "A chain of four distinct objects exists where the first is to the right of the second, the second is <D2> of the third, and the third is <D3> of the fourth."
+      "The scene contains four distinct objects linked in a three-step spatial chain: to the right, then <D2>, then <D3>.",
+      "A spatial chain of four objects runs through the scene: the first is to the right of the second, the second is <D2> of the third, and the third is <D3> of the fourth."
     ],
     "params": [
       {
@@ -402,57 +128,12 @@
     "relation_focus": "right"
   },
   {
-    "asp_template_file": "constraint_templates_C4_chain3.txt",
-    "constraint_family": "chain3",
-    "text": [
-      "Four objects form a chain: the first is in front of the second, the second is <D2> of the third, and the third is <D3> of the fourth.",
-      "A chain of four distinct objects exists where the first is in front of the second, the second is <D2> of the third, and the third is <D3> of the fourth."
-    ],
-    "params": [
-      {
-        "type": "Relation",
-        "name": "<D1>"
-      },
-      {
-        "type": "Relation",
-        "name": "<D2>"
-      },
-      {
-        "type": "Relation",
-        "name": "<D3>"
-      }
-    ],
-    "relation_focus": "front"
-  },
-  {
-    "asp_template_file": "constraint_templates_C4_chain3.txt",
-    "constraint_family": "chain3",
-    "text": [
-      "Four objects form a chain: the first is behind the second, the second is <D2> of the third, and the third is <D3> of the fourth.",
-      "A chain of four distinct objects exists where the first is behind the second, the second is <D2> of the third, and the third is <D3> of the fourth."
-    ],
-    "params": [
-      {
-        "type": "Relation",
-        "name": "<D1>"
-      },
-      {
-        "type": "Relation",
-        "name": "<D2>"
-      },
-      {
-        "type": "Relation",
-        "name": "<D3>"
-      }
-    ],
-    "relation_focus": "behind"
-  },
-  {
-    "asp_template_file": "constraint_templates_C4_shared_hub.txt",
+    "asp_template_file": "C4_0prop_shared.txt",
     "constraint_family": "shared_hub",
     "text": [
-      "One object is to the left of a second object and <D2> of a third, distinct object.",
-      "A hub object is to the left of one object and <D2> of another, distinct object."
+      "One object is to the left of a second and <D2> of a third.",
+      "A hub object exists that is to the left of one object and <D2> of another distinct object.",
+      "The scene contains a central hub object positioned to the left of one other object and simultaneously <D2> of a second distinct object, creating a branching spatial arrangement."
     ],
     "params": [
       {
@@ -467,11 +148,12 @@
     "relation_focus": "left"
   },
   {
-    "asp_template_file": "constraint_templates_C4_shared_hub.txt",
+    "asp_template_file": "C4_0prop_shared.txt",
     "constraint_family": "shared_hub",
     "text": [
-      "One object is to the right of a second object and <D2> of a third, distinct object.",
-      "A hub object is to the right of one object and <D2> of another, distinct object."
+      "One object is to the right of a second and <D2> of a third.",
+      "A hub object exists that is to the right of one object and <D2> of another distinct object.",
+      "The scene contains a central hub object positioned to the right of one other object and simultaneously <D2> of a second distinct object, creating a branching spatial arrangement."
     ],
     "params": [
       {
@@ -486,11 +168,12 @@
     "relation_focus": "right"
   },
   {
-    "asp_template_file": "constraint_templates_C4_shared_hub.txt",
+    "asp_template_file": "C4_0prop_shared.txt",
     "constraint_family": "shared_hub",
     "text": [
-      "One object is in front of a second object and <D2> of a third, distinct object.",
-      "A hub object is in front of one object and <D2> of another, distinct object."
+      "One object is in front of a second and <D2> of a third.",
+      "A hub object exists that is in front of one object and <D2> of another distinct object.",
+      "The scene contains a central hub object positioned in front of one other object and simultaneously <D2> of a second distinct object."
     ],
     "params": [
       {
@@ -505,11 +188,12 @@
     "relation_focus": "front"
   },
   {
-    "asp_template_file": "constraint_templates_C4_shared_hub.txt",
+    "asp_template_file": "C4_0prop_shared.txt",
     "constraint_family": "shared_hub",
     "text": [
-      "One object is behind a second object and <D2> of a third, distinct object.",
-      "A hub object is behind one object and <D2> of another, distinct object."
+      "One object is behind a second and <D2> of a third.",
+      "A hub object exists that is behind one object and <D2> of another distinct object.",
+      "The scene contains a central hub object positioned behind one other object and simultaneously <D2> of a second distinct object."
     ],
     "params": [
       {
@@ -522,5 +206,302 @@
       }
     ],
     "relation_focus": "behind"
+  },
+  {
+    "asp_template_file": "C4_1prop_2hop.txt",
+    "constraint_family": "prop_2hop",
+    "text": [
+      "An object in <V1> is to the left of a <V2> object, which is <D2> of a <V3> object.",
+      "The scene contains a two-hop chain where an object in <V1> is to the left of a <V2> object, which is <D2> of a <V3> object.",
+      "Three distinct objects form a spatially connected sequence: one in <V1> is to the left of a <V2> object, and that object is <D2> of a <V3> object."
+    ],
+    "params": [
+      {
+        "type": "Region",
+        "name": "<V1>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V3>"
+      },
+      {
+        "type": "Relation",
+        "name": "<D2>"
+      }
+    ],
+    "property_focus": "region",
+    "relation_focus": "left"
+  },
+  {
+    "asp_template_file": "C4_1prop_2hop.txt",
+    "constraint_family": "prop_2hop",
+    "text": [
+      "An object in <V1> is to the left of a <V2> object, which is <D2> of a <V3> object.",
+      "The scene contains a two-hop chain where an object in <V1> is to the left of a <V2> object, which is <D2> of a <V3> object.",
+      "Three distinct objects form a spatially connected sequence: one in <V1> is to the left of a <V2> object, and that object is <D2> of a <V3> object."
+    ],
+    "params": [
+      {
+        "type": "Region",
+        "name": "<V1>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V3>"
+      },
+      {
+        "type": "Relation",
+        "name": "<D2>"
+      }
+    ],
+    "property_focus": "region",
+    "relation_focus": "behind"
+  },
+  {
+    "asp_template_file": "C4_1prop_shared.txt",
+    "constraint_family": "prop_shared_hub",
+    "text": [
+      "An object in <V1> is to the left of a <V2> object and <D2> of a <V3> object.",
+      "The scene contains a hub object in <V1> that is to the left of a <V2> object and simultaneously <D2> of a <V3> object.",
+      "A hub object in <V1> anchors a branching spatial pattern: it is to the left of a <V2> object and also <D2> of a distinct <V3> object."
+    ],
+    "params": [
+      {
+        "type": "Region",
+        "name": "<V1>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V3>"
+      },
+      {
+        "type": "Relation",
+        "name": "<D2>"
+      }
+    ],
+    "property_focus": "region",
+    "relation_focus": "left"
+  },
+  {
+    "asp_template_file": "C4_1prop_2hop.txt",
+    "constraint_family": "prop_2hop",
+    "text": [
+      "An object in <V1> is to the left of a <V2> object, which is <D2> of a <V3> object.",
+      "The scene contains a two-hop chain where an object in <V1> is to the left of a <V2> object, which is <D2> of a <V3> object.",
+      "Three distinct objects form a spatially connected sequence: one in <V1> is to the left of a <V2> object, and that object is <D2> of a <V3> object."
+    ],
+    "params": [
+      {
+        "type": "Color",
+        "name": "<V1>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V3>"
+      },
+      {
+        "type": "Relation",
+        "name": "<D2>"
+      }
+    ],
+    "property_focus": "color",
+    "relation_focus": "behind"
+  },
+  {
+    "asp_template_file": "C4_1prop_2hop.txt",
+    "constraint_family": "prop_2hop",
+    "text": [
+      "An object in <V1> is to the left of a <V2> object, which is <D2> of a <V3> object.",
+      "The scene contains a two-hop chain where an object in <V1> is to the left of a <V2> object, which is <D2> of a <V3> object.",
+      "Three distinct objects form a spatially connected sequence: one in <V1> is to the left of a <V2> object, and that object is <D2> of a <V3> object."
+    ],
+    "params": [
+      {
+        "type": "Shape",
+        "name": "<V1>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V3>"
+      },
+      {
+        "type": "Relation",
+        "name": "<D2>"
+      }
+    ],
+    "property_focus": "shape",
+    "relation_focus": "behind"
+  },
+  {
+    "asp_template_file": "C4_1prop_2hop.txt",
+    "constraint_family": "prop_2hop",
+    "text": [
+      "An object in <V1> is to the left of a <V2> object, which is <D2> of a <V3> object.",
+      "The scene contains a two-hop chain where an object in <V1> is to the left of a <V2> object, which is <D2> of a <V3> object.",
+      "Three distinct objects form a spatially connected sequence: one in <V1> is to the left of a <V2> object, and that object is <D2> of a <V3> object."
+    ],
+    "params": [
+      {
+        "type": "Size",
+        "name": "<V1>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V3>"
+      },
+      {
+        "type": "Relation",
+        "name": "<D2>"
+      }
+    ],
+    "property_focus": "size",
+    "relation_focus": "behind"
+  },
+  {
+    "asp_template_file": "C4_1prop_shared.txt",
+    "constraint_family": "prop_shared_hub",
+    "text": [
+      "An object in <V1> is to the left of a <V2> object and <D2> of a <V3> object.",
+      "The scene contains a hub object in <V1> that is to the left of a <V2> object and simultaneously <D2> of a <V3> object.",
+      "A hub object in <V1> anchors a branching spatial pattern: it is to the left of a <V2> object and also <D2> of a distinct <V3> object."
+    ],
+    "params": [
+      {
+        "type": "Color",
+        "name": "<V1>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V3>"
+      },
+      {
+        "type": "Relation",
+        "name": "<D2>"
+      }
+    ],
+    "property_focus": "color",
+    "relation_focus": "left"
+  },
+  {
+    "asp_template_file": "C4_1prop_shared.txt",
+    "constraint_family": "prop_shared_hub",
+    "text": [
+      "An object in <V1> is to the left of a <V2> object and <D2> of a <V3> object.",
+      "The scene contains a hub object in <V1> that is to the left of a <V2> object and simultaneously <D2> of a <V3> object.",
+      "A hub object in <V1> anchors a branching spatial pattern: it is to the left of a <V2> object and also <D2> of a distinct <V3> object."
+    ],
+    "params": [
+      {
+        "type": "Shape",
+        "name": "<V1>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V3>"
+      },
+      {
+        "type": "Relation",
+        "name": "<D2>"
+      }
+    ],
+    "property_focus": "shape",
+    "relation_focus": "left"
+  },
+  {
+    "asp_template_file": "C4_1prop_shared.txt",
+    "constraint_family": "prop_shared_hub",
+    "text": [
+      "An object in <V1> is to the left of a <V2> object and <D2> of a <V3> object.",
+      "The scene contains a hub object in <V1> that is to the left of a <V2> object and simultaneously <D2> of a <V3> object.",
+      "A hub object in <V1> anchors a branching spatial pattern: it is to the left of a <V2> object and also <D2> of a distinct <V3> object."
+    ],
+    "params": [
+      {
+        "type": "Size",
+        "name": "<V1>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V3>"
+      },
+      {
+        "type": "Relation",
+        "name": "<D2>"
+      }
+    ],
+    "property_focus": "size",
+    "relation_focus": "left"
   }
 ]

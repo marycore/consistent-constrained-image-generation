@@ -31,22 +31,22 @@ class ComboSpec:
 
 
 COLOR_VALUES = ["gray", "red", "blue", "green", "brown", "purple", "cyan", "yellow"]
-MATERIAL_VALUES = ["rubber", "metal"]
+MATERIAL_VALUES = []
 SHAPE_VALUES = ["cube", "cylinder", "sphere", "cone"]
 SIZE_VALUES = ["small", "large", "medium"]
 REL_VALUES = ["left", "right", "front", "behind"]
-PROP_VALUES = ["color", "material", "shape", "size"]
-REGION_VALUES = ["0", "1", "2", "3"]
+PROP_VALUES = ["color", "shape", "size", "region"]
+REGION_VALUES = ["region_1", "region_2", "region_3", "region_4"]
 COUNT_VALUES = ["1", "2", "3"]
 
 DOMAIN: dict[str, list[str]] = {
     "color": COLOR_VALUES,
-    "material": MATERIAL_VALUES,
     "shape": SHAPE_VALUES,
     "size": SIZE_VALUES,
+    "region": REGION_VALUES,
 }
 
-PLACEHOLDER_PATTERN = re.compile(r"([RPDNV][0-9]')")
+PLACEHOLDER_PATTERN = re.compile(r"(N'|[RPDNV][0-9]')")
 PARAM_PATTERN = re.compile(r"<[^>]+>")
 
 
@@ -140,7 +140,7 @@ def value_space_for_placeholder(ph: str) -> list[str]:
         return REL_VALUES
     if ph.startswith("N"):
         return COUNT_VALUES
-    return COLOR_VALUES + MATERIAL_VALUES + SHAPE_VALUES + SIZE_VALUES
+    return COLOR_VALUES + SHAPE_VALUES + SIZE_VALUES + REGION_VALUES
 
 
 def apply_assignment(s: str, assignment: dict[str, str]) -> str:
@@ -262,6 +262,38 @@ def naturalize_constraint_text(text: str, param_assignment: dict[str, str]) -> s
     out = re.sub(r"\b(1 (?:\w+ )?object) that are\b", r"\1 that is", out, flags=re.IGNORECASE)
     out = re.sub(r"\bThere are exactly 1\b", "There is exactly 1", out, flags=re.IGNORECASE)
 
+    # Fix region values appearing in adjective position (as V2 in multi-property templates).
+    # E.g. "A cube, region_1 object" → "A cube object in region_1"
+    #      "Every cube object has a region_1 object to its left" → "... an object in region_1 ..."
+    for val in REGION_VALUES:
+        e = re.escape(val)
+        # "A/An region_N object" (sentence start) → "An object in region_N"
+        out = re.sub(rf"\bAn? {e} object\b", f"An object in {val}", out)
+        # "a/an region_N object" (mid-sentence) → "an object in region_N"
+        out = re.sub(rf"\ban? {e} object\b", f"an object in {val}", out)
+        # "every region_N object" → "every object in region_N"
+        out = re.sub(rf"\bevery {e} object\b", f"every object in {val}", out, flags=re.IGNORECASE)
+        # "each region_N object" → "each object in region_N"
+        out = re.sub(rf"\beach {e} object\b", f"each object in {val}", out, flags=re.IGNORECASE)
+        # "no region_N object" → "no object in region_N"
+        out = re.sub(rf"\bno {e} object\b", f"no object in {val}", out, flags=re.IGNORECASE)
+        # "non-region_N" → "not in region_N"
+        out = re.sub(rf"\bnon-{e}\b", f"not in {val}", out, flags=re.IGNORECASE)
+        # "X, region_N object" (comma adjective list) → "X object in region_N"
+        out = re.sub(rf",\s*{e}\s+object", f" object in {val}", out, flags=re.IGNORECASE)
+        # "and region_N" → "and in region_N" (negative lookahead avoids "and in in ...")
+        out = re.sub(rf"\band (?!in ){e}\b", f"and in {val}", out, flags=re.IGNORECASE)
+        # "also region_N" → "also in region_N"
+        out = re.sub(rf"\balso (?!in ){e}\b", f"also in {val}", out, flags=re.IGNORECASE)
+        # "be region_N" → "be in region_N"
+        out = re.sub(rf"\bbe (?!in ){e}\b", f"be in {val}", out, flags=re.IGNORECASE)
+        # "is/are region_N" → "is/are in region_N"
+        out = re.sub(rf"\b(is|are) (?!in ){e}\b", rf"\1 in {val}", out, flags=re.IGNORECASE)
+        # "not region_N" → "not in region_N"
+        out = re.sub(rf"\bnot (?!in ){e}\b", f"not in {val}", out, flags=re.IGNORECASE)
+        # "lacks region_N" → "is not in region_N"
+        out = re.sub(rf"\blacks {e}\b", f"is not in {val}", out, flags=re.IGNORECASE)
+
     out = re.sub(r"\s+", " ", out).strip()
     return out
 
@@ -335,9 +367,13 @@ def build_asp_assignment(
         "<V>": "V1'",
         "<V1>": "V1'",
         "<V2>": "V2'",
+        "<V3>": "V3'",
+        "<V4>": "V4'",
         "<D1>": "D1'",
         "<D2>": "D2'",
+        "<D3>": "D3'",
         "<N1>": "N1'",
+        "<N>": "N'",
     }
     for param_name, asp_name in param_to_asp.items():
         if param_name in param_assignment:
@@ -387,10 +423,71 @@ def build_asp_assignment(
         param_assignment["<V1>"] = asp_assignment["V1'"]
     if "<V2>" not in param_assignment and "V2'" in asp_assignment:
         param_assignment["<V2>"] = asp_assignment["V2'"]
+    if "<V3>" not in param_assignment and "V3'" in asp_assignment:
+        param_assignment["<V3>"] = asp_assignment["V3'"]
+    if "<V4>" not in param_assignment and "V4'" in asp_assignment:
+        param_assignment["<V4>"] = asp_assignment["V4'"]
     if "<P2>" not in param_assignment and "P2'" in asp_assignment:
         param_assignment["<P2>"] = asp_assignment["P2'"]
     if "<D2>" not in param_assignment and "D2'" in asp_assignment:
         param_assignment["<D2>"] = asp_assignment["D2'"]
+    if "<D3>" not in param_assignment and "D3'" in asp_assignment:
+        param_assignment["<D3>"] = asp_assignment["D3'"]
+    if "<N>" not in param_assignment and "N'" in asp_assignment:
+        param_assignment["<N>"] = asp_assignment["N'"]
+
+    # Enforce X' != Y' inequalities that are explicitly written in the ASP rule.
+    # Build a neighbor graph so each placeholder avoids ALL its constrained peers at once.
+    asp_to_param = {
+        "V1'": "<V1>", "V2'": "<V2>", "V3'": "<V3>", "V4'": "<V4>",
+        "P1'": "<P1>", "P2'": "<P2>", "P3'": "<P3>",
+        "D1'": "<D1>", "D2'": "<D2>", "D3'": "<D3>",
+        "R1'": "<R1>", "R2'": "<R2>",
+        "N'":  "<N>",
+    }
+    inequality_pairs = re.findall(r"([A-Z][0-9]?')\s*!=\s*([A-Z][0-9]?')", asp_rule)
+    if inequality_pairs:
+        from collections import defaultdict
+        neighbors: dict[str, set[str]] = defaultdict(set)
+        for lhs, rhs in inequality_pairs:
+            neighbors[lhs].add(rhs)
+            neighbors[rhs].add(lhs)
+
+        # One pass is enough: each placeholder is resampled against all current
+        # neighbor values simultaneously, so updating in place propagates fixes.
+        for ph, nbrs in neighbors.items():
+            if ph not in asp_assignment:
+                continue
+            excluded = {asp_assignment[n] for n in nbrs if n in asp_assignment}
+            if asp_assignment[ph] not in excluded:
+                continue
+            prefix = ph[0]
+            if prefix == "P":
+                domain = PROP_VALUES
+            elif prefix == "V":
+                p_key = "P" + ph[1] + "'"
+                p_val = asp_assignment.get(p_key)
+                domain = DOMAIN.get(p_val, value_space_for_placeholder(ph)) if p_val else value_space_for_placeholder(ph)
+            elif prefix == "D":
+                domain = REL_VALUES
+            elif prefix == "R":
+                domain = REGION_VALUES
+            else:
+                continue
+            choices = [v for v in domain if v not in excluded]
+            if not choices:
+                continue
+            new_val = rng.choice(choices)
+            asp_assignment[ph] = new_val
+            if ph in asp_to_param:
+                param_assignment[asp_to_param[ph]] = new_val
+            # If a P placeholder changed, resample its paired V from the new domain
+            if prefix == "P" and new_val in DOMAIN:
+                v_key = "V" + ph[1] + "'"
+                if v_key in asp_assignment:
+                    asp_assignment[v_key] = sample_value_for_property(new_val, rng)
+                    if v_key in asp_to_param:
+                        param_assignment[asp_to_param[v_key]] = asp_assignment[v_key]
 
     return asp_assignment
 

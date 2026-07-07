@@ -5,63 +5,63 @@
       "file": "C1_existential_object.json",
       "family": "Object-Level",
       "name": "Existential Object",
-      "constraint_families": ["exist", "forbid"]
+      "constraint_families": ["1prop", "2prop", "4prop", "1prop_neg", "1prop_2val_neg", "2prop_neg", "2prop_mix_neg"]
     },
     {
       "level": "C2",
       "file": "C2_universal_object.json",
       "family": "Object-Level",
       "name": "Universal Object",
-      "constraint_families": ["universal"]
+      "constraint_families": ["1prop", "1prop_neg", "2prop", "2prop_neg", "2prop_mix_neg"]
     },
     {
       "level": "C3",
       "file": "C3_conditional_object.json",
       "family": "Object-Level",
       "name": "Conditional Object",
-      "constraint_families": ["conditional", "conditional_negated"]
+      "constraint_families": ["1propA_1propC", "1propA_1prop_neg", "1propA_neg_1propC", "2propA_1propC", "1propA_2propC"]
     },
     {
       "level": "C4",
       "file": "C4_existential_subgraph.json",
       "family": "SubGraph-Level",
       "name": "Existential (Subgraph)",
-      "constraint_families": ["exist_pair", "forbid_pair", "chain2", "chain3", "shared_hub"]
+      "constraint_families": ["2hop", "3hop", "shared_hub", "prop_2hop", "prop_shared_hub"]
     },
     {
       "level": "C5",
       "file": "C5_conditional_subgraph.json",
       "family": "SubGraph-Level",
       "name": "Conditional (Subgraph)",
-      "constraint_families": ["pair_conditional"]
+      "constraint_families": ["pair_propA_relC", "pair_propRelA_RelC", "pair_propRelA_propC", "pair_relA_propC", "triple_propA_RelC", "triple_propRelA_relC", "triple_propRelA_propC"]
     },
     {
       "level": "C6",
       "file": "C6_existential_universal.json",
       "family": "SubGraph-Level",
       "name": "Existential-Universal",
-      "constraint_families": ["witness_universal"]
+      "constraint_families": ["witness_1prop", "witness_1prop_neg", "witness_2prop"]
     },
     {
       "level": "C7",
       "file": "C7_universal_existential.json",
       "family": "SubGraph-Level",
       "name": "Universal-Existential",
-      "constraint_families": ["implication", "universal_witness", "unique_witness"]
+      "constraint_families": ["propRel", "propRel_neg", "propRel_propRel", "exact", "exact_neg"]
     },
     {
       "level": "C8",
       "file": "C8_cardinality.json",
       "family": "Cardinality-Level",
       "name": "Cardinality",
-      "constraint_families": ["unary_count", "relational_count", "all_different"]
+      "constraint_families": ["1prop_exact", "1prop_atleast", "1prop_atmost", "1prop_exact_neg", "2prop_exact", "relational_exact", "relational_atleast", "relational_atmost"]
     },
     {
       "level": "C9",
       "file": "C9_aggregate_comparison.json",
       "family": "Cardinality-Level",
       "name": "Aggregate Comparison",
-      "constraint_families": ["count_coupling"]
+      "constraint_families": ["1prop", "2prop", "2prop_mix"]
     }
   ],
   "combo_pairs_file": "combo_pairs.json"

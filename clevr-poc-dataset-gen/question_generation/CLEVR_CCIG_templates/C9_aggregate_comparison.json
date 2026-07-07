@@ -1,23 +1,16 @@
 [
   {
-    "asp_template_file": "constraint_templates_C9_count_coupling.txt",
-    "constraint_family": "count_coupling",
+    "asp_template_file": "C9_1prop.txt",
+    "constraint_family": "1prop",
     "text": [
-      "The number of <V1> objects in region <R1> equals the number of <V2> objects in region <R2>.",
-      "Region <R1> has exactly as many <V1> objects as region <R2> has <V2> objects."
+      "The number of objects in <V1> equals the number of <V2> objects.",
+      "The scene must have as many objects in <V1> as <V2> objects.",
+      "The scene enforces a balanced count: the total number of objects in <V1> and the total number of <V2> objects must be exactly equal."
     ],
     "params": [
       {
         "type": "Region",
-        "name": "<R1>"
-      },
-      {
-        "type": "Color",
         "name": "<V1>"
-      },
-      {
-        "type": "Region",
-        "name": "<R2>"
       },
       {
         "type": "Property",
@@ -28,58 +21,20 @@
         "name": "<V2>"
       }
     ],
-    "property_focus": "color"
+    "property_focus": "region"
   },
   {
-    "asp_template_file": "constraint_templates_C9_count_coupling.txt",
-    "constraint_family": "count_coupling",
+    "asp_template_file": "C9_1prop.txt",
+    "constraint_family": "1prop",
     "text": [
-      "The number of <V1> objects in region <R1> equals the number of <V2> objects in region <R2>.",
-      "Region <R1> has exactly as many <V1> objects as region <R2> has <V2> objects."
+      "The number of <V1> objects equals the number of <V2> objects.",
+      "The scene must have as many <V1> objects as <V2> objects.",
+      "The scene enforces a balanced count: the total number of <V1> objects and the total number of <V2> objects must be exactly equal, even if both counts are zero."
     ],
     "params": [
-      {
-        "type": "Region",
-        "name": "<R1>"
-      },
-      {
-        "type": "Material",
-        "name": "<V1>"
-      },
-      {
-        "type": "Region",
-        "name": "<R2>"
-      },
-      {
-        "type": "Property",
-        "name": "<P2>"
-      },
-      {
-        "type": "Value",
-        "name": "<V2>"
-      }
-    ],
-    "property_focus": "material"
-  },
-  {
-    "asp_template_file": "constraint_templates_C9_count_coupling.txt",
-    "constraint_family": "count_coupling",
-    "text": [
-      "The number of <V1> objects in region <R1> equals the number of <V2> objects in region <R2>.",
-      "Region <R1> has exactly as many <V1> objects as region <R2> has <V2> objects."
-    ],
-    "params": [
-      {
-        "type": "Region",
-        "name": "<R1>"
-      },
       {
         "type": "Shape",
         "name": "<V1>"
-      },
-      {
-        "type": "Region",
-        "name": "<R2>"
       },
       {
         "type": "Property",
@@ -93,24 +48,17 @@
     "property_focus": "shape"
   },
   {
-    "asp_template_file": "constraint_templates_C9_count_coupling.txt",
-    "constraint_family": "count_coupling",
+    "asp_template_file": "C9_1prop.txt",
+    "constraint_family": "1prop",
     "text": [
-      "The number of <V1> objects in region <R1> equals the number of <V2> objects in region <R2>.",
-      "Region <R1> has exactly as many <V1> objects as region <R2> has <V2> objects."
+      "The number of <V1> objects equals the number of <V2> objects.",
+      "The scene must have as many <V1> objects as <V2> objects.",
+      "The scene enforces a balanced count: the total number of <V1> objects and the total number of <V2> objects must be exactly equal, even if both counts are zero."
     ],
     "params": [
       {
-        "type": "Region",
-        "name": "<R1>"
-      },
-      {
         "type": "Size",
         "name": "<V1>"
-      },
-      {
-        "type": "Region",
-        "name": "<R2>"
       },
       {
         "type": "Property",
@@ -119,6 +67,286 @@
       {
         "type": "Value",
         "name": "<V2>"
+      }
+    ],
+    "property_focus": "size"
+  },
+  {
+    "asp_template_file": "C9_2prop.txt",
+    "constraint_family": "2prop",
+    "text": [
+      "The count of objects in <V1> that are <V2> matches the count of objects in <V3> that are <V4>.",
+      "The scene must have as many objects in <V1> that are <V2> as objects in <V3> that are <V4>.",
+      "Two filtered subsets are constrained to equal size: objects in <V1> with property <V2> must be exactly as numerous as objects in <V3> with property <V4>."
+    ],
+    "params": [
+      {
+        "type": "Region",
+        "name": "<V1>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V3>"
+      },
+      {
+        "type": "Value",
+        "name": "<V4>"
+      }
+    ],
+    "property_focus": "region"
+  },
+  {
+    "asp_template_file": "C9_2prop.txt",
+    "constraint_family": "2prop",
+    "text": [
+      "The count of <V1>, <V2> objects matches the count of <V3>, <V4> objects.",
+      "The scene must have as many objects that are both <V1> and <V2> as objects that are both <V3> and <V4>.",
+      "Two subsets of the scene are constrained to equal size: the group of objects that are simultaneously <V1> and <V2> must have exactly the same count as the group that are simultaneously <V3> and <V4>."
+    ],
+    "params": [
+      {
+        "type": "Shape",
+        "name": "<V1>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V3>"
+      },
+      {
+        "type": "Value",
+        "name": "<V4>"
+      }
+    ],
+    "property_focus": "shape"
+  },
+  {
+    "asp_template_file": "C9_2prop_mix.txt",
+    "constraint_family": "2prop_mix",
+    "text": [
+      "The count of objects not in <V1> but with <V2> matches the count of objects not in <V3> but with <V4>.",
+      "The scene must have as many objects not in <V1> but with <V2> as objects not in <V3> but with <V4>.",
+      "Two mixed-property subsets are constrained to equal size: objects outside <V1> carrying <V2> must equal in count those outside <V3> carrying <V4>."
+    ],
+    "params": [
+      {
+        "type": "Region",
+        "name": "<V1>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V3>"
+      },
+      {
+        "type": "Value",
+        "name": "<V4>"
+      }
+    ],
+    "property_focus": "region"
+  },
+  {
+    "asp_template_file": "C9_2prop_mix.txt",
+    "constraint_family": "2prop_mix",
+    "text": [
+      "The count of non-<V1>, <V2> objects matches the count of non-<V3>, <V4> objects.",
+      "The scene must have as many objects that are not <V1> but are <V2> as objects that are not <V3> but are <V4>.",
+      "Two mixed-property subsets are constrained to equal size: objects that lack <V1> yet have <V2> must be as numerous as objects that lack <V3> yet have <V4>."
+    ],
+    "params": [
+      {
+        "type": "Shape",
+        "name": "<V1>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V3>"
+      },
+      {
+        "type": "Value",
+        "name": "<V4>"
+      }
+    ],
+    "property_focus": "shape"
+  },
+  {
+    "asp_template_file": "C9_1prop.txt",
+    "constraint_family": "1prop",
+    "text": [
+      "The number of <V1> objects equals the number of <V2> objects.",
+      "The scene must have as many <V1> objects as <V2> objects.",
+      "The scene enforces a balanced count: the total number of <V1> objects and the total number of <V2> objects must be exactly equal."
+    ],
+    "params": [
+      {
+        "type": "Color",
+        "name": "<V1>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      }
+    ],
+    "property_focus": "color"
+  },
+  {
+    "asp_template_file": "C9_2prop.txt",
+    "constraint_family": "2prop",
+    "text": [
+      "The count of <V1>, <V2> objects matches the count of <V3>, <V4> objects.",
+      "The scene must have as many objects that are both <V1> and <V2> as objects that are both <V3> and <V4>.",
+      "Two subsets of the scene are constrained to equal size: objects that are simultaneously <V1> and <V2> must be exactly as numerous as those that are simultaneously <V3> and <V4>."
+    ],
+    "params": [
+      {
+        "type": "Color",
+        "name": "<V1>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V3>"
+      },
+      {
+        "type": "Value",
+        "name": "<V4>"
+      }
+    ],
+    "property_focus": "color"
+  },
+  {
+    "asp_template_file": "C9_2prop_mix.txt",
+    "constraint_family": "2prop_mix",
+    "text": [
+      "The count of non-<V1>, <V2> objects matches the count of non-<V3>, <V4> objects.",
+      "The scene must have as many objects that are not <V1> but are <V2> as objects that are not <V3> but are <V4>.",
+      "Two mixed-property subsets are constrained to equal size: objects that lack <V1> yet have <V2> must be as numerous as objects that lack <V3> yet have <V4>."
+    ],
+    "params": [
+      {
+        "type": "Color",
+        "name": "<V1>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V3>"
+      },
+      {
+        "type": "Value",
+        "name": "<V4>"
+      }
+    ],
+    "property_focus": "color"
+  },
+  {
+    "asp_template_file": "C9_2prop.txt",
+    "constraint_family": "2prop",
+    "text": [
+      "The count of <V1>, <V2> objects matches the count of <V3>, <V4> objects.",
+      "The scene must have as many objects that are both <V1> and <V2> as objects that are both <V3> and <V4>.",
+      "Two subsets of the scene are constrained to equal size: objects that are simultaneously <V1> and <V2> must be exactly as numerous as those that are simultaneously <V3> and <V4>."
+    ],
+    "params": [
+      {
+        "type": "Size",
+        "name": "<V1>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V3>"
+      },
+      {
+        "type": "Value",
+        "name": "<V4>"
+      }
+    ],
+    "property_focus": "size"
+  },
+  {
+    "asp_template_file": "C9_2prop_mix.txt",
+    "constraint_family": "2prop_mix",
+    "text": [
+      "The count of non-<V1>, <V2> objects matches the count of non-<V3>, <V4> objects.",
+      "The scene must have as many objects that are not <V1> but are <V2> as objects that are not <V3> but are <V4>.",
+      "Two mixed-property subsets are constrained to equal size: objects that lack <V1> yet have <V2> must be as numerous as objects that lack <V3> yet have <V4>."
+    ],
+    "params": [
+      {
+        "type": "Size",
+        "name": "<V1>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V3>"
+      },
+      {
+        "type": "Value",
+        "name": "<V4>"
       }
     ],
     "property_focus": "size"

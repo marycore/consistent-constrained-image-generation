@@ -1,17 +1,17 @@
 {
   "combos": [
     {
-      "id": "2_C1_exist+C1_forbid",
+      "id": "2_C1_1prop+C2_1prop_neg",
       "components": [
-        {"level": "C1", "constraint_family": "exist"},
-        {"level": "C1", "constraint_family": "forbid"}
+        {"level": "C1", "constraint_family": "1prop"},
+        {"level": "C2", "constraint_family": "1prop_neg"}
       ]
     },
     {
-      "id": "2_C1_exist+C4_chain2",
+      "id": "2_C1_1prop+C4_2hop",
       "components": [
-        {"level": "C1", "constraint_family": "exist"},
-        {"level": "C4", "constraint_family": "chain2"}
+        {"level": "C1", "constraint_family": "1prop"},
+        {"level": "C4", "constraint_family": "2hop"}
       ]
     },
     {
@@ -22,33 +22,33 @@
       ]
     },
     {
-      "id": "2_C7_implication+C8_unary_count",
+      "id": "2_C7_propRel+C8_1prop_exact",
       "components": [
-        {"level": "C7", "constraint_family": "implication"},
-        {"level": "C8", "constraint_family": "unary_count"}
+        {"level": "C7", "constraint_family": "propRel"},
+        {"level": "C8", "constraint_family": "1prop_exact"}
       ]
     },
     {
-      "id": "2_C7_universal_witness+C7_unique_witness",
+      "id": "2_C7_propRel+C7_exact",
       "components": [
-        {"level": "C7", "constraint_family": "universal_witness"},
-        {"level": "C7", "constraint_family": "unique_witness"}
+        {"level": "C7", "constraint_family": "propRel"},
+        {"level": "C7", "constraint_family": "exact"}
       ]
     },
     {
-      "id": "3_C1_exist+C4_exist_pair+C4_chain2",
+      "id": "3_C1_1prop+C4_2hop+C4_shared_hub",
       "components": [
-        {"level": "C1", "constraint_family": "exist"},
-        {"level": "C4", "constraint_family": "exist_pair"},
-        {"level": "C4", "constraint_family": "chain2"}
+        {"level": "C1", "constraint_family": "1prop"},
+        {"level": "C4", "constraint_family": "2hop"},
+        {"level": "C4", "constraint_family": "shared_hub"}
       ]
     },
     {
-      "id": "3_C1_forbid+C4_shared_hub+C7_universal_witness",
+      "id": "3_C1_1prop_neg+C4_shared_hub+C7_propRel",
       "components": [
-        {"level": "C1", "constraint_family": "forbid"},
+        {"level": "C1", "constraint_family": "1prop_neg"},
         {"level": "C4", "constraint_family": "shared_hub"},
-        {"level": "C7", "constraint_family": "universal_witness"}
+        {"level": "C7", "constraint_family": "propRel"}
       ]
     },
     {
@@ -60,21 +60,21 @@
       ]
     },
     {
-      "id": "4_C1_exist+C4_chain2+C7_implication+C8_unary_count",
+      "id": "4_C1_1prop+C4_2hop+C7_propRel+C8_1prop_exact",
       "components": [
-        {"level": "C1", "constraint_family": "exist"},
-        {"level": "C4", "constraint_family": "chain2"},
-        {"level": "C7", "constraint_family": "implication"},
-        {"level": "C8", "constraint_family": "unary_count"}
+        {"level": "C1", "constraint_family": "1prop"},
+        {"level": "C4", "constraint_family": "2hop"},
+        {"level": "C7", "constraint_family": "propRel"},
+        {"level": "C8", "constraint_family": "1prop_exact"}
       ]
     },
     {
-      "id": "4_C4_exist_pair+C5_pair_conditional+C6_witness_universal+C9_count_coupling",
+      "id": "4_C4_2hop+C5_pair_propA_relC+C6_witness_1prop+C9_1prop",
       "components": [
-        {"level": "C4", "constraint_family": "exist_pair"},
-        {"level": "C5", "constraint_family": "pair_conditional"},
-        {"level": "C6", "constraint_family": "witness_universal"},
-        {"level": "C9", "constraint_family": "count_coupling"}
+        {"level": "C4", "constraint_family": "2hop"},
+        {"level": "C5", "constraint_family": "pair_propA_relC"},
+        {"level": "C6", "constraint_family": "witness_1prop"},
+        {"level": "C9", "constraint_family": "1prop"}
       ]
     },
     {

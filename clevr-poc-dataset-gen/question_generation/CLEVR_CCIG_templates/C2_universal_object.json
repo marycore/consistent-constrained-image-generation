@@ -1,57 +1,29 @@
 [
   {
-    "asp_template_file": "constraint_templates_C2_universal.txt",
-    "constraint_family": "universal",
+    "asp_template_file": "C2_1prop.txt",
+    "constraint_family": "1prop",
     "text": [
-      "Every object in region <R1> has color <V1>.",
-      "All objects in region <R1> are <V1>.",
-      "Region <R1> contains only <V1> objects."
+      "All objects are in <V1>.",
+      "Every single object in the scene must be located in <V1>.",
+      "The scene places all objects uniformly in <V1>: every object must reside there, with no exceptions permitted."
     ],
     "params": [
       {
         "type": "Region",
-        "name": "<R1>"
-      },
-      {
-        "type": "Color",
         "name": "<V1>"
       }
     ],
-    "property_focus": "color"
+    "property_focus": "region"
   },
   {
-    "asp_template_file": "constraint_templates_C2_universal.txt",
-    "constraint_family": "universal",
+    "asp_template_file": "C2_1prop.txt",
+    "constraint_family": "1prop",
     "text": [
-      "Every object in region <R1> has material <V1>.",
-      "All objects in region <R1> are <V1>.",
-      "Region <R1> contains only <V1> objects."
+      "All objects are <V1>.",
+      "Every single object in the scene must be <V1>.",
+      "The scene is uniformly <V1>: each and every object placed in it must carry this property, with no exceptions permitted."
     ],
     "params": [
-      {
-        "type": "Region",
-        "name": "<R1>"
-      },
-      {
-        "type": "Material",
-        "name": "<V1>"
-      }
-    ],
-    "property_focus": "material"
-  },
-  {
-    "asp_template_file": "constraint_templates_C2_universal.txt",
-    "constraint_family": "universal",
-    "text": [
-      "Every object in region <R1> has shape <V1>.",
-      "All objects in region <R1> are <V1>.",
-      "Region <R1> contains only <V1> objects."
-    ],
-    "params": [
-      {
-        "type": "Region",
-        "name": "<R1>"
-      },
       {
         "type": "Shape",
         "name": "<V1>"
@@ -60,21 +32,385 @@
     "property_focus": "shape"
   },
   {
-    "asp_template_file": "constraint_templates_C2_universal.txt",
-    "constraint_family": "universal",
+    "asp_template_file": "C2_1prop.txt",
+    "constraint_family": "1prop",
     "text": [
-      "Every object in region <R1> has size <V1>.",
-      "All objects in region <R1> are <V1>.",
-      "Region <R1> contains only <V1> objects."
+      "All objects are <V1>.",
+      "Every single object in the scene must be <V1>.",
+      "The scene is uniformly <V1>: each and every object placed in it must carry this property, with no exceptions permitted."
+    ],
+    "params": [
+      {
+        "type": "Size",
+        "name": "<V1>"
+      }
+    ],
+    "property_focus": "size"
+  },
+  {
+    "asp_template_file": "C2_1prop_neg.txt",
+    "constraint_family": "1prop_neg",
+    "text": [
+      "No object is in <V1>.",
+      "The scene contains no objects in <V1> whatsoever.",
+      "Every object in the scene must avoid being in <V1>; this region is globally forbidden and no object may be placed there."
     ],
     "params": [
       {
         "type": "Region",
-        "name": "<R1>"
-      },
+        "name": "<V1>"
+      }
+    ],
+    "property_focus": "region"
+  },
+  {
+    "asp_template_file": "C2_1prop_neg.txt",
+    "constraint_family": "1prop_neg",
+    "text": [
+      "No object is <V1>.",
+      "The scene contains no <V1> objects whatsoever.",
+      "Every object in the scene must avoid being <V1>; this property is globally forbidden and no object may carry it."
+    ],
+    "params": [
+      {
+        "type": "Shape",
+        "name": "<V1>"
+      }
+    ],
+    "property_focus": "shape"
+  },
+  {
+    "asp_template_file": "C2_1prop_neg.txt",
+    "constraint_family": "1prop_neg",
+    "text": [
+      "No object is <V1>.",
+      "The scene contains no <V1> objects whatsoever.",
+      "Every object in the scene must avoid being <V1>; this property is globally forbidden and no object may carry it."
+    ],
+    "params": [
       {
         "type": "Size",
         "name": "<V1>"
+      }
+    ],
+    "property_focus": "size"
+  },
+  {
+    "asp_template_file": "C2_2prop.txt",
+    "constraint_family": "2prop",
+    "text": [
+      "Every object is in <V1> and is also <V2>.",
+      "Each object in the scene must be located in <V1> and simultaneously satisfy <V2>.",
+      "The scene enforces two universal requirements: every object must be in <V1> and also <V2>, with no object free to deviate from either constraint."
+    ],
+    "params": [
+      {
+        "type": "Region",
+        "name": "<V1>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      }
+    ],
+    "property_focus": "region"
+  },
+  {
+    "asp_template_file": "C2_2prop.txt",
+    "constraint_family": "2prop",
+    "text": [
+      "Every object is both <V1> and <V2>.",
+      "Each object in the scene must simultaneously satisfy two properties: it must be <V1> and <V2>.",
+      "The scene enforces two universal requirements at once: every object is <V1> and also <V2>, and no object may deviate from either of these two constraints."
+    ],
+    "params": [
+      {
+        "type": "Shape",
+        "name": "<V1>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      }
+    ],
+    "property_focus": "shape"
+  },
+  {
+    "asp_template_file": "C2_2prop_neg.txt",
+    "constraint_family": "2prop_neg",
+    "text": [
+      "No object is both in <V1> and <V2> at the same time.",
+      "The scene forbids any object from being in <V1> while also being <V2>.",
+      "An object that is in <V1> and also <V2> must never appear; every object must avoid at least one of these two properties."
+    ],
+    "params": [
+      {
+        "type": "Region",
+        "name": "<V1>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      }
+    ],
+    "property_focus": "region"
+  },
+  {
+    "asp_template_file": "C2_2prop_neg.txt",
+    "constraint_family": "2prop_neg",
+    "text": [
+      "No object combines <V1> with <V2>.",
+      "The scene forbids any object from being <V1> and <V2> at the same time.",
+      "An object that is simultaneously <V1> and <V2> must never appear anywhere in the scene; each object is required to avoid at least one of these two properties."
+    ],
+    "params": [
+      {
+        "type": "Shape",
+        "name": "<V1>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      }
+    ],
+    "property_focus": "shape"
+  },
+  {
+    "asp_template_file": "C2_2prop_mix_neg.txt",
+    "constraint_family": "2prop_mix_neg",
+    "text": [
+      "No object in <V1> lacks <V2>.",
+      "Every object in <V1> is also required to be <V2>.",
+      "The scene forbids any object in <V1> that is not <V2>: whenever an object is in <V1>, it must simultaneously carry <V2> as well."
+    ],
+    "params": [
+      {
+        "type": "Region",
+        "name": "<V1>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      }
+    ],
+    "property_focus": "region"
+  },
+  {
+    "asp_template_file": "C2_2prop_mix_neg.txt",
+    "constraint_family": "2prop_mix_neg",
+    "text": [
+      "No <V1> object lacks <V2>.",
+      "Every <V1> object in the scene is also required to be <V2>.",
+      "The scene forbids any <V1> object that is not <V2>: whenever an object has the property <V1>, it must simultaneously carry <V2> as well."
+    ],
+    "params": [
+      {
+        "type": "Shape",
+        "name": "<V1>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      }
+    ],
+    "property_focus": "shape"
+  },
+  {
+    "asp_template_file": "C2_1prop.txt",
+    "constraint_family": "1prop",
+    "text": [
+      "All objects are <V1>.",
+      "Every single object in the scene must be <V1>.",
+      "The scene is uniformly <V1>: each and every object placed in it must carry this color, with no exceptions permitted."
+    ],
+    "params": [
+      {
+        "type": "Color",
+        "name": "<V1>"
+      }
+    ],
+    "property_focus": "color"
+  },
+  {
+    "asp_template_file": "C2_1prop_neg.txt",
+    "constraint_family": "1prop_neg",
+    "text": [
+      "No object is <V1>.",
+      "The scene contains no <V1> objects whatsoever.",
+      "Every object in the scene must avoid being <V1>; this color is globally forbidden and no object may carry it."
+    ],
+    "params": [
+      {
+        "type": "Color",
+        "name": "<V1>"
+      }
+    ],
+    "property_focus": "color"
+  },
+  {
+    "asp_template_file": "C2_2prop.txt",
+    "constraint_family": "2prop",
+    "text": [
+      "Every object is both <V1> and <V2>.",
+      "Each object in the scene must simultaneously be <V1> and <V2>.",
+      "The scene enforces two universal requirements at once: every object is <V1> and also <V2>, and no object may deviate from either of these two constraints."
+    ],
+    "params": [
+      {
+        "type": "Color",
+        "name": "<V1>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      }
+    ],
+    "property_focus": "color"
+  },
+  {
+    "asp_template_file": "C2_2prop_neg.txt",
+    "constraint_family": "2prop_neg",
+    "text": [
+      "No object is both <V1> and <V2>.",
+      "The scene forbids any object from being <V1> and <V2> at the same time.",
+      "An object that is simultaneously <V1> and <V2> must never appear anywhere in the scene; each object is required to avoid at least one of these two properties."
+    ],
+    "params": [
+      {
+        "type": "Color",
+        "name": "<V1>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      }
+    ],
+    "property_focus": "color"
+  },
+  {
+    "asp_template_file": "C2_2prop_mix_neg.txt",
+    "constraint_family": "2prop_mix_neg",
+    "text": [
+      "No <V1> object lacks <V2>.",
+      "Every <V1> object in the scene is also required to be <V2>.",
+      "The scene forbids any <V1> object that is not <V2>: whenever an object has the color <V1>, it must simultaneously carry <V2> as well."
+    ],
+    "params": [
+      {
+        "type": "Color",
+        "name": "<V1>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      }
+    ],
+    "property_focus": "color"
+  },
+  {
+    "asp_template_file": "C2_2prop.txt",
+    "constraint_family": "2prop",
+    "text": [
+      "Every object is both <V1> and <V2>.",
+      "Each object in the scene must simultaneously be <V1> and <V2>.",
+      "The scene enforces two universal requirements at once: every object is <V1> and also <V2>, and no object may deviate from either of these two constraints."
+    ],
+    "params": [
+      {
+        "type": "Size",
+        "name": "<V1>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      }
+    ],
+    "property_focus": "size"
+  },
+  {
+    "asp_template_file": "C2_2prop_neg.txt",
+    "constraint_family": "2prop_neg",
+    "text": [
+      "No object is both <V1> and <V2>.",
+      "The scene forbids any object from being <V1> and <V2> at the same time.",
+      "An object that is simultaneously <V1> and <V2> must never appear anywhere in the scene; each object is required to avoid at least one of these two properties."
+    ],
+    "params": [
+      {
+        "type": "Size",
+        "name": "<V1>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
+      }
+    ],
+    "property_focus": "size"
+  },
+  {
+    "asp_template_file": "C2_2prop_mix_neg.txt",
+    "constraint_family": "2prop_mix_neg",
+    "text": [
+      "No <V1> object lacks <V2>.",
+      "Every <V1> object in the scene is also required to be <V2>.",
+      "The scene forbids any <V1> object that is not <V2>: whenever an object has the color <V1>, it must simultaneously carry <V2> as well."
+    ],
+    "params": [
+      {
+        "type": "Size",
+        "name": "<V1>"
+      },
+      {
+        "type": "Property",
+        "name": "<P2>"
+      },
+      {
+        "type": "Value",
+        "name": "<V2>"
       }
     ],
     "property_focus": "size"
