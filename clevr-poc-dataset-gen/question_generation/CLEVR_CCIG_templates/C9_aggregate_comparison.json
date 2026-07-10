@@ -9,10 +9,6 @@
     ],
     "params": [
       {
-        "type": "Region",
-        "name": "<V1>"
-      },
-      {
         "type": "Property",
         "name": "<P2>"
       },
@@ -32,10 +28,6 @@
       "The scene enforces a balanced count: the total number of <V1> objects and the total number of <V2> objects must be exactly equal, even if both counts are zero."
     ],
     "params": [
-      {
-        "type": "Shape",
-        "name": "<V1>"
-      },
       {
         "type": "Property",
         "name": "<P2>"
@@ -57,10 +49,6 @@
     ],
     "params": [
       {
-        "type": "Size",
-        "name": "<V1>"
-      },
-      {
         "type": "Property",
         "name": "<P2>"
       },
@@ -80,10 +68,6 @@
       "Two filtered subsets are constrained to equal size: objects in <V1> with property <V2> must be exactly as numerous as objects in <V3> with property <V4>."
     ],
     "params": [
-      {
-        "type": "Region",
-        "name": "<V1>"
-      },
       {
         "type": "Property",
         "name": "<P2>"
@@ -113,10 +97,6 @@
     ],
     "params": [
       {
-        "type": "Shape",
-        "name": "<V1>"
-      },
-      {
         "type": "Property",
         "name": "<P2>"
       },
@@ -144,10 +124,6 @@
       "Two mixed-property subsets are constrained to equal size: objects outside <V1> carrying <V2> must equal in count those outside <V3> carrying <V4>."
     ],
     "params": [
-      {
-        "type": "Region",
-        "name": "<V1>"
-      },
       {
         "type": "Property",
         "name": "<P2>"
@@ -177,10 +153,6 @@
     ],
     "params": [
       {
-        "type": "Shape",
-        "name": "<V1>"
-      },
-      {
         "type": "Property",
         "name": "<P2>"
       },
@@ -209,10 +181,6 @@
     ],
     "params": [
       {
-        "type": "Color",
-        "name": "<V1>"
-      },
-      {
         "type": "Property",
         "name": "<P2>"
       },
@@ -232,10 +200,6 @@
       "Two subsets of the scene are constrained to equal size: objects that are simultaneously <V1> and <V2> must be exactly as numerous as those that are simultaneously <V3> and <V4>."
     ],
     "params": [
-      {
-        "type": "Color",
-        "name": "<V1>"
-      },
       {
         "type": "Property",
         "name": "<P2>"
@@ -265,10 +229,6 @@
     ],
     "params": [
       {
-        "type": "Color",
-        "name": "<V1>"
-      },
-      {
         "type": "Property",
         "name": "<P2>"
       },
@@ -296,10 +256,6 @@
       "Two subsets of the scene are constrained to equal size: objects that are simultaneously <V1> and <V2> must be exactly as numerous as those that are simultaneously <V3> and <V4>."
     ],
     "params": [
-      {
-        "type": "Size",
-        "name": "<V1>"
-      },
       {
         "type": "Property",
         "name": "<P2>"
@@ -328,10 +284,6 @@
       "Two mixed-property subsets are constrained to equal size: objects that lack <V1> yet have <V2> must be as numerous as objects that lack <V3> yet have <V4>."
     ],
     "params": [
-      {
-        "type": "Size",
-        "name": "<V1>"
-      },
       {
         "type": "Property",
         "name": "<P2>"

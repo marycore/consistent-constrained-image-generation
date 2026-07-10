@@ -32,8 +32,8 @@ class ComboSpec:
 
 COLOR_VALUES = ["gray", "red", "blue", "green", "brown", "purple", "cyan", "yellow"]
 MATERIAL_VALUES = []
-SHAPE_VALUES = ["cube", "cylinder", "sphere", "cone"]
-SIZE_VALUES = ["small", "large", "medium"]
+SHAPE_VALUES = ["cube", "cylinder", "sphere"]
+SIZE_VALUES = ["small", "large"]
 REL_VALUES = ["left", "right", "front", "behind"]
 PROP_VALUES = ["color", "shape", "size", "region"]
 REGION_VALUES = ["region_1", "region_2", "region_3", "region_4"]
@@ -453,10 +453,13 @@ def build_asp_assignment(
             neighbors[lhs].add(rhs)
             neighbors[rhs].add(lhs)
 
+        # P1' is fixed by property_focus and must never be resampled.
+        fixed = {"P1'"} if property_focus else set()
+
         # One pass is enough: each placeholder is resampled against all current
         # neighbor values simultaneously, so updating in place propagates fixes.
         for ph, nbrs in neighbors.items():
-            if ph not in asp_assignment:
+            if ph not in asp_assignment or ph in fixed:
                 continue
             excluded = {asp_assignment[n] for n in nbrs if n in asp_assignment}
             if asp_assignment[ph] not in excluded:
@@ -500,20 +503,17 @@ def sample_param_assignment(
     property_focus = template_entry.get("property_focus")
     relation_focus = template_entry.get("relation_focus")
 
+    # V1 is always the value of the focused property — derived implicitly so that
+    # JSON entries no longer need a redundant typed param for <V1>.
+    if property_focus and property_focus in DOMAIN:
+        param_assignment["<V1>"] = sample_value_for_property(property_focus, rng)
+
     for param in template_entry.get("params", []):
         name = param["name"]
         ptype = param["type"]
-        if ptype == "Region":
-            param_assignment[name] = rng.choice(REGION_VALUES)
-        elif ptype == "Color":
-            param_assignment[name] = rng.choice(COLOR_VALUES)
-        elif ptype == "Material":
-            param_assignment[name] = rng.choice(MATERIAL_VALUES)
-        elif ptype == "Shape":
-            param_assignment[name] = rng.choice(SHAPE_VALUES)
-        elif ptype == "Size":
-            param_assignment[name] = rng.choice(SIZE_VALUES)
-        elif ptype == "Relation":
+        if name == "<V1>" and "<V1>" in param_assignment:
+            continue  # already filled from property_focus above
+        if ptype == "Relation":
             if relation_focus and name == "<D1>":
                 param_assignment[name] = relation_focus
             else:
@@ -526,28 +526,29 @@ def sample_param_assignment(
             else:
                 param_assignment[name] = rng.choice(PROP_VALUES)
         elif ptype == "Value":
-            pass  # filled after dependent property params are known
+            pass  # filled in the second pass below
 
-    # Fill value params that depend on a property param
+    # Fill Value params: <V2> paired with <P2> uses P2's domain; without <P2> it is
+    # a second value of the focused property (e.g. 1prop_2val_neg) and must differ from V1.
     for param in template_entry.get("params", []):
         if param["type"] != "Value":
             continue
         name = param["name"]
-        if name == "<V2>" and "<P2>" in param_assignment:
-            param_assignment[name] = sample_value_for_property(param_assignment["<P2>"], rng)
-        elif name == "<V1>" and property_focus and name not in param_assignment:
-            param_assignment[name] = sample_value_for_property(property_focus, rng)
+        if name == "<V1>" and "<V1>" not in param_assignment:
+            if property_focus:
+                param_assignment[name] = sample_value_for_property(property_focus, rng)
+        elif name == "<V2>":
+            if "<P2>" in param_assignment:
+                param_assignment[name] = sample_value_for_property(param_assignment["<P2>"], rng)
+            elif property_focus and property_focus in DOMAIN:
+                choices = [v for v in DOMAIN[property_focus] if v != param_assignment.get("<V1>")]
+                param_assignment[name] = rng.choice(choices) if choices else sample_value_for_property(property_focus, rng)
 
     # Ensure distinct regions when both present
     if "<R1>" in param_assignment and "<R2>" in param_assignment:
         if param_assignment["<R1>"] == param_assignment["<R2>"]:
             choices = [r for r in REGION_VALUES if r != param_assignment["<R1>"]]
             param_assignment["<R2>"] = rng.choice(choices)
-
-    if property_focus:
-        v_key = next((p["name"] for p in template_entry.get("params", []) if p["type"].title() == property_focus.title() or p["name"] in ("<V>", "<V1>")), None)
-        if v_key and v_key not in param_assignment:
-            param_assignment[v_key] = sample_value_for_property(property_focus, rng)
 
     return param_assignment
 

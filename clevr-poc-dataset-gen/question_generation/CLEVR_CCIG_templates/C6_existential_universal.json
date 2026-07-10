@@ -9,10 +9,6 @@
     ],
     "params": [
       {
-        "type": "Region",
-        "name": "<V1>"
-      },
-      {
         "type": "Property",
         "name": "<P2>"
       },
@@ -33,10 +29,6 @@
       "There exists at least one object in <V1> that stands to the left of all <V2> objects simultaneously; it serves as a universal left-side reference for all <V2> objects."
     ],
     "params": [
-      {
-        "type": "Region",
-        "name": "<V1>"
-      },
       {
         "type": "Property",
         "name": "<P2>"
@@ -59,10 +51,6 @@
     ],
     "params": [
       {
-        "type": "Shape",
-        "name": "<V1>"
-      },
-      {
         "type": "Property",
         "name": "<P2>"
       },
@@ -83,10 +71,6 @@
       "There exists an object in <V1> that stands to the left of all objects whose property is not <V2>; every non-<V2> object has this witness in <V1> to its left."
     ],
     "params": [
-      {
-        "type": "Region",
-        "name": "<V1>"
-      },
       {
         "type": "Property",
         "name": "<P2>"
@@ -109,10 +93,6 @@
     ],
     "params": [
       {
-        "type": "Shape",
-        "name": "<V1>"
-      },
-      {
         "type": "Property",
         "name": "<P2>"
       },
@@ -133,10 +113,6 @@
       "There exists a single object in <V1> that is also <V2>, and this object is to the left of every object that is in <V3> and also <V4>."
     ],
     "params": [
-      {
-        "type": "Region",
-        "name": "<V1>"
-      },
       {
         "type": "Property",
         "name": "<P2>"
@@ -167,10 +143,6 @@
     ],
     "params": [
       {
-        "type": "Color",
-        "name": "<V1>"
-      },
-      {
         "type": "Property",
         "name": "<P2>"
       },
@@ -191,10 +163,6 @@
     ],
     "params": [
       {
-        "type": "Color",
-        "name": "<V1>"
-      },
-      {
         "type": "Property",
         "name": "<P2>"
       },
@@ -214,10 +182,6 @@
       "There exists a single <V1> and <V2> object, and this object is to the left of every object that is also <V3> and <V4>."
     ],
     "params": [
-      {
-        "type": "Color",
-        "name": "<V1>"
-      },
       {
         "type": "Property",
         "name": "<P2>"
@@ -247,10 +211,6 @@
     ],
     "params": [
       {
-        "type": "Size",
-        "name": "<V1>"
-      },
-      {
         "type": "Property",
         "name": "<P2>"
       },
@@ -271,10 +231,6 @@
     ],
     "params": [
       {
-        "type": "Size",
-        "name": "<V1>"
-      },
-      {
         "type": "Property",
         "name": "<P2>"
       },
@@ -294,10 +250,6 @@
       "There exists a single <V1> and <V2> object, and this object is to the left of every object that is also <V3> and <V4>."
     ],
     "params": [
-      {
-        "type": "Shape",
-        "name": "<V1>"
-      },
       {
         "type": "Property",
         "name": "<P2>"
@@ -326,10 +278,6 @@
       "There exists a single <V1> and <V2> object, and this object is to the left of every object that is also <V3> and <V4>."
     ],
     "params": [
-      {
-        "type": "Size",
-        "name": "<V1>"
-      },
       {
         "type": "Property",
         "name": "<P2>"

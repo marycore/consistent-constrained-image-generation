@@ -7,12 +7,7 @@
       "Every single object in the scene must be located in <V1>.",
       "The scene places all objects uniformly in <V1>: every object must reside there, with no exceptions permitted."
     ],
-    "params": [
-      {
-        "type": "Region",
-        "name": "<V1>"
-      }
-    ],
+    "params": [],
     "property_focus": "region"
   },
   {
@@ -23,12 +18,7 @@
       "Every single object in the scene must be <V1>.",
       "The scene is uniformly <V1>: each and every object placed in it must carry this property, with no exceptions permitted."
     ],
-    "params": [
-      {
-        "type": "Shape",
-        "name": "<V1>"
-      }
-    ],
+    "params": [],
     "property_focus": "shape"
   },
   {
@@ -39,12 +29,7 @@
       "Every single object in the scene must be <V1>.",
       "The scene is uniformly <V1>: each and every object placed in it must carry this property, with no exceptions permitted."
     ],
-    "params": [
-      {
-        "type": "Size",
-        "name": "<V1>"
-      }
-    ],
+    "params": [],
     "property_focus": "size"
   },
   {
@@ -55,12 +40,7 @@
       "The scene contains no objects in <V1> whatsoever.",
       "Every object in the scene must avoid being in <V1>; this region is globally forbidden and no object may be placed there."
     ],
-    "params": [
-      {
-        "type": "Region",
-        "name": "<V1>"
-      }
-    ],
+    "params": [],
     "property_focus": "region"
   },
   {
@@ -71,12 +51,7 @@
       "The scene contains no <V1> objects whatsoever.",
       "Every object in the scene must avoid being <V1>; this property is globally forbidden and no object may carry it."
     ],
-    "params": [
-      {
-        "type": "Shape",
-        "name": "<V1>"
-      }
-    ],
+    "params": [],
     "property_focus": "shape"
   },
   {
@@ -87,12 +62,7 @@
       "The scene contains no <V1> objects whatsoever.",
       "Every object in the scene must avoid being <V1>; this property is globally forbidden and no object may carry it."
     ],
-    "params": [
-      {
-        "type": "Size",
-        "name": "<V1>"
-      }
-    ],
+    "params": [],
     "property_focus": "size"
   },
   {
@@ -104,10 +74,6 @@
       "The scene enforces two universal requirements: every object must be in <V1> and also <V2>, with no object free to deviate from either constraint."
     ],
     "params": [
-      {
-        "type": "Region",
-        "name": "<V1>"
-      },
       {
         "type": "Property",
         "name": "<P2>"
@@ -129,10 +95,6 @@
     ],
     "params": [
       {
-        "type": "Shape",
-        "name": "<V1>"
-      },
-      {
         "type": "Property",
         "name": "<P2>"
       },
@@ -152,10 +114,6 @@
       "An object that is in <V1> and also <V2> must never appear; every object must avoid at least one of these two properties."
     ],
     "params": [
-      {
-        "type": "Region",
-        "name": "<V1>"
-      },
       {
         "type": "Property",
         "name": "<P2>"
@@ -177,10 +135,6 @@
     ],
     "params": [
       {
-        "type": "Shape",
-        "name": "<V1>"
-      },
-      {
         "type": "Property",
         "name": "<P2>"
       },
@@ -200,10 +154,6 @@
       "The scene forbids any object in <V1> that is not <V2>: whenever an object is in <V1>, it must simultaneously carry <V2> as well."
     ],
     "params": [
-      {
-        "type": "Region",
-        "name": "<V1>"
-      },
       {
         "type": "Property",
         "name": "<P2>"
@@ -225,10 +175,6 @@
     ],
     "params": [
       {
-        "type": "Shape",
-        "name": "<V1>"
-      },
-      {
         "type": "Property",
         "name": "<P2>"
       },
@@ -247,12 +193,7 @@
       "Every single object in the scene must be <V1>.",
       "The scene is uniformly <V1>: each and every object placed in it must carry this color, with no exceptions permitted."
     ],
-    "params": [
-      {
-        "type": "Color",
-        "name": "<V1>"
-      }
-    ],
+    "params": [],
     "property_focus": "color"
   },
   {
@@ -263,12 +204,7 @@
       "The scene contains no <V1> objects whatsoever.",
       "Every object in the scene must avoid being <V1>; this color is globally forbidden and no object may carry it."
     ],
-    "params": [
-      {
-        "type": "Color",
-        "name": "<V1>"
-      }
-    ],
+    "params": [],
     "property_focus": "color"
   },
   {
@@ -280,10 +216,6 @@
       "The scene enforces two universal requirements at once: every object is <V1> and also <V2>, and no object may deviate from either of these two constraints."
     ],
     "params": [
-      {
-        "type": "Color",
-        "name": "<V1>"
-      },
       {
         "type": "Property",
         "name": "<P2>"
@@ -305,10 +237,6 @@
     ],
     "params": [
       {
-        "type": "Color",
-        "name": "<V1>"
-      },
-      {
         "type": "Property",
         "name": "<P2>"
       },
@@ -328,10 +256,6 @@
       "The scene forbids any <V1> object that is not <V2>: whenever an object has the color <V1>, it must simultaneously carry <V2> as well."
     ],
     "params": [
-      {
-        "type": "Color",
-        "name": "<V1>"
-      },
       {
         "type": "Property",
         "name": "<P2>"
@@ -353,10 +277,6 @@
     ],
     "params": [
       {
-        "type": "Size",
-        "name": "<V1>"
-      },
-      {
         "type": "Property",
         "name": "<P2>"
       },
@@ -377,10 +297,6 @@
     ],
     "params": [
       {
-        "type": "Size",
-        "name": "<V1>"
-      },
-      {
         "type": "Property",
         "name": "<P2>"
       },
@@ -400,10 +316,6 @@
       "The scene forbids any <V1> object that is not <V2>: whenever an object has the color <V1>, it must simultaneously carry <V2> as well."
     ],
     "params": [
-      {
-        "type": "Size",
-        "name": "<V1>"
-      },
       {
         "type": "Property",
         "name": "<P2>"

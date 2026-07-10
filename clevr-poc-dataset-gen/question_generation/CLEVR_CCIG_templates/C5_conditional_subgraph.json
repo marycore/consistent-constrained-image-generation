@@ -9,10 +9,6 @@
     ],
     "params": [
       {
-        "type": "Region",
-        "name": "<V1>"
-      },
-      {
         "type": "Property",
         "name": "<P2>"
       },
@@ -34,10 +30,6 @@
     ],
     "params": [
       {
-        "type": "Region",
-        "name": "<V1>"
-      },
-      {
         "type": "Property",
         "name": "<P2>"
       },
@@ -58,10 +50,6 @@
       "For every pair where an object in <V1> is to the left of a <V2> object, a second spatial relation <D2> must also hold between them."
     ],
     "params": [
-      {
-        "type": "Region",
-        "name": "<V1>"
-      },
       {
         "type": "Property",
         "name": "<P2>"
@@ -87,10 +75,6 @@
       "For every pair where an object in <V1> is to the left of a <V2> object, a second spatial relation <D2> must also hold between them."
     ],
     "params": [
-      {
-        "type": "Region",
-        "name": "<V1>"
-      },
       {
         "type": "Property",
         "name": "<P2>"
@@ -117,10 +101,6 @@
     ],
     "params": [
       {
-        "type": "Region",
-        "name": "<V1>"
-      },
-      {
         "type": "Property",
         "name": "<P2>"
       },
@@ -146,10 +126,6 @@
     ],
     "params": [
       {
-        "type": "Region",
-        "name": "<V1>"
-      },
-      {
         "type": "Property",
         "name": "<P2>"
       },
@@ -173,12 +149,7 @@
       "Every object positioned to the left of some other object must be in <V1>.",
       "The scene enforces that whichever object occupies a left-of position relative to any other must be located in <V1>."
     ],
-    "params": [
-      {
-        "type": "Region",
-        "name": "<V1>"
-      }
-    ],
+    "params": [],
     "property_focus": "region",
     "relation_focus": "left"
   },
@@ -190,12 +161,7 @@
       "Every object positioned in front of some other object must be <V1>.",
       "The scene enforces that whichever object is positioned in front of any other object is required to carry the property <V1>."
     ],
-    "params": [
-      {
-        "type": "Shape",
-        "name": "<V1>"
-      }
-    ],
+    "params": [],
     "property_focus": "shape",
     "relation_focus": "front"
   },
@@ -208,10 +174,6 @@
       "The scene enforces that every triple of objects in <V1>, <V2>, and <V3> must be chained: the object in <V1> to the left of the one in <V2>, which is <D2> of the one in <V3>."
     ],
     "params": [
-      {
-        "type": "Region",
-        "name": "<V1>"
-      },
       {
         "type": "Property",
         "name": "<P2>"
@@ -242,10 +204,6 @@
     ],
     "params": [
       {
-        "type": "Region",
-        "name": "<V1>"
-      },
-      {
         "type": "Property",
         "name": "<P2>"
       },
@@ -271,10 +229,6 @@
     ],
     "params": [
       {
-        "type": "Region",
-        "name": "<V1>"
-      },
-      {
         "type": "Property",
         "name": "<P2>"
       },
@@ -304,10 +258,6 @@
     ],
     "params": [
       {
-        "type": "Color",
-        "name": "<V1>"
-      },
-      {
         "type": "Property",
         "name": "<P2>"
       },
@@ -327,10 +277,6 @@
       "For every pair where a <V1> object is to the left of a <V2> object, a second spatial relation <D2> must also hold between them."
     ],
     "params": [
-      {
-        "type": "Color",
-        "name": "<V1>"
-      },
       {
         "type": "Property",
         "name": "<P2>"
@@ -356,10 +302,6 @@
     ],
     "params": [
       {
-        "type": "Color",
-        "name": "<V1>"
-      },
-      {
         "type": "Property",
         "name": "<P2>"
       },
@@ -382,12 +324,7 @@
       "Every object positioned to the left of some other object must be <V1>.",
       "The scene enforces that whichever object occupies a left-of position relative to any other must be <V1>."
     ],
-    "params": [
-      {
-        "type": "Color",
-        "name": "<V1>"
-      }
-    ],
+    "params": [],
     "property_focus": "color"
   },
   {
@@ -399,10 +336,6 @@
       "The scene enforces that every triple of <V1>, <V2>, and <V3> objects must be chained: the <V1> to the left of the <V2>, which is <D2> of the <V3>."
     ],
     "params": [
-      {
-        "type": "Color",
-        "name": "<V1>"
-      },
       {
         "type": "Property",
         "name": "<P2>"
@@ -432,10 +365,6 @@
     ],
     "params": [
       {
-        "type": "Color",
-        "name": "<V1>"
-      },
-      {
         "type": "Property",
         "name": "<P2>"
       },
@@ -459,10 +388,6 @@
       "The scene chains a conditional through three objects: whenever a <V1> object is to the left of a <V2> object and the <V2> is <D2> of a third, that third must be <V3>."
     ],
     "params": [
-      {
-        "type": "Color",
-        "name": "<V1>"
-      },
       {
         "type": "Property",
         "name": "<P2>"
@@ -492,10 +417,6 @@
     ],
     "params": [
       {
-        "type": "Shape",
-        "name": "<V1>"
-      },
-      {
         "type": "Property",
         "name": "<P2>"
       },
@@ -516,10 +437,6 @@
     ],
     "params": [
       {
-        "type": "Size",
-        "name": "<V1>"
-      },
-      {
         "type": "Property",
         "name": "<P2>"
       },
@@ -539,10 +456,6 @@
       "For every pair where a <V1> object is to the left of a <V2> object, a second spatial relation <D2> must also hold between them."
     ],
     "params": [
-      {
-        "type": "Shape",
-        "name": "<V1>"
-      },
       {
         "type": "Property",
         "name": "<P2>"
@@ -567,10 +480,6 @@
       "For every pair where a <V1> object is to the left of a <V2> object, a second spatial relation <D2> must also hold between them."
     ],
     "params": [
-      {
-        "type": "Size",
-        "name": "<V1>"
-      },
       {
         "type": "Property",
         "name": "<P2>"
@@ -595,10 +504,6 @@
       "The scene requires that in every pair where a <V1> object is to the left of a <V2> object, the <V2> object must also carry <V3>."
     ],
     "params": [
-      {
-        "type": "Shape",
-        "name": "<V1>"
-      },
       {
         "type": "Property",
         "name": "<P2>"
@@ -623,10 +528,6 @@
       "The scene requires that in every pair where a <V1> object is to the left of a <V2> object, the <V2> object must also carry <V3>."
     ],
     "params": [
-      {
-        "type": "Size",
-        "name": "<V1>"
-      },
       {
         "type": "Property",
         "name": "<P2>"
@@ -650,12 +551,7 @@
       "Every object positioned to the left of some other object must be <V1>.",
       "The scene enforces that whichever object occupies a left-of position relative to any other must be <V1>."
     ],
-    "params": [
-      {
-        "type": "Size",
-        "name": "<V1>"
-      }
-    ],
+    "params": [],
     "property_focus": "size"
   },
   {
@@ -667,10 +563,6 @@
       "The scene enforces that every triple of <V1>, <V2>, and <V3> objects must be chained: the <V1> to the left of the <V2>, which is <D2> of the <V3>."
     ],
     "params": [
-      {
-        "type": "Shape",
-        "name": "<V1>"
-      },
       {
         "type": "Property",
         "name": "<P2>"
@@ -699,10 +591,6 @@
       "The scene enforces that every triple of <V1>, <V2>, and <V3> objects must be chained: the <V1> to the left of the <V2>, which is <D2> of the <V3>."
     ],
     "params": [
-      {
-        "type": "Size",
-        "name": "<V1>"
-      },
       {
         "type": "Property",
         "name": "<P2>"
@@ -732,10 +620,6 @@
     ],
     "params": [
       {
-        "type": "Shape",
-        "name": "<V1>"
-      },
-      {
         "type": "Property",
         "name": "<P2>"
       },
@@ -760,10 +644,6 @@
     ],
     "params": [
       {
-        "type": "Size",
-        "name": "<V1>"
-      },
-      {
         "type": "Property",
         "name": "<P2>"
       },
@@ -787,10 +667,6 @@
       "The scene chains a conditional through three objects: whenever a <V1> object is to the left of a <V2> object and the <V2> is <D2> of a third, that third must be <V3>."
     ],
     "params": [
-      {
-        "type": "Shape",
-        "name": "<V1>"
-      },
       {
         "type": "Property",
         "name": "<P2>"
@@ -819,10 +695,6 @@
       "The scene chains a conditional through three objects: whenever a <V1> object is to the left of a <V2> object and the <V2> is <D2> of a third, that third must be <V3>."
     ],
     "params": [
-      {
-        "type": "Size",
-        "name": "<V1>"
-      },
       {
         "type": "Property",
         "name": "<P2>"

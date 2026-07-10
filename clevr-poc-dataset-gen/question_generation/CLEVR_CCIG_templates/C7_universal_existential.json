@@ -9,10 +9,6 @@
     ],
     "params": [
       {
-        "type": "Region",
-        "name": "<V1>"
-      },
-      {
         "type": "Property",
         "name": "<P2>"
       },
@@ -33,10 +29,6 @@
       "The scene ensures that no object in <V1> appears without a companion: each object in <V1> must have at least one <V2> object to its left."
     ],
     "params": [
-      {
-        "type": "Region",
-        "name": "<V1>"
-      },
       {
         "type": "Property",
         "name": "<P2>"
@@ -59,10 +51,6 @@
     ],
     "params": [
       {
-        "type": "Shape",
-        "name": "<V1>"
-      },
-      {
         "type": "Property",
         "name": "<P2>"
       },
@@ -83,10 +71,6 @@
       "The scene requires that every object outside <V1> is paired with at least one <V2> object positioned to its left."
     ],
     "params": [
-      {
-        "type": "Region",
-        "name": "<V1>"
-      },
       {
         "type": "Property",
         "name": "<P2>"
@@ -109,10 +93,6 @@
     ],
     "params": [
       {
-        "type": "Shape",
-        "name": "<V1>"
-      },
-      {
         "type": "Property",
         "name": "<P2>"
       },
@@ -133,10 +113,6 @@
       "The scene chains two existential witnesses: each object in <V1> that has a <V2> object to its left must also have a <V3> object to its left."
     ],
     "params": [
-      {
-        "type": "Region",
-        "name": "<V1>"
-      },
       {
         "type": "Property",
         "name": "<P2>"
@@ -163,10 +139,6 @@
     ],
     "params": [
       {
-        "type": "Shape",
-        "name": "<V1>"
-      },
-      {
         "type": "Property",
         "name": "<P2>"
       },
@@ -191,10 +163,6 @@
       "The scene enforces a precise count: each object in <V1> must have exactly <N> <V2> objects to its left; this count is fixed for every qualifying object."
     ],
     "params": [
-      {
-        "type": "Region",
-        "name": "<V1>"
-      },
       {
         "type": "Property",
         "name": "<P2>"
@@ -221,10 +189,6 @@
     ],
     "params": [
       {
-        "type": "Shape",
-        "name": "<V1>"
-      },
-      {
         "type": "Property",
         "name": "<P2>"
       },
@@ -249,10 +213,6 @@
       "The scene enforces a precise exclusion count: every object in <V1> must have exactly <N> objects to its left that are not <V2>; <V2> objects are not counted."
     ],
     "params": [
-      {
-        "type": "Region",
-        "name": "<V1>"
-      },
       {
         "type": "Property",
         "name": "<P2>"
@@ -279,10 +239,6 @@
     ],
     "params": [
       {
-        "type": "Color",
-        "name": "<V1>"
-      },
-      {
         "type": "Property",
         "name": "<P2>"
       },
@@ -304,10 +260,6 @@
     ],
     "params": [
       {
-        "type": "Color",
-        "name": "<V1>"
-      },
-      {
         "type": "Property",
         "name": "<P2>"
       },
@@ -328,10 +280,6 @@
       "The scene chains two existential witnesses: each <V1> object that has a <V2> object to its left must also have a <V3> object to its left."
     ],
     "params": [
-      {
-        "type": "Color",
-        "name": "<V1>"
-      },
       {
         "type": "Property",
         "name": "<P2>"
@@ -358,10 +306,6 @@
     ],
     "params": [
       {
-        "type": "Color",
-        "name": "<V1>"
-      },
-      {
         "type": "Property",
         "name": "<P2>"
       },
@@ -386,10 +330,6 @@
       "The scene enforces a precise exclusion count: every <V1> object must have exactly <N> objects to its left that are not <V2>; objects that are <V2> are not counted."
     ],
     "params": [
-      {
-        "type": "Color",
-        "name": "<V1>"
-      },
       {
         "type": "Property",
         "name": "<P2>"
@@ -416,10 +356,6 @@
     ],
     "params": [
       {
-        "type": "Size",
-        "name": "<V1>"
-      },
-      {
         "type": "Property",
         "name": "<P2>"
       },
@@ -441,10 +377,6 @@
     ],
     "params": [
       {
-        "type": "Size",
-        "name": "<V1>"
-      },
-      {
         "type": "Property",
         "name": "<P2>"
       },
@@ -465,10 +397,6 @@
       "The scene chains two existential witnesses: each <V1> object that has a <V2> object to its left must also have a <V3> object to its left."
     ],
     "params": [
-      {
-        "type": "Size",
-        "name": "<V1>"
-      },
       {
         "type": "Property",
         "name": "<P2>"
@@ -495,10 +423,6 @@
     ],
     "params": [
       {
-        "type": "Size",
-        "name": "<V1>"
-      },
-      {
         "type": "Property",
         "name": "<P2>"
       },
@@ -524,10 +448,6 @@
     ],
     "params": [
       {
-        "type": "Shape",
-        "name": "<V1>"
-      },
-      {
         "type": "Property",
         "name": "<P2>"
       },
@@ -552,10 +472,6 @@
       "The scene enforces a precise exclusion count: every <V1> object must have exactly <N> objects to its left that are not <V2>; objects that are <V2> are not counted."
     ],
     "params": [
-      {
-        "type": "Size",
-        "name": "<V1>"
-      },
       {
         "type": "Property",
         "name": "<P2>"

@@ -2,32 +2,47 @@
   {
     "asp_template_file": "C1_1prop.txt",
     "constraint_family": "1prop",
-    "params": [
-      {
-        "Property": "P1'",
-        "Value": "V1'"
-      }
+    "text": [
+      "An object is in <V1>.",
+      "The scene contains at least one object located in <V1>.",
+      "Among all the objects placed in the scene, at least one of them must be situated in <V1>; no restriction is placed on the other objects."
     ],
-    "constraints": []
+    "params": [],
+    "property_focus": "region"
   },
   {
     "asp_template_file": "C1_1prop.txt",
     "constraint_family": "1prop",
-    "nlp_template": [{
-      "short": "A <V1> object is in the scene.", 
-      "medium": "The scene contains at least one <V1>.", 
-      "long": "Among all the objects placed in the scene, at least one of them must be <V1>; no restriction is placed on any of the other objects."
-    }],
-    "params": [
-      {
-        "Property": "P1'",
-        "Value": "<V1'>"
-      }
-    ]
+    "text": [
+      "A <V1> object is in the scene.",
+      "The scene contains at least one <V1>.",
+      "Among all the objects placed in the scene, at least one of them must be <V1>; no restriction is placed on any of the other objects."
+    ],
+    "params": [],
+    "property_focus": "shape"
   },
-
-
-
+  {
+    "asp_template_file": "C1_1prop.txt",
+    "constraint_family": "1prop",
+    "text": [
+      "A <V1> object is in the scene.",
+      "The scene contains at least one <V1> object.",
+      "Among all the objects placed in the scene, at least one of them must be <V1>; no restriction is placed on any of the other objects."
+    ],
+    "params": [],
+    "property_focus": "size"
+  },
+  {
+    "asp_template_file": "C1_1prop.txt",
+    "constraint_family": "1prop",
+    "text": [
+      "A <V1> object is in the scene.",
+      "The scene contains at least one <V1> object.",
+      "Among all the objects placed in the scene, at least one of them must be <V1>; no restriction is placed on any of the other objects."
+    ],
+    "params": [],
+    "property_focus": "color"
+  },
   {
     "asp_template_file": "C1_2prop.txt",
     "constraint_family": "2prop",

@@ -9,10 +9,6 @@
     ],
     "params": [
       {
-        "type": "Region",
-        "name": "<V1>"
-      },
-      {
         "type": "Count",
         "name": "<N>"
       }
@@ -29,10 +25,6 @@
     ],
     "params": [
       {
-        "type": "Shape",
-        "name": "<V1>"
-      },
-      {
         "type": "Count",
         "name": "<N>"
       }
@@ -48,10 +40,6 @@
       "A precise count is enforced: exactly <N> objects in the scene must be <V1>; having more or fewer <V1> objects would violate this constraint."
     ],
     "params": [
-      {
-        "type": "Size",
-        "name": "<V1>"
-      },
       {
         "type": "Count",
         "name": "<N>"
@@ -69,10 +57,6 @@
     ],
     "params": [
       {
-        "type": "Region",
-        "name": "<V1>"
-      },
-      {
         "type": "Count",
         "name": "<N>"
       }
@@ -88,10 +72,6 @@
       "A minimum count is imposed: the scene must include at least <N> objects carrying the property <V1>; having fewer would violate this lower bound."
     ],
     "params": [
-      {
-        "type": "Shape",
-        "name": "<V1>"
-      },
       {
         "type": "Count",
         "name": "<N>"
@@ -109,10 +89,6 @@
     ],
     "params": [
       {
-        "type": "Region",
-        "name": "<V1>"
-      },
-      {
         "type": "Count",
         "name": "<N>"
       }
@@ -128,10 +104,6 @@
       "An upper bound is placed on <V1> objects: the scene cannot have more than <N> of them, though it may have fewer or none at all."
     ],
     "params": [
-      {
-        "type": "Shape",
-        "name": "<V1>"
-      },
       {
         "type": "Count",
         "name": "<N>"
@@ -149,10 +121,6 @@
     ],
     "params": [
       {
-        "type": "Region",
-        "name": "<V1>"
-      },
-      {
         "type": "Count",
         "name": "<N>"
       }
@@ -169,10 +137,6 @@
     ],
     "params": [
       {
-        "type": "Shape",
-        "name": "<V1>"
-      },
-      {
         "type": "Count",
         "name": "<N>"
       }
@@ -188,10 +152,6 @@
       "A precise joint count is enforced: exactly <N> objects must be in <V1> and also <V2> at the same time; this combined count is fixed."
     ],
     "params": [
-      {
-        "type": "Region",
-        "name": "<V1>"
-      },
       {
         "type": "Property",
         "name": "<P2>"
@@ -217,10 +177,6 @@
     ],
     "params": [
       {
-        "type": "Shape",
-        "name": "<V1>"
-      },
-      {
         "type": "Property",
         "name": "<P2>"
       },
@@ -244,10 +200,6 @@
       "A relational count is fixed: exactly <N> objects in <V1> must each be to the left of at least one <V2> object; not more and not fewer."
     ],
     "params": [
-      {
-        "type": "Region",
-        "name": "<V1>"
-      },
       {
         "type": "Property",
         "name": "<P2>"
@@ -278,10 +230,6 @@
     ],
     "params": [
       {
-        "type": "Shape",
-        "name": "<V1>"
-      },
-      {
         "type": "Property",
         "name": "<P2>"
       },
@@ -310,10 +258,6 @@
       "A relational lower bound is imposed: at least <N> of the objects in <V1> must each stand to the left of some <V2> object."
     ],
     "params": [
-      {
-        "type": "Region",
-        "name": "<V1>"
-      },
       {
         "type": "Property",
         "name": "<P2>"
@@ -344,10 +288,6 @@
     ],
     "params": [
       {
-        "type": "Region",
-        "name": "<V1>"
-      },
-      {
         "type": "Property",
         "name": "<P2>"
       },
@@ -377,10 +317,6 @@
     ],
     "params": [
       {
-        "type": "Color",
-        "name": "<V1>"
-      },
-      {
         "type": "Count",
         "name": "<N>"
       }
@@ -396,10 +332,6 @@
       "A minimum count is imposed: the scene must include at least <N> objects carrying the color <V1>; having fewer would violate this lower bound."
     ],
     "params": [
-      {
-        "type": "Color",
-        "name": "<V1>"
-      },
       {
         "type": "Count",
         "name": "<N>"
@@ -417,10 +349,6 @@
     ],
     "params": [
       {
-        "type": "Color",
-        "name": "<V1>"
-      },
-      {
         "type": "Count",
         "name": "<N>"
       }
@@ -437,10 +365,6 @@
     ],
     "params": [
       {
-        "type": "Color",
-        "name": "<V1>"
-      },
-      {
         "type": "Count",
         "name": "<N>"
       }
@@ -456,10 +380,6 @@
       "A precise joint count is enforced: exactly <N> objects must be <V1> and <V2> at the same time; this combined property count is fixed."
     ],
     "params": [
-      {
-        "type": "Color",
-        "name": "<V1>"
-      },
       {
         "type": "Property",
         "name": "<P2>"
@@ -484,10 +404,6 @@
       "A relational count is fixed: exactly <N> objects that are <V1> must each be positioned to the left of at least one <V2> object; not more and not fewer may satisfy this spatial relation."
     ],
     "params": [
-      {
-        "type": "Color",
-        "name": "<V1>"
-      },
       {
         "type": "Property",
         "name": "<P2>"
@@ -518,10 +434,6 @@
     ],
     "params": [
       {
-        "type": "Color",
-        "name": "<V1>"
-      },
-      {
         "type": "Property",
         "name": "<P2>"
       },
@@ -550,10 +462,6 @@
       "A relational upper bound is placed: no more than <N> <V1> objects may each be positioned to the left of at least one <V2> object."
     ],
     "params": [
-      {
-        "type": "Color",
-        "name": "<V1>"
-      },
       {
         "type": "Property",
         "name": "<P2>"
@@ -584,10 +492,6 @@
     ],
     "params": [
       {
-        "type": "Size",
-        "name": "<V1>"
-      },
-      {
         "type": "Count",
         "name": "<N>"
       }
@@ -603,10 +507,6 @@
       "An upper bound is placed on <V1> objects: the scene cannot have more than <N> of them, though it may have fewer or none at all."
     ],
     "params": [
-      {
-        "type": "Size",
-        "name": "<V1>"
-      },
       {
         "type": "Count",
         "name": "<N>"
@@ -624,10 +524,6 @@
     ],
     "params": [
       {
-        "type": "Size",
-        "name": "<V1>"
-      },
-      {
         "type": "Count",
         "name": "<N>"
       }
@@ -643,10 +539,6 @@
       "A precise joint count is enforced: exactly <N> objects must be <V1> and <V2> at the same time; this combined property count is fixed."
     ],
     "params": [
-      {
-        "type": "Size",
-        "name": "<V1>"
-      },
       {
         "type": "Property",
         "name": "<P2>"
@@ -672,10 +564,6 @@
     ],
     "params": [
       {
-        "type": "Size",
-        "name": "<V1>"
-      },
-      {
         "type": "Property",
         "name": "<P2>"
       },
@@ -704,10 +592,6 @@
       "A relational lower bound is imposed: at least <N> of the <V1> objects in the scene must each stand to the left of some <V2> object."
     ],
     "params": [
-      {
-        "type": "Shape",
-        "name": "<V1>"
-      },
       {
         "type": "Property",
         "name": "<P2>"
@@ -738,10 +622,6 @@
     ],
     "params": [
       {
-        "type": "Size",
-        "name": "<V1>"
-      },
-      {
         "type": "Property",
         "name": "<P2>"
       },
@@ -771,10 +651,6 @@
     ],
     "params": [
       {
-        "type": "Shape",
-        "name": "<V1>"
-      },
-      {
         "type": "Property",
         "name": "<P2>"
       },
@@ -803,10 +679,6 @@
       "A relational upper bound is placed: no more than <N> <V1> objects may each be positioned to the left of at least one <V2> object."
     ],
     "params": [
-      {
-        "type": "Size",
-        "name": "<V1>"
-      },
       {
         "type": "Property",
         "name": "<P2>"

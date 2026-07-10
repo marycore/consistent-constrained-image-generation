@@ -9,10 +9,6 @@
     ],
     "params": [
       {
-        "type": "Region",
-        "name": "<V1>"
-      },
-      {
         "type": "Property",
         "name": "<P2>"
       },
@@ -33,10 +29,6 @@
     ],
     "params": [
       {
-        "type": "Shape",
-        "name": "<V1>"
-      },
-      {
         "type": "Property",
         "name": "<P2>"
       },
@@ -56,10 +48,6 @@
       "The scene enforces a conditional rule: if an object is <V1>, it is required to also have the property <V2>; objects that are not <V1> are free from this restriction."
     ],
     "params": [
-      {
-        "type": "Size",
-        "name": "<V1>"
-      },
       {
         "type": "Property",
         "name": "<P2>"
@@ -81,10 +69,6 @@
     ],
     "params": [
       {
-        "type": "Region",
-        "name": "<V1>"
-      },
-      {
         "type": "Property",
         "name": "<P2>"
       },
@@ -104,10 +88,6 @@
       "The scene enforces an incompatibility: any object carrying the property <V1> is explicitly forbidden from also being <V2>."
     ],
     "params": [
-      {
-        "type": "Shape",
-        "name": "<V1>"
-      },
       {
         "type": "Property",
         "name": "<P2>"
@@ -129,10 +109,6 @@
     ],
     "params": [
       {
-        "type": "Region",
-        "name": "<V1>"
-      },
-      {
         "type": "Property",
         "name": "<P2>"
       },
@@ -153,10 +129,6 @@
     ],
     "params": [
       {
-        "type": "Shape",
-        "name": "<V1>"
-      },
-      {
         "type": "Property",
         "name": "<P2>"
       },
@@ -176,10 +148,6 @@
       "The scene enforces that whenever an object is both in <V1> and <V2>, it is also required to be <V3>; objects missing either antecedent are unconstrained."
     ],
     "params": [
-      {
-        "type": "Region",
-        "name": "<V1>"
-      },
       {
         "type": "Property",
         "name": "<P2>"
@@ -204,10 +172,6 @@
       "The scene enforces that whenever an object is both <V1> and <V2> at the same time, it is also required to be <V3>; objects missing either antecedent are unconstrained by this rule."
     ],
     "params": [
-      {
-        "type": "Shape",
-        "name": "<V1>"
-      },
       {
         "type": "Property",
         "name": "<P2>"
@@ -233,10 +197,6 @@
     ],
     "params": [
       {
-        "type": "Region",
-        "name": "<V1>"
-      },
-      {
         "type": "Property",
         "name": "<P2>"
       },
@@ -260,10 +220,6 @@
       "The scene places a compound consequent on <V1> objects: whenever an object is <V1>, it must simultaneously be <V2> and <V3>; both secondary properties are required together."
     ],
     "params": [
-      {
-        "type": "Shape",
-        "name": "<V1>"
-      },
       {
         "type": "Property",
         "name": "<P2>"
@@ -289,10 +245,6 @@
     ],
     "params": [
       {
-        "type": "Color",
-        "name": "<V1>"
-      },
-      {
         "type": "Property",
         "name": "<P2>"
       },
@@ -312,10 +264,6 @@
       "The scene enforces an incompatibility: any object carrying the color <V1> is explicitly forbidden from also being <V2>."
     ],
     "params": [
-      {
-        "type": "Color",
-        "name": "<V1>"
-      },
       {
         "type": "Property",
         "name": "<P2>"
@@ -337,10 +285,6 @@
     ],
     "params": [
       {
-        "type": "Color",
-        "name": "<V1>"
-      },
-      {
         "type": "Property",
         "name": "<P2>"
       },
@@ -360,10 +304,6 @@
       "The scene enforces that whenever an object is both <V1> and <V2> at the same time, it is also required to be <V3>; objects missing either antecedent are unconstrained by this rule."
     ],
     "params": [
-      {
-        "type": "Color",
-        "name": "<V1>"
-      },
       {
         "type": "Property",
         "name": "<P2>"
@@ -389,10 +329,6 @@
     ],
     "params": [
       {
-        "type": "Color",
-        "name": "<V1>"
-      },
-      {
         "type": "Property",
         "name": "<P2>"
       },
@@ -417,10 +353,6 @@
     ],
     "params": [
       {
-        "type": "Size",
-        "name": "<V1>"
-      },
-      {
         "type": "Property",
         "name": "<P2>"
       },
@@ -441,10 +373,6 @@
     ],
     "params": [
       {
-        "type": "Size",
-        "name": "<V1>"
-      },
-      {
         "type": "Property",
         "name": "<P2>"
       },
@@ -464,10 +392,6 @@
       "The scene enforces that whenever an object is both <V1> and <V2> at the same time, it is also required to be <V3>; objects missing either antecedent are unconstrained by this rule."
     ],
     "params": [
-      {
-        "type": "Size",
-        "name": "<V1>"
-      },
       {
         "type": "Property",
         "name": "<P2>"
@@ -492,10 +416,6 @@
       "The scene places a compound consequent on <V1> objects: whenever an object is <V1>, it must simultaneously be <V2> and <V3>; both secondary properties are required together."
     ],
     "params": [
-      {
-        "type": "Size",
-        "name": "<V1>"
-      },
       {
         "type": "Property",
         "name": "<P2>"
