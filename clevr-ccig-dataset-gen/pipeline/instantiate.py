@@ -15,6 +15,7 @@ import re
 import itertools
 import random
 from pathlib import Path
+from typing import Dict, List, Tuple, Set
 
 from domain import PROPERTIES, RELATIONS, COUNTS
 
@@ -22,15 +23,20 @@ from domain import PROPERTIES, RELATIONS, COUNTS
 
 # Matches any primed placeholder: P1', V2', D3', N'
 # Uses (?<!\w) so we don't match mid-word; ' is not a word char so no trailing boundary needed.
-_PH_RE = re.compile(r"(?<!\w)([PVD][1-4]'|N')")
+_N_RE = re.compile(r"(?<!\w)(N')")
 
 # Matches inequality constraints between primed placeholders: P1'!=P2', V1'!=V3', …
 _INEQ_RE = re.compile(r"(?<!\w)([PVD][1-4]'|N')\s*!=\s*([PVD][1-4]'|N')")
 
+_REMOVE_INEQ_RE = re.compile(r"\s*[PVD][1-4]'\s*!=\s*[PVD][1-4]'\s*,?\s*")
+
+_HASPROP_RE = re.compile(r"hasProperty\s*\(\s*[^,]+,\s*(P[1-4]')\s*,\s*(V[1-4]')\s*\)")
+
+_HASREL_RE = re.compile(r"hasRelationship\s*\(\s*[^,]+\s*,\s*[^,]+\s*,\s*(D[^,)]*)\s*\)")
 
 # ── Template loading ────────────────────────────────────────────────────────
 
-def load_template(path: Path) -> tuple[str, str]:
+def load_template(path: Path) -> Tuple[str, str]:
     """
     Read an ASP template file and return (description, rule_text).
 
@@ -47,73 +53,74 @@ def load_template(path: Path) -> tuple[str, str]:
         else:
             rules.append(stripped)
     description = " ".join(comments)
-    rule_text = _normalize(rules)
+    rule_text = " ".join(rules)
     return description, rule_text
 
-
-def _normalize(rule_lines: list[str]) -> str:
-    """
-    Join rule lines and normalize bare 'N' count placeholders to N'.
-
-    Some C8 2-property templates write '!= N' instead of '!= N''.
-    The normalization converts patterns like '!= N.' → '!= N'.' so the
-    placeholder regex finds them consistently.
-    """
-    rule = "\n".join(rule_lines)
-    # Replace bare N (count placeholder) that follows a comparison operator
-    rule = re.sub(r"([!=<>]\s*)N(?!')", r"\1N'", rule)
-    return rule
 
 
 # ── Placeholder discovery ───────────────────────────────────────────────────
 
-def placeholders(rule: str) -> list[str]:
+def placeholders(rule: str) :
     """Return unique primed placeholders found in rule, in order of first appearance."""
-    seen: set[str] = set()
+    match_N = _N_RE.findall(rule)
+    match_prop_val = _HASPROP_RE.finditer(rule) 
+    match_rel = _HASREL_RE.findall(rule)
     result: list[str] = []
-    for m in _PH_RE.finditer(rule):
-        ph = m.group(1)
-        if ph not in seen:
-            seen.add(ph)
-            result.append(ph)
-    return result
+    pair_pv = []
+    if match_N:
+        for n in match_N:
+            if n not in result:
+                result.append(n)
+
+    if match_prop_val:
+        for match in match_prop_val:
+            prop = match.group(1)
+            value = match.group(2)
+            if (prop, value) not in pair_pv:
+                pair_pv.append((prop, value))
+            if prop not in result:
+                result.append(prop)
+            if value not in result:
+                result.append(value)
+    
+    if match_rel:
+        for d in match_rel:
+            if d not in result:
+                result.append(d)
+    
+    return result, pair_pv
 
 
-def inequalities(rule: str) -> set[frozenset]:
+def inequalities(rule: str) -> Set[frozenset]:
     """Return set of {a, b} frozensets where a != b is required by the rule."""
     return {frozenset([a, b]) for a, b in _INEQ_RE.findall(rule)}
 
 
 # ── Domain helpers ──────────────────────────────────────────────────────────
 
-def _paired_p(v_ph: str) -> str:
+def _paired_p(v_ph: str, pair_pv) -> str:
     """Return the P placeholder paired with a V placeholder: V2' → P2'."""
-    digit = v_ph[1]  # e.g. '2' from "V2'"
-    return f"P{digit}'"
+    for (p,v) in pair_pv:
+        if v == v_ph:
+            return P
+    
 
 
-def _domain(ph: str, partial: dict[str, str]) -> list[str]:
+def _domain(ph: str, partial: Dict[str, str], pair_pv: List[Tuple[str, str]]) -> List[str]:
     """
     Return the value domain for a placeholder, given the partial assignment so far.
     For V placeholders, the domain is the property values of the paired P placeholder.
     """
-    prefix = ph[0]
-    if prefix == "P":
-        return list(PROPERTIES.keys())
-    if prefix == "D":
-        return list(RELATIONS)
-    if prefix == "N":
-        return list(COUNTS)
     # V placeholder — depends on paired P
-    p_ph = _paired_p(ph)
+    for (prop, val) in pair_pv:
+        if ph==val:
+            p_ph = prop
     prop = partial.get(p_ph)
     if prop and prop in PROPERTIES:
         return list(PROPERTIES[prop])
-    # fallback: union of all value domains
-    return [v for vals in PROPERTIES.values() for v in vals]
+    
 
-
-def _violates(candidate: dict[str, str], ineqs: set[frozenset]) -> bool:
+def _violates(candidate: Dict[str, str], ineqs: Set[frozenset]) -> bool:
     """Return True if the candidate assignment violates any inequality constraint."""
     return any(
         candidate.get(a) == candidate.get(b)
@@ -125,7 +132,7 @@ def _violates(candidate: dict[str, str], ineqs: set[frozenset]) -> bool:
 
 # ── Assignment generation ───────────────────────────────────────────────────
 
-def sample_assignment(rule: str, rng: random.Random) -> dict[str, str]:
+def sample_assignment(rule: str, rng: random.Random) -> Dict[str, str]:
     """
     Sample one valid random assignment for all primed placeholders in rule.
 
@@ -134,32 +141,34 @@ def sample_assignment(rule: str, rng: random.Random) -> dict[str, str]:
 
     Raises RuntimeError if a valid assignment cannot be found after many attempts.
     """
-    phs = placeholders(rule)
+    phs, pair_pv = placeholders(rule)
     ineqs = inequalities(rule)
-
+    
     p_phs = [ph for ph in phs if ph.startswith("P")]
     v_phs = [ph for ph in phs if ph.startswith("V")]
     d_phs = [ph for ph in phs if ph.startswith("D")]
     n_phs = [ph for ph in phs if ph.startswith("N")]
 
     for _ in range(2000):
-        asgn: dict[str, str] = {}
+        asgn: Dict[str, str] = {}
 
         # Fill P placeholders
         valid = True
         for ph in p_phs:
             excluded = {asgn[o] for o in asgn if frozenset([ph, o]) in ineqs}
+            
             choices = [p for p in PROPERTIES if p not in excluded]
             if not choices:
                 valid = False
                 break
             asgn[ph] = rng.choice(choices)
+            
         if not valid:
             continue
 
         # Fill V placeholders (depend on paired P)
         for ph in v_phs:
-            domain = _domain(ph, asgn)
+            domain = _domain(ph, asgn, pair_pv)
             excluded = {asgn[o] for o in asgn if frozenset([ph, o]) in ineqs}
             choices = [v for v in domain if v not in excluded]
             if not choices:
@@ -171,8 +180,8 @@ def sample_assignment(rule: str, rng: random.Random) -> dict[str, str]:
 
         # Fill D placeholders
         for ph in d_phs:
-            excluded = {asgn[o] for o in asgn if frozenset([ph, o]) in ineqs}
-            choices = [d for d in RELATIONS if d not in excluded]
+            #excluded = {asgn[o] for o in asgn if frozenset([ph, o]) in ineqs}
+            choices = [d for d in RELATIONS]
             if not choices:
                 valid = False
                 break
@@ -193,7 +202,7 @@ def sample_assignment(rule: str, rng: random.Random) -> dict[str, str]:
     )
 
 
-def all_assignments(rule: str) -> list[dict[str, str]]:
+def all_assignments(rule: str) -> List[Dict[str, str]]:
     """
     Enumerate every valid assignment of primed placeholders in rule (exhaustive).
 
@@ -239,7 +248,7 @@ def all_assignments(rule: str) -> list[dict[str, str]]:
 
 # ── Rule instantiation ──────────────────────────────────────────────────────
 
-def apply_assignment(rule: str, assignment: dict[str, str]) -> str:
+def apply_assignment(rule: str, assignment: Dict[str, str]) -> str:
     """
     Substitute all primed placeholders in rule with their assigned values.
 
@@ -247,6 +256,34 @@ def apply_assignment(rule: str, assignment: dict[str, str]) -> str:
     (e.g. P1' before P1 if both existed, though all placeholders end with ').
     """
     out = rule
-    for ph in sorted(assignment, key=len, reverse=True):
+    out = _REMOVE_INEQ_RE.sub("",out)
+    # Remove a comma immediately before a period
+    out = re.sub(r",\s*\.", ".", out)
+    # Remove a comma immediately before a }
+    out = re.sub(r",\s*}", "}", out)
+    # Optional: clean up duplicate commas
+    out = re.sub(r"\s*,\s*,\s*", ", ", out) 
+    
+    for ph in assignment:
         out = out.replace(ph, assignment[ph])
+    
     return out
+
+
+#Testing instantiate.py - after instantiation remove all ineq with dash vars
+#constraints_path = Path('/users/sbsh670/CCIG_Eval/clevr-ccig-dataset-gen/ConstraintTemplates')
+#count = 0
+#seed = 49
+#for txt_file in constraints_path.glob("*.txt"):
+    
+#    count = count+1
+#    if count<=10: continue
+#    if count>20: break
+#    desc, rule = load_template(txt_file)
+#    print('\n----RULE----', rule)
+#    phs, pair_pv = placeholders(rule)
+#    ineqs = inequalities(rule)
+#    rng = random.Random(seed)
+#    asgn = sample_assignment(rule, rng)
+#    apply_assignment(rule, asgn)
+

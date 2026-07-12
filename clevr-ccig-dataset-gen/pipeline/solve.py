@@ -6,13 +6,14 @@ The solve() function calls clingo on a complete ASP program and returns:
   - models: list of answer sets (each as a list of ground atoms)
 
 The format_scene() helper structures ground atoms into a human-readable scene dict.
-"""
+2"""
 
 import re
 import subprocess
 import tempfile
 import json
 from pathlib import Path
+from typing import Dict, List, Tuple, Set
 
 
 # ── Core solver ─────────────────────────────────────────────────────────────
@@ -23,7 +24,7 @@ def solve(
     n_models: int = 5,
     time_limit: int = 10,
     clingo_bin: str = "clingo",
-) -> tuple[str, list[list[str]]]:
+) -> Tuple[str, List[List[str]]]:
     """
     Run clingo on the given ASP program.
 
@@ -73,7 +74,7 @@ def solve(
     return _parse_clingo_json(output_text)
 
 
-def _parse_clingo_json(output: str) -> tuple[str, list[list[str]]]:
+def _parse_clingo_json(output: str) -> Tuple[str, List[List[str]]]:
     """Parse clingo's JSON output (--outf=2) into (status, models)."""
     try:
         data = json.loads(output)
@@ -96,7 +97,7 @@ def _parse_clingo_json(output: str) -> tuple[str, list[list[str]]]:
     return status, models
 
 
-def _parse_clingo_text(output: str) -> tuple[str, list[list[str]]]:
+def _parse_clingo_text(output: str) -> Tuple[str, List[List[str]]]:
     """Fallback text parser for clingo stdout (used when JSON parsing fails)."""
     models: list[list[str]] = []
     current: list[str] | None = None
@@ -127,7 +128,7 @@ _PROP_ATOM = re.compile(r"hasProperty\((\d+),(\w+),([\w_]+)\)")
 _REL_ATOM  = re.compile(r"hasRelationship\((\d+),(\d+),([\w_]+)\)")
 
 
-def format_scene(atoms: list[str]) -> dict:
+def format_scene(atoms: List[str]) -> Dict:
     """
     Parse a list of ground ASP atoms into a structured scene dict.
 
@@ -143,8 +144,8 @@ def format_scene(atoms: list[str]) -> dict:
           ]
         }
     """
-    objects: dict[str, dict[str, str]] = {}
-    relations: list[dict] = []
+    objects: Dict[str, Dict[str, str]] = {}
+    relations: List[Dict] = []
 
     for atom in atoms:
         m = _PROP_ATOM.match(atom)

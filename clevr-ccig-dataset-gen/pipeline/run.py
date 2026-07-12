@@ -111,7 +111,7 @@ def run(
         print(f"No template files found in {template_dir}", file=sys.stderr)
         sys.exit(1)
 
-    background = background_asp(n_objects)
+    
     output_path.parent.mkdir(parents=True, exist_ok=True)
 
     sat_path  = output_path.with_stem(output_path.stem + "_SAT")
@@ -120,59 +120,69 @@ def run(
     sat_count = unsat_count = total_count = 0
 
     with open(sat_path, "w") as sat_f, open(unsat_path, "w") as unsat_f:
-        for tpl_path in template_files:
+        for tpl_path in template_files: #for each template of that class - generate 5 sat plus 2 unsat per file 
             if verbose:
                 print(f"Processing {tpl_path.name} …")
 
             _, rule_text = load_template(tpl_path)
 
-            try:
-                if mode == "exhaustive":
-                    assignments = all_assignments(rule_text)
-                    if not assignments:
-                        continue
-                else:
-                    assignments = _sample_unique(rule_text, rng, n_samples)
-            except Exception as e:
-                print(f"  ERROR generating assignments for {tpl_path.name}: {e}",
-                      file=sys.stderr)
-                continue
-
-            for idx, asgn in enumerate(assignments):
+            history_asgn = []
+            max_attempts = 1000
+            attempts = 0
+            while (sat_count<n_samples and attempts<max_attempts):
+                attempts  =attempts+1
+                flag = True
+                n_objects = random.randint(3, 9)
+                while (flag):
+                    asgn = sample_assignment(rule_text, rng) #generate an assignment for the rule class - rule_text
+                    if (asgn, n_objects) not in history_asgn:
+                        history_asgn.append((asgn, n_objects))
+                        flag  = False
+                        
+                    
                 instantiated_rule = apply_assignment(rule_text, asgn)
+                print('Instantiated rule:', instantiated_rule)
+                background = background_asp(n_objects)
                 full_program = background + instantiated_rule + "\n"
-
-                if solve_programs:
-                    try:
-                        status, raw_models = solve(
+                try:
+                    status, raw_models = solve(
                             full_program,
                             n_models=n_models,
                             time_limit=time_limit,
                             clingo_bin=clingo_bin,
-                        )
-                    except RuntimeError as e:
-                        print(f"  Solver error: {e}", file=sys.stderr)
-                        status = "ERROR"
-                else:
-                    status = "UNKNOWN"
+                            )
+                except RuntimeError as e:
+                    print(f"  Solver error: {e}", file=sys.stderr)
+                    status = "ERROR"
+                
+                if status == "SAT":
+                    record_id = _record_id(tpl_path.name, asgn, sat_count)
+                    sat_count += 1
+                    for r_m in raw_models:
+                        scene = format_scene(r_m)
+                        print(scene)
+                    
+                    
+                elif status == "UNSAT":
+                    record_id = _record_id(tpl_path.name, asgn, unsat_count)
+                    unsat_count += 1
+                    
+                total_count += 1
 
-                record_id = _record_id(tpl_path.name, asgn, idx)
                 record = build_record(tpl_path, asgn, rule_text, background, status, record_id)
                 line = json.dumps(record) + "\n"
 
                 if status == "SAT":
+                    print('Wriing sat')
                     sat_f.write(line)
-                    sat_count += 1
                 elif status == "UNSAT":
                     unsat_f.write(line)
-                    unsat_count += 1
-
-                total_count += 1
 
                 if verbose:
                     mark = {"SAT": "✓", "UNSAT": "✗", "TIMEOUT": "⏱", "UNKNOWN": "?"}.get(status, "?")
                     print(f"  [{mark}] {record_id}")
-
+            if (sat_count < n_samples):
+                print('Tried max_attempts =1000 times but could produce:', sat_count, ' satisfiable and ', unsat_count, ' unsatisfiable prompts.')
     print(
         f"\nDone. {total_count} records written.\n"
         f"  SAT={sat_count}  → {sat_path}\n"
@@ -180,26 +190,6 @@ def run(
     )
 
 
-def _sample_unique(
-    rule_text: str,
-    rng: random.Random,
-    n: int,
-    max_attempts: int = 10_000,
-) -> list[dict[str, str]]:
-    seen: set[str] = set()
-    results: list[dict[str, str]] = []
-    attempts = 0
-    while len(results) < n and attempts < max_attempts:
-        attempts += 1
-        try:
-            asgn = sample_assignment(rule_text, rng)
-        except RuntimeError:
-            break
-        key = json.dumps(asgn, sort_keys=True)
-        if key not in seen:
-            seen.add(key)
-            results.append(asgn)
-    return results
 
 
 # ── CLI ──────────────────────────────────────────────────────────────────────
@@ -217,7 +207,7 @@ def _parse_args() -> argparse.Namespace:
     parser.add_argument("--mode", choices=["random", "exhaustive"], default="random")
     parser.add_argument("--classes", nargs="+", metavar="C1")
     parser.add_argument("--no_solve", action="store_true")
-    parser.add_argument("--n_models", type=int, default=5)
+    parser.add_argument("--n_models", type=int, default=1) 
     parser.add_argument("--time_limit", type=int, default=10)
     parser.add_argument("--clingo", type=str, default="clingo")
     parser.add_argument("--seed", type=int, default=42)
@@ -230,12 +220,12 @@ if __name__ == "__main__":
     run(
         template_dir=args.template_dir,
         output_path=args.output,
-        n_samples=args.samples,
-        n_objects=args.n_objects,
-        mode=args.mode,
-        classes=args.classes,
+        n_samples=args.samples, # is nuber of prompts generated?
+        n_objects=args.n_objects, # no. of objects in each setting?
+        mode=args.mode, #exhaustive or few samples -> use only few samples
+        classes=args.classes, #complexity
         solve_programs=not args.no_solve,
-        n_models=args.n_models,
+        n_models=args.n_models, #is this no of plausible scene configurations for a setting? we probably do not need this now
         time_limit=args.time_limit,
         clingo_bin=args.clingo,
         seed=args.seed,
