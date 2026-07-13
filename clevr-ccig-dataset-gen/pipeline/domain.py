@@ -33,7 +33,13 @@ def background_asp(n_objects: int = 4) -> str:
         lines.append(f"1 {{ hasProperty(X, {prop}, V) : property({prop}, V) }} 1 :- object(X).")
     lines.append("")
 
-    lines.append(_BACKGROUND_LP.read_text())
+    with _BACKGROUND_LP.open("r", encoding="utf-8") as f:
+        for bl in f:
+            bl = bl.strip()
+            # Skip comment lines and comments
+            if not (bl.startswith("%")):
+                lines.append(bl)
+    
     return "\n".join(lines)
 
     

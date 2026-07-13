@@ -2,7 +2,7 @@
 % PROPERTIES in domain.py — do not hardcode them here.
 
 % ── Region capacity (at most 3 objects per region) ────────────────────────
-:- #count { X : object(X), hasProperty(X, region, R) } >= 4, property(region, R).
+%:- #count { X : object(X), hasProperty(X, region, R) } >= 4, property(region, R).
 
 % ── Region spatial layout (2×2 grid) ─────────────────────────────────────
 % reg_0=top-left  | reg_1=top-right
@@ -35,6 +35,13 @@ hasRelationship(X, Y, front); hasRelationship(X, Y, behind) :-
 
 % Anti-symmetry
 :- hasRelationship(X1, X2, R), hasRelationship(X2, X1, R), X1 != X2.
+
+% Symmetry
+hasRelationship(X1, X2, left)   :- hasRelationship(X2, X1, right).
+hasRelationship(X1, X2, front)  :- hasRelationship(X2, X1, behind).
+hasRelationship(X1, X2, right)   :- hasRelationship(X2, X1, left).
+hasRelationship(X1, X2, behind)  :- hasRelationship(X2, X1, front).
+
 
 % Transitivity
 hasRelationship(X1, X3, left)   :- hasRelationship(X1, X2, left),
