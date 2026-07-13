@@ -147,9 +147,10 @@ def _g(a: dict, *keys: str) -> tuple:
 
 
 def _c1(variant: str, a: dict) -> dict[str, str]:
-    p1, v1 = _g(a, "P1'", "V1'")
-
+    
     if variant == "1prop":
+        p1, v1 = _g(a, "P1'", "V1'")
+
         return dict(
             short=f"{_Obj(p1, v1)} is in the scene.",
             medium=f"The scene contains at least one {_bare(p1, v1)}.",
@@ -158,6 +159,8 @@ def _c1(variant: str, a: dict) -> dict[str, str]:
         )
 
     if variant == "1prop_neg":
+        p1, v1 = _g(a, "P1'", "V1'")
+
         return dict(
             short=f"Some object is {_not_adj(p1, v1)}.",
             medium=f"The scene contains at least one object that is {_not_adj(p1, v1)}.",
@@ -166,7 +169,8 @@ def _c1(variant: str, a: dict) -> dict[str, str]:
         )
 
     if variant == "1prop_2val_neg":
-        p2, v2 = _g(a, "P2'", "V2'")
+        
+        p1, v1, v2 = _g(a, "P1'", "V1'", "V2'")
         return dict(
             short=f"Some object is neither {_adj(p1, v1)} nor {_adj(p1, v2)}.",
             medium=f"The scene contains at least one object that is neither {_adj(p1, v1)} nor {_adj(p1, v2)}.",
@@ -175,16 +179,16 @@ def _c1(variant: str, a: dict) -> dict[str, str]:
         )
 
     if variant == "1prop_3val_neg":
-        p2, v2, v3 = _g(a, "P2'", "V2'", "V3'")
+        p1, v1, v2, v3 = _g(a, "P1'", "V1'", "V2'", "V3'")
         return dict(
-            short=f"Some object is {_adj(p1, v1)}, {_adj(p1, v2)}, nor {_adj(p1, v3)}.",
+            short=f"Some object is neither {_adj(p1, v1)}, {_adj(p1, v2)}, nor {_adj(p1, v3)}.",
             medium=f"The scene contains at least one object that is none of {_adj(p1, v1)}, {_adj(p1, v2)}, or {_adj(p1, v3)}.",
-            long=(f"Among all objects in the scene, at least one must differ from all three values "
-                  f"({_adj(p1, v1)}, {_adj(p1, v2)}, {_adj(p1, v3)}) on property {p1}."),
+            long = (f"Among all objects in the scene, at least one object must have a value for {p1} "
+                    f"that is neither {_adj(p1, v1)}, {_adj(p1, v2)}, nor {_adj(p1, v3)}."),
         )
 
     if variant == "2prop":
-        p2, v2 = _g(a, "P2'", "V2'")
+        p1, v1, p2, v2 = _g(a, "P1'", "V1'", "P2'", "V2'")
         o = _multi_obj([(p1, v1), (p2, v2)])
         return dict(
             short=f"{o.capitalize()} is in the scene.",
@@ -194,7 +198,7 @@ def _c1(variant: str, a: dict) -> dict[str, str]:
         )
 
     if variant == "2prop_neg":
-        p2, v2 = _g(a, "P2'", "V2'")
+        p1, v1, p2, v2 = _g(a, "P1'", "V1'", "P2'", "V2'")
         return dict(
             short=f"Some object is {_not_adj(p1, v1)} and {_not_adj(p2, v2)}.",
             medium=f"The scene contains at least one object that is neither {_adj(p1, v1)} nor {_adj(p2, v2)}.",
@@ -203,16 +207,16 @@ def _c1(variant: str, a: dict) -> dict[str, str]:
         )
 
     if variant == "2prop_mix_neg":
-        p2, v2 = _g(a, "P2'", "V2'")
+        p1, v1, p2, v2 = _g(a, "P1'", "V1'", "P2'", "V2'")
         return dict(
-            short=f"{_quant('Some', p1, v1)} is {_not_adj(p2, v2)}.",
-            medium=f"The scene contains at least one {_adj(p1, v1)} object that is {_not_adj(p2, v2)}.",
-            long=(f"At least one object must be {_adj(p1, v1)} while simultaneously not being "
-                  f"{_adj(p2, v2)}."),
+            short=f"No object has {_adj(p1, v1)} and no object has {_not_adj(p2, v2)}.",
+            medium=f"The scene contains at least one object that is neither {_adj(p1, v1)} nor {_adj(p2, v2)}.",
+            long=(f"At least one object must simultaneously avoid being {_adj(p1, v1)} "
+                  f"and avoid being {_adj(p2, v2)}."),
         )
 
     if variant == "3prop":
-        p2, v2, p3, v3 = _g(a, "P2'", "V2'", "P3'", "V3'")
+        p1, v1, p2, v2, p3, v3 = _g(a, "P1'", "V1'",  "P2'", "V2'", "P3'", "V3'")
         o = _multi_obj([(p1, v1), (p2, v2), (p3, v3)])
         return dict(
             short=f"{o.capitalize()} is in the scene.",
@@ -222,7 +226,7 @@ def _c1(variant: str, a: dict) -> dict[str, str]:
         )
 
     if variant == "3prop_val_mix_neg":
-        p2, v2, p3, v3, v4 = _g(a, "P2'", "V2'", "P3'", "V3'", "V4'")
+        p1, v1, p2, v2, p3, v3, v4 = _g(a, "P1'", "V1'", "P2'", "V2'", "P3'", "V3'", "V4'")
         return dict(
             short=(f"Some object that is {_adj(p1, v1)} and {_adj(p2, v2)} "
                    f"is neither {_adj(p3, v3)} nor {_adj(p3, v4)}."),
@@ -233,17 +237,17 @@ def _c1(variant: str, a: dict) -> dict[str, str]:
         )
 
     if variant == "4prop":
-        p2, v2, p3, v3, p4, v4 = _g(a, "P2'", "V2'", "P3'", "V3'", "P4'", "V4'")
+        p1, v1, p2, v2, p3, v3, p4, v4 = _g(a, "P1'", "V1'", "P2'", "V2'", "P3'", "V3'", "P4'", "V4'")
         return dict(
             short=f"Some object is {_adj(p1, v1)}, {_adj(p2, v2)}, {_adj(p3, v3)}, and {_adj(p4, v4)}.",
-            medium=(f"The scene contains at least one object satisfying all four properties: "
+            long=(f"The scene contains at least one object satisfying all four properties: "
                     f"{_adj(p1, v1)}, {_adj(p2, v2)}, {_adj(p3, v3)}, and {_adj(p4, v4)}."),
-            long=(f"At least one object must simultaneously be {_adj(p1, v1)}, {_adj(p2, v2)}, "
+            medium=(f"At least one object must simultaneously be {_adj(p1, v1)}, {_adj(p2, v2)}, "
                   f"{_adj(p3, v3)}, and {_adj(p4, v4)}."),
         )
 
     if variant == "4prop_mix_neg":
-        p2, v2, p3, v3, p4, v4 = _g(a, "P2'", "V2'", "P3'", "V3'", "P4'", "V4'")
+        p1, v1, p2, v2, p3, v3, p4, v4 = _g(a, "P1'", "V1'", "P2'", "V2'", "P3'", "V3'", "P4'", "V4'")
         return dict(
             short=(f"Some object that is {_adj(p1, v1)} and {_adj(p2, v2)} "
                    f"is {_not_adj(p3, v3)} and {_not_adj(p4, v4)}."),
@@ -253,13 +257,13 @@ def _c1(variant: str, a: dict) -> dict[str, str]:
                   f"while not being {_adj(p3, v3)} and not being {_adj(p4, v4)}."),
         )
 
-    return _generic("C1", variant, a)
-
+    return None
 
 def _c2(variant: str, a: dict) -> dict[str, str]:
-    p1, v1 = _g(a, "P1'", "V1'")
-
+    
     if variant == "1prop":
+        p1, v1 = _g(a, "P1'", "V1'")
+
         return dict(
             short=f"All objects are {_adj(p1, v1)}.",
             medium=f"Every single object in the scene must be {_adj(p1, v1)}.",
@@ -268,6 +272,8 @@ def _c2(variant: str, a: dict) -> dict[str, str]:
         )
 
     if variant == "1prop_neg":
+        p1, v1 = _g(a, "P1'", "V1'")
+
         return dict(
             short=f"No object is {_adj(p1, v1)}.",
             medium=f"The scene contains no {_objs(p1, v1)} whatsoever.",
@@ -276,16 +282,16 @@ def _c2(variant: str, a: dict) -> dict[str, str]:
         )
 
     if variant == "1prop_2val_neg":
-        p2, v2 = _g(a, "P2'", "V2'")
+        p1, v1, v2 = _g(a, "P1'", "V1'", "V2'")
         return dict(
-            short=f"No object is both {_adj(p1, v1)} and {_adj(p1, v2)}.",
-            medium=f"No object in the scene can simultaneously be {_adj(p1, v1)} and {_adj(p1, v2)}.",
-            long=(f"The constraint forbids any object from having two values for property {p1} "
-                  f"at once: an object cannot be both {_adj(p1, v1)} and {_adj(p1, v2)}."),
+            short=f"No object is either {_adj(p1, v1)} or {_adj(p1, v2)}.",
+            medium=f"No object in the scene can be {_adj(p1, v1)} and no object in the scene can be {_adj(p1, v2)}.",
+            long=(f"The constraint forbids any object from having the following two values for the property {p1} "
+                  f": no object can either be {_adj(p1, v1)} or {_adj(p1, v2)}."),
         )
 
     if variant == "2prop":
-        p2, v2 = _g(a, "P2'", "V2'")
+        p1, v1, p2, v2 = _g(a, "P1'", "V1'", "P2'", "V2'")
         return dict(
             short=f"Every object is {_adj(p1, v1)} and {_adj(p2, v2)}.",
             medium=f"Each object in the scene must simultaneously be {_adj(p1, v1)} and {_adj(p2, v2)}.",
@@ -294,25 +300,28 @@ def _c2(variant: str, a: dict) -> dict[str, str]:
         )
 
     if variant == "2prop_neg":
-        p2, v2 = _g(a, "P2'", "V2'")
+        p1, v1, p2, v2 = _g(a, "P1'", "V1'", "P2'", "V2'")
         return dict(
-            short=f"No object is both {_adj(p1, v1)} and {_adj(p2, v2)}.",
+            short=f"No object is {_adj(p1, v1)} and {_adj(p2, v2)} simultaneously.",
             medium=f"The scene forbids any object from being {_adj(p1, v1)} and {_adj(p2, v2)} simultaneously.",
             long=(f"An object that is simultaneously {_adj(p1, v1)} and {_adj(p2, v2)} must never "
                   f"appear; every object must avoid at least one of these two property values."),
         )
 
     if variant == "2prop_mix_neg":
-        p2, v2 = _g(a, "P2'", "V2'")
+        p1, v1, p2, v2 = _g(a, "P1'", "V1'", "P2'", "V2'")
         return dict(
-            short=f"{_quant('No', p1, v1)} lacks {_adj(p2, v2)}.",
-            medium=f"{_quant('Every', p1, v1)} in the scene is also required to be {_adj(p2, v2)}.",
-            long=(f"The scene forbids any {_bare(p1, v1)} that is not also {_adj(p2, v2)}: "
-                  f"whenever an object is {_adj(p1, v1)}, it must simultaneously carry {_adj(p2, v2)}."),
+            short=f"No object is {_adj(p1, v1)} and {_not_adj(p2, v2)} simultaneously.",
+            medium=f"The scene forbids any object from being {_adj(p1, v1)} and {_not_adj(p2, v2)} simultaneously.",
+            long=(f"An object that is simultaneously {_adj(p1, v1)} and {_not_adj(p2, v2)} must never "
+                  f"appear."),
         )
+            
+            
+           
 
     if variant == "3prop":
-        p2, v2, p3, v3 = _g(a, "P2'", "V2'", "P3'", "V3'")
+        p1, v1, p2, v2, p3, v3 = _g(a, "P1'", "V1'", "P2'", "V2'", "P3'", "V3'")
         return dict(
             short=f"Every object is {_adj(p1, v1)}, {_adj(p2, v2)}, and {_adj(p3, v3)}.",
             medium=f"Each object in the scene must be {_adj(p1, v1)}, {_adj(p2, v2)}, and {_adj(p3, v3)}.",
@@ -321,28 +330,33 @@ def _c2(variant: str, a: dict) -> dict[str, str]:
         )
 
     if variant == "3prop_val_mix_neg":
-        p2, v2, p3, v3, v4 = _g(a, "P2'", "V2'", "P3'", "V3'", "V4'")
+        p1, v1, p2, v2, p3, v3, v4 = _g(a, "P1'", "V1'","P2'", "V2'", "P3'", "V3'", "V4'")
         return dict(
-            short=(f"Every object that is {_adj(p1, v1)} and {_adj(p2, v2)} "
-                   f"is neither {_adj(p3, v3)} nor {_adj(p3, v4)}."),
-            medium=(f"Each object that is {_adj(p1, v1)} and {_adj(p2, v2)} must be neither "
-                    f"{_adj(p3, v3)} nor {_adj(p3, v4)}."),
-            long=(f"The scene requires that any object combining {_adj(p1, v1)} with {_adj(p2, v2)} "
-                  f"must avoid both {_adj(p3, v3)} and {_adj(p3, v4)}."),
+            short=(f"No object must be simultaneously {_adj(p1, v1)} and {_adj(p2, v2)} "
+                   f"and is neither {_adj(p3, v3)} nor {_adj(p3, v4)}."),
+            medium=(f"It is impossible to have an object that is simultaneously {_adj(p1, v1)} and {_adj(p2, v2)} and "
+                    f"{_not_adj(p3, v3)} and {_not_adj(p3, v4)}."),
+            long=(f"The scene requires that any object with the following combination is not present: {_adj(p1, v1)} with {_adj(p2, v2)} "
+                  f"and {_not_adj(p3, v3)} and {_not_adj(p3, v4)}."),
         )
 
     if variant == "4prop_neg":
-        p2, v2, p3, v3, p4, v4 = _g(a, "P2'", "V2'", "P3'", "V3'", "P4'", "V4'")
+        p1, v1, p2, v2, p3, v3, p4, v4 = _g(a, "P1'", "V1'","P2'", "V2'", "P3'", "V3'", "P4'", "V4'")
         return dict(
-            short=f"No object has all four: {_adj(p1, v1)}, {_adj(p2, v2)}, {_adj(p3, v3)}, {_adj(p4, v4)}.",
-            medium=(f"The scene forbids any object from being {_adj(p1, v1)}, {_adj(p2, v2)}, "
-                    f"{_adj(p3, v3)}, and {_adj(p4, v4)} simultaneously."),
-            long=(f"Every object must lack at least one of: {_adj(p1, v1)}, {_adj(p2, v2)}, "
-                  f"{_adj(p3, v3)}, {_adj(p4, v4)}."),
+            short=(f"No object must be simultaneously {_adj(p1, v1)} and {_adj(p2, v2)} "
+                   f"and is neither {_adj(p3, v3)} nor {_adj(p4, v4)}."),
+            medium=(f"It is impossible to have an object that is simultaneously {_adj(p1, v1)} and {_adj(p2, v2)} and "
+                    f"{_not_adj(p3, v3)} and {_not_adj(p4, v4)}."),
+            long=(f"The scene requires that any object with the following combination is not present: {_adj(p1, v1)} with {_adj(p2, v2)} "
+                  f"and {_not_adj(p3, v3)} and {_not_adj(p4, v4)}."),
         )
+        
+        
+        
 
     if variant == "4prop":
-        p2, v2, p3, v3, p4, v4 = _g(a, "P2'", "V2'", "P3'", "V3'", "P4'", "V4'")
+        p1, v1, p2, v2, p3, v3, p4, v4 = _g(a, "P1'", "V1'","P2'", "V2'", "P3'", "V3'", "P4'", "V4'")
+        
         return dict(
             short=f"Every object is {_adj(p1, v1)}, {_adj(p2, v2)}, {_adj(p3, v3)}, and {_adj(p4, v4)}.",
             medium=(f"Each object in the scene must simultaneously satisfy all four: "
@@ -351,7 +365,7 @@ def _c2(variant: str, a: dict) -> dict[str, str]:
                   f"{_adj(p1, v1)}, {_adj(p2, v2)}, {_adj(p3, v3)}, and {_adj(p4, v4)}."),
         )
 
-    return _generic("C2", variant, a)
+    return None
 
 
 def _c3(variant: str, a: dict) -> dict[str, str]:
@@ -896,18 +910,6 @@ def _c9(variant: str, a: dict) -> dict[str, str]:
     return _generic("C9", variant, a)
 
 
-# ── Fallback verbalizer ─────────────────────────────────────────────────────
-
-def _generic(cls: str, variant: str, a: dict) -> dict[str, str]:
-    """Generic fallback text when no specific handler is defined."""
-    parts = ", ".join(f"{k}={v}" for k, v in sorted(a.items()))
-    return dict(
-        short=f"{cls} constraint ({variant}) with {parts}.",
-        medium=f"A {cls} constraint of type '{variant}' applies with {parts}.",
-        long=(f"The scene must satisfy a {cls}-class constraint of variant '{variant}'. "
-              f"Instantiated with: {parts}."),
-    )
-
 
 # ── Dispatch table ──────────────────────────────────────────────────────────
 
@@ -936,4 +938,4 @@ def verbalize(template_stem: str, assignment: dict[str, str]) -> dict[str, str]:
     handler = _HANDLERS.get(cls)
     if handler:
         return handler(variant, assignment)
-    return _generic(cls, variant, assignment)
+    

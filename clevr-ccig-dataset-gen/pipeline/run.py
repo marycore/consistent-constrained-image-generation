@@ -57,7 +57,9 @@ def build_record(
     record_id: str,
 ) -> dict:
     stem = template_path.stem
+
     cls = stem.split("_")[0]
+    
     family = stem.split("_", 1)[1] if "_" in stem else ""
 
     instantiated_rule = apply_assignment(rule_text, assignment)
