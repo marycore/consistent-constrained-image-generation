@@ -82,6 +82,15 @@ def _quant(q: str, p: str, v: str) -> str:
         return f"{q} object in {v}"
     return f"{q} {v} object"
 
+def _not_quant(q: str, p: str, v: str) -> str:
+    """
+    Quantified noun phrase: 'every gray object', 'every object in region_1'.
+    q is the quantifier word (every, each, no, some, any, …).
+    """
+    if p == "region":
+        return f"{q} object not in {v}"
+    return f"{q} object that is not {v}"
+
 
 def _dir(d: str) -> str:
     """'to the left of', 'in front of', 'behind', 'to the right of'."""
@@ -617,58 +626,58 @@ def _c5(variant: str, a: dict) -> dict[str, str]:
 
 
 def _c6(variant: str, a: dict) -> dict[str, str]:
-    p1, v1, p2, v2, d1 = _g(a, "P1'", "V1'", "P2'", "V2'", "D1'")
-
+    
+    #there exist x(p1,v1) st for all y(p2,v2) X is D1 Y
     if variant == "1prop":
+        p1, v1, p2, v2, d1 = _g(a, "P1'", "V1'", "P2'", "V2'", "D1'")
         return dict(
-            short=(f"{_quant('Some', p1, v1)} is {_dir(d1)} {_quant('every', p2, v2)}."),
+            short=(f"There exists {_quant('Some', p1, v1)} such that it is {_dir(d1)} {_quant('every', p2, v2)} in the scene."),
             medium=(f"At least one {_bare(p1, v1)} stands {_dir(d1)} every single "
                     f"{_bare(p2, v2)} in the scene."),
             long=(f"There exists at least one {_bare(p1, v1)} that, "
                   f"for every {_bare(p2, v2)} in the scene, stands {_dir(d1)} it."),
         )
 
+    #there exist x(p1,v1) st for all y(p2!=v2) X is D1 Y
     if variant == "1prop_neg":
+        p1, v1, p2, v2, d1 = _g(a, "P1'", "V1'", "P2'", "V2'", "D1'")
         return dict(
-            short=(f"{_quant('Some', p1, v1)} is not {_dir(d1)} any {_bare(p2, v2)}."),
-            medium=(f"At least one {_bare(p1, v1)} exists that does not stand {_dir(d1)} "
-                    f"any {_bare(p2, v2)}."),
-            long=(f"There exists {_obj(p1, v1)} that fails to stand {_dir(d1)} "
-                  f"at least one {_bare(p2, v2)} — the universal coverage does not hold."),
+            short=(f"There exists {_quant('some', p1, v1)} such that it is {_dir(d1)} {_not_quant('every', p2, v2)}."),
+            medium=(f"At least one {_bare(p1, v1)} exists that is standing {_dir(d1)} "
+                    f"{_not_quant('every', p2, v2)}."),
+            long=(f"There exists at least one {_bare(p1, v1)} that, for every {_not_ bare(p2, v2)} in the scene, stands {_dir(d1)} it."),
         )
 
+    
+    #there exist x(p1,v1,p2, v2) st for all y(p3,v3, p4, v4) X is D1 Y
     if variant == "2prop":
-        p3, v3, p4, v4 = _g(a, "P3'", "V3'", "P4'", "V4'")
+        p1, v1, p2, v2, p3, v3, p4, v4, d1 = _g(a, "P1'", "V1'", "P2'", "V2'", "P3'", "V3'", "P4'", "V4'", "D1'")
         return dict(
-            short=(f"Some object that is {_adj(p1, v1)} and {_adj(p2, v2)} is {_dir(d1)} "
-                   f"every object that is {_adj(p3, v3)} and {_adj(p4, v4)}."),
-            medium=(f"At least one object that is both {_adj(p1, v1)} and {_adj(p2, v2)} "
-                    f"stands {_dir(d1)} every object that is {_adj(p3, v3)} and {_adj(p4, v4)}."),
-            long=(f"There exists a candidate object satisfying both {_adj(p1, v1)} and {_adj(p2, v2)} "
-                  f"that covers all target objects ({_adj(p3, v3)}, {_adj(p4, v4)}) "
-                  f"via the {_dir(d1)} relation."),
+            short=(f"There exists {_quant('Some', p1, v1)} that is {_adj(p2, v2)} such that it is {_dir(d1)} {_quant('every', p2, v2)} that is {_adj(p4, v4)} in the scene."),
+            medium=(f"At least one {_bare(p1, v1)} that is {_adj(p2, v2)} stands {_dir(d1)} every single "
+                    f"{_bare(p2, v2)} that is {_adj(p4, v4)} in the scene."),
+            long=(f"There exists at least one {_bare(p1, v1)} that is {_adj(p2, v2)}  that, "
+                  f"for every {_bare(p2, v2)} that is also {_adj(p4, v4)}  in the scene, stands {_dir(d1)} it."),
         )
 
+    #there exist x(p1,v1,p2, v2) st for all y(p3,v3, p4!=v4) X is D1 Y
     if variant == "2prop_neg":
-        p3, v3, p4, v4 = _g(a, "P3'", "V3'", "P4'", "V4'")
+        p1, v1, p2, v2, p3, v3, p4, v4, d1 = _g(a, "P1'", "V1'", "P2'", "V2'", "P3'", "V3'", "P4'", "V4'", "D1'")
         return dict(
-            short=(f"No object that is {_adj(p1, v1)} and {_adj(p2, v2)} covers every "
-                   f"object that is {_adj(p3, v3)} and {_adj(p4, v4)}."),
-            medium=(f"The scene has no object that is {_adj(p1, v1)}, {_adj(p2, v2)} and "
-                    f"stands {_dir(d1)} every object that is {_adj(p3, v3)}, {_adj(p4, v4)}."),
-            long=(f"For every candidate object ({_adj(p1, v1)}, {_adj(p2, v2)}), there is at "
-                  f"least one target object ({_adj(p3, v3)}, {_adj(p4, v4)}) that the candidate "
-                  f"does not stand {_dir(d1)}."),
+            short=(f"There exists {_quant('Some', p1, v1)} that is {_adj(p2, v2)} such that it is {_dir(d1)} {_quant('every', p2, v2)} that is {_not_adj(p4, v4)} in the scene."),
+            medium=(f"At least one {_bare(p1, v1)} that is {_adj(p2, v2)} stands {_dir(d1)} every single "
+                    f"{_bare(p2, v2)} that is {_not_adj(p4, v4)} in the scene."),
+            long=(f"There exists at least one {_bare(p1, v1)} that is {_adj(p2, v2)}  that, "
+                  f"for every {_bare(p2, v2)} that is also {_not_adj(p4, v4)}  in the scene, stands {_dir(d1)} it."),
         )
-
-    return _generic("C6", variant, a)
-
+    return None
 
 def _c7(variant: str, a: dict) -> dict[str, str]:
-    p1, v1, p2, v2, d1 = _g(a, "P1'", "V1'", "P2'", "V2'", "D1'")
-
+    
     if variant == "1prop_propRel":
-        return dict(
+        p1, v1, p2, v2, d1 = _g(a, "P1'", "V1'", "P2'", "V2'", "D1'")
+
+        return dict( 
             short=(f"{_quant('Every', p1, v1)} has {_obj(p2, v2)} {_dir(d1)} it."),
             medium=(f"For each {_bare(p1, v1)} in the scene, there must exist "
                     f"at least one {_bare(p2, v2)} standing {_dir(d1)} it."),
@@ -677,60 +686,63 @@ def _c7(variant: str, a: dict) -> dict[str, str]:
         )
 
     if variant == "1prop_propRel_neg":
+        p1, v1, p2, v2, d1 = _g(a, "P1'", "V1'", "P2'", "V2'", "D1'")
+
         return dict(
-            short=(f"{_quant('Every', p1, v1)} has no {_bare(p2, v2)} {_dir(d1)} it."),
-            medium=(f"For each {_bare(p1, v1)} in the scene, there must be no "
+            short=(f"{_not_quant('Every', p1, v1)} has {_obj(p2, v2)} {_dir(d1)} it."),
+            medium=(f"For each {_not_bare(p1, v1)} in the scene, there must be at least one "
                     f"{_bare(p2, v2)} standing {_dir(d1)} it."),
-            long=(f"Every object that is {_adj(p1, v1)} must be unwitnessed: no {_bare(p2, v2)} "
-                  f"may stand {_dir(d1)} any {_bare(p1, v1)}."),
+            long=(f"Every object that is {_not_adj(p1, v1)} is required to have a witness: {_obj(p2, v2)} "
+                  f"that stands {_dir(d1)} it."),
         )
 
+    
     if variant == "propRel_propRel":
-        p3, v3, d2 = _g(a, "P3'", "V3'", "D2'")
+        p1, v1, p2, v2, p3, v3, d1, d2 = _g(a, "P1'", "V1'","P2'", "V2'","P3'", "V3'", "D1'", "D2'")
         return dict(
-            short=(f"{_quant('Every', p1, v1)} related {_dir(d1)} {_obj(p2, v2)} "
-                   f"has {_obj(p3, v3)} {_dir(d2)} it."),
-            medium=(f"For every {_bare(p1, v1)} X that is {_dir(d1)} some {_bare(p2, v2)} Z, "
-                    f"there must exist {_obj(p3, v3)} Y standing {_dir(d2)} X."),
-            long=(f"Whenever X is {_adj(p1, v1)} and stands {_dir(d1)} {_obj(p2, v2)} Z, "
-                  f"a witness Y must exist that is {_adj(p3, v3)} and stands {_dir(d2)} X."),
+            short=(f" {_quant('Every', p1, v1)} that is {_dir(d1)} {_obj(p2, v2)} "
+                   f"has some {_bare(p3, v3)} {_dir(d2)} it."),
+            medium=(f"Every object that is {_adj(p1, v1)} and is {_dir(d1)} {_obj(p2, v2)}, has a certain , "
+                    f"{_bare(p3, v3)} {_dir(d2)} it."),
+            long=(f"Whenever there is an object that is {_adj(p1, v1)} and standing {_dir(d1)} {_obj(p2, v2)}, "
+                  f"there must always exists some {_bare(p3, v3)} standing {_dir(d2)} it."),
         )
 
+    
     if variant == "propRel_propRel_neg":
-        p3, v3, d2 = _g(a, "P3'", "V3'", "D2'")
+        p1, v1, p2, v2, p3, v3, d1, d2 = _g(a, "P1'", "V1'","P2'", "V2'","P3'", "V3'", "D1'", "D2'")
         return dict(
-            short=(f"{_quant('Every', p1, v1)} {_dir(d1)} {_obj(p2, v2)} "
-                   f"has no {_bare(p3, v3)} {_dir(d2)} it."),
-            medium=(f"For every qualifying pair (X {_adj(p1, v1)}, Z {_adj(p2, v2)}, X {_dir(d1)} Z), "
-                    f"no {_bare(p3, v3)} may stand {_dir(d2)} X."),
-            long=(f"Whenever X is {_adj(p1, v1)} and stands {_dir(d1)} {_obj(p2, v2)} Z, "
-                  f"the scene must contain no {_bare(p3, v3)} standing {_dir(d2)} X."),
+            short=(f" {_quant('Every', p1, v1)} that is {_dir(d1)} {_obj(p2, v2)} "
+                   f"has some {_not_bare(p3, v3)} {_dir(d2)} it."),
+            medium=(f"Every object that is {_adj(p1, v1)} and is {_dir(d1)} {_obj(p2, v2)}, has a certain , "
+                    f"{_not_bare(p3, v3)} {_dir(d2)} it."),
+            long=(f"Whenever there is an object that is {_adj(p1, v1)} and standing {_dir(d1)} {_obj(p2, v2)}, "
+                  f"there must always exists some {_not_bare(p3, v3)} standing {_dir(d2)} of it."),
         )
 
     if variant == "1prop_exact":
-        n = a.get("N'", "?")
-        return dict(
-            short=(f"{_quant('Every', p1, v1)} has {_exactly(n)} {_objs(p2, v2)} {_dir(d1)} it."),
-            medium=(f"For each {_bare(p1, v1)} in the scene, {_exactly(n)} "
-                    f"{_objs(p2, v2)} must stand {_dir(d1)} it."),
-            long=(f"Every object that is {_adj(p1, v1)} requires {_exactly(n)} witness(es): "
-                  f"{_obj(p2, v2)} standing {_dir(d1)} it — no more, no fewer."),
+        p1, v1, p2, v2, d1, n = _g(a, "P1'", "V1'", "P2'", "V2'", "D1'", "N'")
+
+        return dict( 
+            short=(f"{_quant('Every', p1, v1)} has {_exactly(n)} {_bare(p2, v2) if n=='1' else _objs(p2, v2)} that {'is' if n=='1' else 'are'} {_dir(d1)} it."),
+            medium=(f"For each {_bare(p1, v1)} in the scene, there must exist "
+                    f"exactly {n} objects that are {_adj(p2, v2)} standing {_dir(d1)} it."),
+            long=(f"Every object that is {_adj(p1, v1)} is required to have {_exactly(n)} {'witness' if n=='1' else 'witnesses'}: "
+                  f"A witness is {_obj(p2, v2)} standing {_dir(d1)} it."),
         )
 
     if variant == "1prop_exact_neg":
-        n = a.get("N'", "?")
-        _pl = "object" if n == "1" else "objects"
-        _not_phrase = (f"not in {v2}" if p2 == "region" else f"not {v2}")
-        return dict(
-            short=(f"{_quant('Every', p1, v1)} has {_exactly(n)} {_not_phrase} "
-                   f"{_pl} {_dir(d1)} it."),
-            medium=(f"For each {_bare(p1, v1)}, {_exactly(n)} {_pl} that are not "
-                    f"{_adj(p2, v2)} must stand {_dir(d1)} it."),
-            long=(f"Each {_bare(p1, v1)} must have exactly {n} {_pl} that "
-                  f"are {_not_adj(p2, v2)} and stand {_dir(d1)} it."),
-        )
+        p1, v1, p2, v2, d1, n = _g(a, "P1'", "V1'", "P2'", "V2'", "D1'", "N'")
 
-    return _generic("C7", variant, a)
+        return dict( 
+            short=(f"{_quant('Every', p1, v1)} has {_exactly(n)} {_not_bare(p2, v2) if n=='1' else _not_objs(p2, v2)} that {'is' if n=='1' else 'are'} {_dir(d1)} it."),
+            medium=(f"For each {_bare(p1, v1)} in the scene, there must exist "
+                    f"exactly {n} objects that are {_not_adj(p2, v2)} standing {_dir(d1)} it."),
+            long=(f"Every object that is {_adj(p1, v1)} is required to have {_exactly(n)} {'witness' if n=='1' else 'witnesses'}: "
+                  f"A witness is {_not_obj(p2, v2)} standing {_dir(d1)} it."),
+        )
+        
+    return None
 
 
 def _c8(variant: str, a: dict) -> dict[str, str]:
