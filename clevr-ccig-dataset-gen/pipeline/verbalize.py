@@ -867,40 +867,41 @@ def _c9(variant: str, a: dict) -> dict[str, str]:
     p1, v1, p2, v2 = _g(a, "P1'", "V1'", "P2'", "V2'")
 
     if variant == "1prop":
+        p1, v1, p2, v2 = _g(a, "P1'", "V1'", "P2'", "V2'")
+
         return dict(
             short=(f"The count of {_objs(p1, v1)} equals the count of {_objs(p2, v2)}."),
-            medium=(f"The number of {_adj(p1, v1)} objects in the scene must equal "
-                    f"the number of {_adj(p2, v2)} objects."),
-            long=(f"The scene enforces a balance: the cardinality of the {_adj(p1, v1)} "
-                  f"object group must exactly match the cardinality of the {_adj(p2, v2)} "
-                  f"object group."),
+            medium=(f"The number of objects that are {_adj(p1, v1)} in the scene must equal "
+                    f"the number of objects that are {_adj(p2, v2)}."),
+            long=(f"The scene enforces a balance: the cardinality of objects thar are {_adj(p1, v1)} "
+                  f"must exactly match the cardinality of objects that are {_adj(p2, v2)} "),
         )
 
     if variant == "2prop":
-        p3, v3, p4, v4 = _g(a, "P3'", "V3'", "P4'", "V4'")
+        p1, v1, p2, v2, p3, v3, p4, v4 = _g(a, "P1'", "V1'", "P2'", "V2'", "P3'", "V3'", "P4'", "V4'")
         return dict(
-            short=(f"The count of ({_adj(p1, v1)}, {_adj(p2, v2)}) objects equals "
-                   f"the count of ({_adj(p3, v3)}, {_adj(p4, v4)}) objects."),
-            medium=(f"The number of objects that are {_adj(p1, v1)} and {_adj(p2, v2)} "
-                    f"must equal the number of objects that are {_adj(p3, v3)} and {_adj(p4, v4)}."),
-            long=(f"The scene requires equal cardinality between two groups: objects with both "
-                  f"{_adj(p1, v1)} and {_adj(p2, v2)}, and objects with both "
+            short=(f"The count of objects that are both ({_adj(p1, v1)} and {_adj(p2, v2)}) equals "
+                   f"the count of objects that are both ({_adj(p3, v3)} and {_adj(p4, v4)})."),
+            medium=(f"The number of objects that are {_adj(p1, v1)} and {_adj(p2, v2)} simultaneously "
+                    f"must equal the number of objects that are both {_adj(p3, v3)} and {_adj(p4, v4)}."),
+            long=(f"The scene requires equal cardinality between two groups: the first group being the collection of objects that are both "
+                  f"{_adj(p1, v1)} and {_adj(p2, v2)}, and the second group being the collection of objects that are both "
                   f"{_adj(p3, v3)} and {_adj(p4, v4)}."),
         )
 
     if variant == "2prop_mix":
-        p3, v3, p4, v4 = _g(a, "P3'", "V3'", "P4'", "V4'")
+        p1, v1, p2, v2, p3, v3, p4, v4 = _g(a, "P1'", "V1'", "P2'", "V2'", "P3'", "V3'", "P4'", "V4'")
         return dict(
-            short=(f"The count of ({_not_adj(p1, v1)}, {_adj(p2, v2)}) objects equals "
-                   f"the count of ({_not_adj(p3, v3)}, {_adj(p4, v4)}) objects."),
+            short=(f"The count of object that are ({_not_adj(p1, v1)} but are {_adj(p2, v2)}) equals "
+                   f"the count of objects that are ({_not_adj(p3, v3)} but {_adj(p4, v4)})."),
             medium=(f"The number of objects that are {_not_adj(p1, v1)} but {_adj(p2, v2)} "
                     f"must equal the number that are {_not_adj(p3, v3)} but {_adj(p4, v4)}."),
-            long=(f"The scene balances two negation-filtered groups: objects that lack "
-                  f"{_adj(p1, v1)} but have {_adj(p2, v2)}, versus objects that lack "
-                  f"{_adj(p3, v3)} but have {_adj(p4, v4)}."),
+            long=(f"The scene balances two groups: the first group is the collection of objects that are not "
+                  f"{_adj(p1, v1)} but  {_adj(p2, v2)}, and the second group is the collection of objects that are not "
+                  f"{_adj(p3, v3)} but {_adj(p4, v4)}."),
         )
 
-    return _generic("C9", variant, a)
+    return None
 
 
 
