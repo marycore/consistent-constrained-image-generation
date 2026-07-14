@@ -372,7 +372,7 @@ def _c3(variant: str, a: dict) -> dict[str, str]:
     p1, v1 = _g(a, "P1'", "V1'")
 
     if variant == "1propA_1propC":
-        p2, v2 = _g(a, "P2'", "V2'")
+        p1, v1, p2, v2 = _g(a, "P1'", "V1'", "P2'", "V2'")
         return dict(
             short=f"{_quant('Every', p1, v1)} is also {_adj(p2, v2)}.",
             medium=f"Each object that is {_adj(p1, v1)} must also be {_adj(p2, v2)}.",
@@ -381,7 +381,7 @@ def _c3(variant: str, a: dict) -> dict[str, str]:
         )
 
     if variant == "1propA_1prop_neg":
-        p2, v2 = _g(a, "P2'", "V2'")
+        p1, v1, p2, v2 = _g(a, "P1'", "V1'", "P2'", "V2'")
         return dict(
             short=f"{_quant('Every', p1, v1)} is {_not_adj(p2, v2)}.",
             medium=f"Each object that is {_adj(p1, v1)} must not be {_adj(p2, v2)}.",
@@ -390,7 +390,7 @@ def _c3(variant: str, a: dict) -> dict[str, str]:
         )
 
     if variant == "1propA_neg_1propC":
-        p2, v2 = _g(a, "P2'", "V2'")
+        p1, v1, p2, v2 = _g(a, "P1'", "V1'", "P2'", "V2'")
         return dict(
             short=f"Every object that is {_not_adj(p1, v1)} must be {_adj(p2, v2)}.",
             medium=f"Each object that is not {_adj(p1, v1)} is required to be {_adj(p2, v2)}.",
@@ -398,18 +398,8 @@ def _c3(variant: str, a: dict) -> dict[str, str]:
                   f"only {_adj(p1, v1)} objects escape this requirement."),
         )
 
-    if variant == "2propA_1propC":
-        p2, v2, p3, v3 = _g(a, "P2'", "V2'", "P3'", "V3'")
-        return dict(
-            short=f"Every object that is {_adj(p1, v1)} and {_adj(p2, v2)} is also {_adj(p3, v3)}.",
-            medium=(f"Each object that is both {_adj(p1, v1)} and {_adj(p2, v2)} "
-                    f"must also be {_adj(p3, v3)}."),
-            long=(f"Whenever an object combines {_adj(p1, v1)} with {_adj(p2, v2)}, "
-                  f"it must additionally be {_adj(p3, v3)}."),
-        )
-
     if variant == "1propA_2propC":
-        p2, v2, p3, v3 = _g(a, "P2'", "V2'", "P3'", "V3'")
+        p1, v1, p2, v2, p3, v3 = _g(a, "P1'", "V1'", "P2'", "V2'", "P3'", "V3'")
         return dict(
             short=f"{_quant('Every', p1, v1)} must be {_adj(p2, v2)} and {_adj(p3, v3)}.",
             medium=(f"Each object that is {_adj(p1, v1)} must simultaneously satisfy "
@@ -419,7 +409,7 @@ def _c3(variant: str, a: dict) -> dict[str, str]:
         )
 
     if variant == "1propA_3propC":
-        p2, v2, p3, v3, p4, v4 = _g(a, "P2'", "V2'", "P3'", "V3'", "P4'", "V4'")
+        p1, v1, p2, v2, p3, v3, p4, v4 = _g(a, "P1'", "V1'", "P2'", "V2'", "P3'", "V3'", "P4'", "V4'")
         return dict(
             short=f"{_quant('Every', p1, v1)} must be {_adj(p2, v2)}, {_adj(p3, v3)}, and {_adj(p4, v4)}.",
             medium=(f"Each {_bare(p1, v1)} must satisfy all three consequent properties: "
@@ -429,116 +419,117 @@ def _c3(variant: str, a: dict) -> dict[str, str]:
                   f"missing any of these is forbidden."),
         )
 
+
+    if variant == "2propA_1propC":
+        p1, v1, p2, v2, p3, v3 = _g(a, "P1'", "V1'", "P2'", "V2'", "P3'", "V3'")
+        return dict(
+            short=f"Every object that is {_adj(p1, v1)} and {_adj(p2, v2)} is also {_adj(p3, v3)}.",
+            medium=(f"Each object that is both {_adj(p1, v1)} and {_adj(p2, v2)} "
+                    f"must also be {_adj(p3, v3)}."),
+            long=(f"Whenever there is a combination of the following properties, that is, an object is {_adj(p1, v1)} and {_adj(p2, v2)}, "
+                  f"it must additionally be {_adj(p3, v3)}."),
+        )
+
+    
     if variant == "2propA_2propC":
-        p2, v2, p3, v3, p4, v4 = _g(a, "P2'", "V2'", "P3'", "V3'", "P4'", "V4'")
+        p1, v1, p2, v2, p3, v3, p4, v4 = _g(a, "P1'", "V1'","P2'", "V2'", "P3'", "V3'", "P4'", "V4'")
         return dict(
             short=(f"Every object that is {_adj(p1, v1)} and {_adj(p2, v2)} must be "
                    f"{_adj(p3, v3)} and {_adj(p4, v4)}."),
             medium=(f"Each object that is {_adj(p1, v1)} and {_adj(p2, v2)} must also be "
                     f"{_adj(p3, v3)} and {_adj(p4, v4)}."),
-            long=(f"The combination of {_adj(p1, v1)} and {_adj(p2, v2)} in one object "
-                  f"requires that object to also be {_adj(p3, v3)} and {_adj(p4, v4)}."),
+            long=(f"Whenever there is a combination of the following properties, that is, the object is {_adj(p1, v1)} and {_adj(p2, v2)}, then it "
+                  f"requires that the object is also {_adj(p3, v3)} and {_adj(p4, v4)}."),
         )
 
     if variant == "2propA_neg_2propC":
-        p2, v2, p3, v3, p4, v4 = _g(a, "P2'", "V2'", "P3'", "V3'", "P4'", "V4'")
+        p1, v1, p2, v2, p3, v3, p4, v4 = _g(a, "P1'", "V1'", "P2'", "V2'", "P3'", "V3'", "P4'", "V4'")
         return dict(
             short=(f"Every object that is {_adj(p1, v1)} and {_not_adj(p2, v2)} must be "
                    f"{_adj(p3, v3)} and {_adj(p4, v4)}."),
             medium=(f"Each object that is {_adj(p1, v1)} but not {_adj(p2, v2)} must be "
                     f"{_adj(p3, v3)} and {_adj(p4, v4)}."),
-            long=(f"An object that is {_adj(p1, v1)} while lacking {_adj(p2, v2)} must "
-                  f"satisfy both {_adj(p3, v3)} and {_adj(p4, v4)}."),
+            long=(f"An object that is {_adj(p1, v1)} while not being {_adj(p2, v2)} must "
+                  f"satisfy being {_adj(p3, v3)} and {_adj(p4, v4)} simultaneously."),
         )
 
     if variant == "3propA_1propC":
-        p2, v2, p3, v3, p4, v4 = _g(a, "P2'", "V2'", "P3'", "V3'", "P4'", "V4'")
+        p1, v1, p2, v2, p3, v3, p4, v4 = _g(a, "P1'", "V1'", "P2'", "V2'", "P3'", "V3'", "P4'", "V4'")
         return dict(
-            short=(f"Every object with {_adj(p1, v1)}, {_adj(p2, v2)}, {_adj(p3, v3)} must be {_adj(p4, v4)}."),
-            medium=(f"Each object combining {_adj(p1, v1)}, {_adj(p2, v2)}, and {_adj(p3, v3)} "
+            short=(f"Every object that is {_adj(p1, v1)}, {_adj(p2, v2)}, {_adj(p3, v3)} must be {_adj(p4, v4)}."),
+            medium=(f"Each object that is {_adj(p1, v1)}, {_adj(p2, v2)}, and {_adj(p3, v3)} "
                     f"must also be {_adj(p4, v4)}."),
-            long=(f"An object that satisfies {_adj(p1, v1)}, {_adj(p2, v2)}, and {_adj(p3, v3)} "
+            long=(f"An object that is {_adj(p1, v1)}, {_adj(p2, v2)}, and {_adj(p3, v3)} "
                   f"is required to additionally be {_adj(p4, v4)}."),
         )
 
     if variant == "3propA_1propC_neg":
-        p2, v2, p3, v3, p4, v4 = _g(a, "P2'", "V2'", "P3'", "V3'", "P4'", "V4'")
+        p1, v1, p2, v2, p3, v3, p4, v4 = _g(a, "P1'", "V1'", "P2'", "V2'", "P3'", "V3'", "P4'", "V4'")
         return dict(
-            short=(f"Every object with {_adj(p1, v1)}, {_adj(p2, v2)}, {_adj(p3, v3)} must not be {_adj(p4, v4)}."),
-            medium=(f"Each object combining {_adj(p1, v1)}, {_adj(p2, v2)}, and {_adj(p3, v3)} "
+            short=(f"Every object that is {_adj(p1, v1)}, {_adj(p2, v2)}, {_adj(p3, v3)} must not be {_adj(p4, v4)}."),
+            medium=(f"Each object that is {_adj(p1, v1)}, {_adj(p2, v2)}, and {_adj(p3, v3)} "
                     f"must not be {_adj(p4, v4)}."),
-            long=(f"An object satisfying all three antecedent conditions ({_adj(p1, v1)}, "
-                  f"{_adj(p2, v2)}, {_adj(p3, v3)}) is forbidden from being {_adj(p4, v4)}."),
+            long=(f"An object satisfying the following three antecedent conditions of being ({_adj(p1, v1)}, "
+                  f"{_adj(p2, v2)}, and {_adj(p3, v3)}) is forbidden from being {_adj(p4, v4)}."),
         )
 
-    return _generic("C3", variant, a)
+    return None
 
 
 def _c4(variant: str, a: dict) -> dict[str, str]:
-    d1, d2 = _g(a, "D1'", "D2'")
+    
+    if variant == "1prop_2hop":
 
-    if variant == "0prop_2hop":
+        p1, v1, p2, v2, p3, v3, d1, d2 = _g(a, "P1'", "V1'", "P2'", "V2'", "P3'", "V3'", "D1'", "D2'")
         return dict(
-            short=f"There is a chain of 3 objects: first {_dir(d1)} second, second {_dir(d2)} third.",
-            medium=(f"The scene contains a 2-hop relational chain where one object is {_dir(d1)} "
-                    f"a second, which is in turn {_dir(d2)} a third."),
-            long=(f"Among all triples of distinct objects, at least one must form a directed chain: "
-                  f"X1 {_dir(d1)} X2, and X2 {_dir(d2)} X3, for three distinct objects X1, X2, X3."),
-        )
-
-    if variant == "0prop_3hop":
-        d3 = a.get("D3'", "?")
-        return dict(
-            short=f"A 3-hop chain ({_dir(d1)}, {_dir(d2)}, {_dir(d3)}) exists in the scene.",
-            medium=(f"The scene contains a 3-hop relational chain: X1 {_dir(d1)} X2, "
-                    f"X2 {_dir(d2)} X3, and X3 {_dir(d3)} X4."),
-            long=(f"At least one quadruple of distinct objects must form a directed 3-hop chain: "
-                  f"X1 {_dir(d1)} X2, X2 {_dir(d2)} X3, and X3 {_dir(d3)} X4."),
-        )
-
-    if variant == "0prop_shared":
-        return dict(
-            short=f"A hub object is {_dir(d1)} one object and {_dir(d2)} another.",
-            medium=(f"The scene contains a hub object that is simultaneously {_dir(d1)} one object "
-                    f"and {_dir(d2)} another distinct object."),
-            long=(f"Among all triples, at least one must include a hub Z that is {_dir(d1)} X1 "
-                  f"and {_dir(d2)} X2, where X1, X2, and Z are all distinct objects."),
-        )
-
-    if "2hop" in variant:
-        p1, v1, p2, v2, p3, v3 = _g(a, "P1'", "V1'", "P2'", "V2'", "P3'", "V3'")
-        return dict(
-            short=(f"A {_adj(p1, v1)} object is {_dir(d1)} {_obj(p2, v2)}, "
+            short=(f"There exists {_obj(p1, v1)} that is {_dir(d1)} {_obj(p2, v2)}, "
                    f"which is {_dir(d2)} {_obj(p3, v3)}."),
             medium=(f"The scene contains a 2-hop chain: {_obj(p1, v1)} is {_dir(d1)} "
-                    f"{_obj(p2, v2)}, and that object is {_dir(d2)} {_obj(p3, v3)}."),
+                    f"{_obj(p2, v2)}, and the latter is {_dir(d2)} {_obj(p3, v3)}."),
             long=(f"At least one triple of distinct objects must form a 2-hop chain with specific "
-                  f"properties: {_obj(p1, v1)} {_dir(d1)} {_obj(p2, v2)} {_dir(d2)} {_obj(p3, v3)}."),
+                  f"properties: {_obj(p1, v1)} {_dir(d1)} {_obj(p2, v2)} that is {_dir(d2)} {_obj(p3, v3)}."),
         )
 
-    if "shared" in variant:
-        p1, v1, p2, v2, p3, v3 = _g(a, "P1'", "V1'", "P2'", "V2'", "P3'", "V3'")
+    if variant == "1prop_2hop_mix":
+
+        p1, v1, p2, v2, p3, v3, d1, d2 = _g(a, "P1'", "V1'", "P2'", "V2'", "P3'", "V3'", "D1'", "D2'")
         return dict(
-            short=(f"A {_adj(p3, v3)} hub is {_dir(d1)} {_obj(p1, v1)} "
+            short=(f"There exists {_obj(p1, v1)} that is {_dir(d1)} {_obj(p2, v2)}, "
+                   f"which is {_dir(d2)} {_not_obj(p3, v3)}."),
+            medium=(f"The scene contains a 2-hop chain: {_obj(p1, v1)} is {_dir(d1)} "
+                    f"{_obj(p2, v2)}, and the latter is {_dir(d2)} {_not_obj(p3, v3)}."),
+            long=(f"At least one triple of distinct objects must form a 2-hop chain with specific "
+                  f"properties: {_obj(p1, v1)} {_dir(d1)} {_obj(p2, v2)} that is {_dir(d2)} {_not_obj(p3, v3)}."),
+        )
+
+        
+    if variant == "1prop_shared":
+        p1, v1, p2, v2, p3, v3, d1, d2 = _g(a, "P1'", "V1'", "P2'", "V2'", "P3'", "V3'", "D1'", "D2'")
+        
+        return dict(
+            short=(f"There exists {_obj(p3, v3)} that is {_dir(d1)} {_obj(p1, v1)}, "
                    f"and {_dir(d2)} {_obj(p2, v2)}."),
-            medium=(f"The scene contains a {_adj(p3, v3)} hub object that is {_dir(d1)} "
-                    f"{_obj(p1, v1)} and also {_dir(d2)} {_obj(p2, v2)}."),
-            long=(f"At least one triple must include a {_adj(p3, v3)} hub Z that is {_dir(d1)} "
-                  f"{_obj(p1, v1)} (X1) and {_dir(d2)} {_obj(p2, v2)} (X2)."),
+            medium=(f"The scene contains an object that is {_adj(p3, v3)} and it is {_dir(d1)} "
+                    f"{_obj(p1, v1)}, and is {_dir(d2)} {_obj(p2, v2)}."),
+            long=(f"There exists at least one triple of distinct objects such that the following constraints are satisfied: "
+                  f" {_obj(p3, v3)} {_dir(d1)} {_obj(p1, v1)}, and is {_dir(d2)} {_obj(p2, v2)}."),
         )
-
-    if "3hop" in variant:
-        p1, v1 = _g(a, "P1'", "V1'")
-        d3 = a.get("D3'", "?")
+        
+    if variant == "1prop_shared_mix":
+        p1, v1, p2, v2, p3, v3, d1, d2 = _g(a, "P1'", "V1'", "P2'", "V2'", "P3'", "V3'", "D1'", "D2'")
+        
         return dict(
-            short=f"A {_adj(p1, v1)} object starts a 3-hop chain ({_dir(d1)}, {_dir(d2)}, {_dir(d3)}).",
-            medium=(f"The scene contains a 3-hop chain beginning with {_obj(p1, v1)}: "
-                    f"X1 {_dir(d1)} X2 {_dir(d2)} X3 {_dir(d3)} X4."),
-            long=(f"At least one quadruple of distinct objects must form a directed 3-hop chain "
-                  f"starting from {_obj(p1, v1)}."),
+            short=(f"There exists {_obj(p3, v3)} that is {_dir(d1)} {_obj(p1, v1)}, "
+                   f"and {_dir(d2)} {_not_obj(p2, v2)}."),
+            medium=(f"The scene contains an object that is {_adj(p3, v3)} and it is {_dir(d1)} "
+                    f"{_obj(p1, v1)}, and is {_dir(d2)} {_not_obj(p2, v2)}."),
+            long=(f"There exists at least one triple of distinct objects such that the following constraints are satisfied: "
+                  f" {_obj(p3, v3)} {_dir(d1)} {_obj(p1, v1)}, and is {_dir(d2)} {_not_obj(p2, v2)}."),
         )
+        
 
-    return _generic("C4", variant, a)
+    
+    return None
 
 
 def _c5(variant: str, a: dict) -> dict[str, str]:
