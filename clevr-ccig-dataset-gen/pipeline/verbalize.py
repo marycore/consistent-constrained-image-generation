@@ -537,29 +537,29 @@ def _c5(variant: str, a: dict) -> dict[str, str]:
     if variant == "pair_propA_relC":
         p1, v1, p2, v2, d1 = _g(a, "P1'", "V1'", "P2'", "V2'", "D1'")
         return dict(
-            short=(f"If one object is {_adj(p1, v1)} and another is {_adj(p2, v2)}, the first is {_dir(d1)} the second."),
-            medium=(f"Whenever a pair of objects (X1, X2) has X1 being {_adj(p1, v1)} and X2 being "
-                    f"{_adj(p2, v2)}, X1 must be {_dir(d1)} X2."),
-            long=(f"For every pair of distinct objects where one is {_adj(p1, v1)} and the other "
+            short=(f"If there is {_obj(p1, v1)} and {_obj(p2, v2)}, then the former must be {_dir(d1)} the latter."),
+            long=(f"Whenever there is a pair of objects (X1, X2), such that X1 is {_adj(p1, v1)} and X2 is "
+                    f"{_adj(p2, v2)}, it must be ensured that X1 is always {_dir(d1)} X2."),
+            medium=(f"For every pair of distinct objects where one is {_adj(p1, v1)} and the other "
                   f"is {_adj(p2, v2)}, the first must stand {_dir(d2)} the second."),
         )
 
     if variant == "pair_propRelA_propC":
         p1, v1, p2, v2, d1, p3, v3 = _g(a, "P1'", "V1'", "P2'", "V2'", "D1'", "P3'", "V3'")
         return dict(
-            short=(f"If {_obj(p1, v1)} is {_dir(d1)} {_obj(p2, v2)}, "
+            short=(f"If there is {_obj(p1, v1)} {_dir(d1)} {_obj(p2, v2)}, "
             f"then the latter must also be {_adj(p3, v3)}."),
-            medium=(f"For any pair of objects (X1, X2), where X1 is {_adj(p1, v1)}, X2 is {_adj(p2, v2)}, and X1 is {_dir(d1)} X2, "
-                    f"then X2 must also be {_adj(p3, v3)}."),
-            long=(f"For every pair (X1, X2) where X1 is {_adj(p1, v1)}, X2 is {_adj(p2, v2)}, "
-                  f"and X1 is {_dir(d1)} X2, the object X2 must additionally be {_adj(p3, v3)}."),
+            medium=(f"For any pair of objects (X1, X2), if X1 is {_adj(p1, v1)}, X2 is {_adj(p2, v2)}, and X1 is {_dir(d1)} X2, "
+                    f"then X2 must be {_adj(p3, v3)}."),
+            long=(f"For every distinct pair of objects where one is {_adj(p1, v1)}, and the other is {_adj(p2, v2)}, "
+                  f"and the former is {_dir(d1)} latter, it must be additionally ensured that the latter is also {_adj(p3, v3)}."),
         )
 
     if variant == "pair_propRelA_RelC":
         p1, v1, p2, v2, d1, d2 = _g(a, "P1'", "V1'", "P2'", "V2'", "D1'",  "D2'")
         
         return dict(
-            short=(f"If {_obj(p1, v1)} is {_dir(d1)} {_obj(p2, v2)}, "
+            short=(f"If there is {_obj(p1, v1)} {_dir(d1)} {_obj(p2, v2)}, "
             f"then it must also be {_dir(d2)} the latter."),
             medium=(f"If X1 is {_obj(p1, v1)} and it is {_dir(d1)} X2, which is {_obj(p2, v2)}, "
                     f"then it is also the case that X1 is {_dir(d2)} X2."),
@@ -574,11 +574,11 @@ def _c5(variant: str, a: dict) -> dict[str, str]:
         # Meaning: for every pair (X1, X2) with X1 related D2' to X2, X1 must be P1'=V1'.
         d1, p1, v1 = a.get("D1'", "P1'", "V1'")
         return dict(
-            short=(f"If an object is {_dir(d1)} another, "
-                   f"it must be {_adj(p1, v1)}."),
-            medium=(f"Whenever X1 stands {_dir(d1)} X2, X1 is required to have {_adj(p1, v1)}."),
-            long=(f"For every ordered pair (X1, X2) where X1 stands {_dir(d1)} X2, "
-                  f"X1 must be {_adj(p1, v1)}."),
+            short=(f"All objects that are {_dir(d1)} some object, "
+                   f"must be {_adj(p1, v1)}."),
+            medium=(f"Whenever X1 stands {_dir(d1)} X2, X1 is required to be {_adj(p1, v1)}."),
+            long=(f"For every distinct pair of objects where the first stands {_dir(d1)} the second, "
+                  f"the first is required to be {_adj(p1, v1)}."),
         )
 
     if variant == "triple_propA_RelC":
