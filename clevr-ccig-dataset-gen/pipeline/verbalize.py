@@ -533,76 +533,71 @@ def _c4(variant: str, a: dict) -> dict[str, str]:
 
 
 def _c5(variant: str, a: dict) -> dict[str, str]:
-    p1, v1, p2, v2 = _g(a, "P1'", "V1'", "P2'", "V2'")
-
+    
     if variant == "pair_propA_relC":
-        d2 = a.get("D2'", "?")
+        p1, v1, p2, v2, d1 = _g(a, "P1'", "V1'", "P2'", "V2'", "D1'")
         return dict(
-            short=(f"Every pair with {_obj(p1, v1)} and {_obj(p2, v2)} must be "
-                   f"related ({_dir(d2)})."),
-            medium=(f"Whenever a pair (X1, X2) has X1 being {_adj(p1, v1)} and X2 being "
-                    f"{_adj(p2, v2)}, X1 must be {_dir(d2)} X2."),
+            short=(f"If one object is {_adj(p1, v1)} and another is {_adj(p2, v2)}, the first is {_dir(d1)} the second."),
+            medium=(f"Whenever a pair of objects (X1, X2) has X1 being {_adj(p1, v1)} and X2 being "
+                    f"{_adj(p2, v2)}, X1 must be {_dir(d1)} X2."),
             long=(f"For every pair of distinct objects where one is {_adj(p1, v1)} and the other "
                   f"is {_adj(p2, v2)}, the first must stand {_dir(d2)} the second."),
         )
 
     if variant == "pair_propRelA_propC":
-        d1, p3, v3 = _g(a, "D1'", "P3'", "V3'")
+        p1, v1, p2, v2, d1, p3, v3 = _g(a, "P1'", "V1'", "P2'", "V2'", "D1'", "P3'", "V3'")
         return dict(
-            short=(f"{_quant('Every', p1, v1)} that is {_dir(d1)} {_obj(p2, v2)} "
-                   f"requires that second object to be {_adj(p3, v3)}."),
-            medium=(f"Whenever X1 is {_adj(p1, v1)}, X2 is {_adj(p2, v2)}, and X1 is {_dir(d1)} X2, "
+            short=(f"If {_obj(p1, v1)} is {_dir(d1)} {_obj(p2, v2)}, "
+            f"then the latter must also be {_adj(p3, v3)}."),
+            medium=(f"For any pair of objects (X1, X2), where X1 is {_adj(p1, v1)}, X2 is {_adj(p2, v2)}, and X1 is {_dir(d1)} X2, "
                     f"then X2 must also be {_adj(p3, v3)}."),
             long=(f"For every pair (X1, X2) where X1 is {_adj(p1, v1)}, X2 is {_adj(p2, v2)}, "
                   f"and X1 is {_dir(d1)} X2, the object X2 must additionally be {_adj(p3, v3)}."),
         )
 
     if variant == "pair_propRelA_RelC":
-        d1, d2 = _g(a, "D1'", "D2'")
+        p1, v1, p2, v2, d1, d2 = _g(a, "P1'", "V1'", "P2'", "V2'", "D1'",  "D2'")
+        
         return dict(
-            short=(f"Every pair where X1 is {_adj(p1, v1)} and X2 is {_adj(p2, v2)}, "
-                   f"with X1 {_dir(d1)} X2, must also have X1 {_dir(d2)} X2."),
-            medium=(f"Whenever X1 is {_adj(p1, v1)}, X2 is {_adj(p2, v2)}, and X1 is {_dir(d1)} X2, "
-                    f"then X1 must also be {_dir(d2)} X2."),
+            short=(f"If {_obj(p1, v1)} is {_dir(d1)} {_obj(p2, v2)}, "
+            f"then it must also be {_dir(d2)} the latter."),
+            medium=(f"If X1 is {_obj(p1, v1)} and it is {_dir(d1)} X2, which is {_obj(p2, v2)}, "
+                    f"then it is also the case that X1 is {_dir(d2)} X2."),
             long=(f"For every pair (X1, X2) where X1 is {_adj(p1, v1)}, X2 is {_adj(p2, v2)}, "
-                  f"and X1 is {_dir(d1)} X2, the spatial relation {_dir(d2)} must also hold."),
+                  f"and X1 is {_dir(d1)} X2, the spatial relation {_dir(d2)} must also hold between X1 and X2."),
         )
 
-    if variant == "pair_propRelA_propRelC":
-        d1, p3, v3, d2 = _g(a, "D1'", "P3'", "V3'", "D2'")
-        return dict(
-            short=(f"Every pair where X1 is {_adj(p1, v1)} and {_dir(d1)} X2 ({_adj(p2, v2)}) "
-                   f"requires X2 to be {_adj(p3, v3)} and {_dir(d2)} X1."),
-            medium=(f"Whenever X1 is {_adj(p1, v1)}, X2 is {_adj(p2, v2)}, and X1 is {_dir(d1)} X2, "
-                    f"then X2 must be {_adj(p3, v3)} and X2 must be {_dir(d2)} X1."),
-            long=(f"For every qualifying pair (X1 {_adj(p1, v1)}, X2 {_adj(p2, v2)}, X1 {_dir(d1)} X2), "
-                  f"X2 must additionally be {_adj(p3, v3)} and stand {_dir(d2)} X1."),
-        )
+    
 
     if variant == "pair_relA_propC":
         # Template: :- object(X1), object(X2), X1!=X2, hasRelationship(X1,X2,D2'), not hasProperty(X1,P1',V1').
         # Meaning: for every pair (X1, X2) with X1 related D2' to X2, X1 must be P1'=V1'.
-        d2 = a.get("D2'", "?")
+        d1, p1, v1 = a.get("D1'", "P1'", "V1'")
         return dict(
-            short=(f"In every pair where X1 is {_dir(d2)} X2, "
-                   f"X1 must be {_adj(p1, v1)}."),
-            medium=(f"Whenever X1 stands {_dir(d2)} X2, X1 is required to have {_adj(p1, v1)}."),
-            long=(f"For every ordered pair (X1, X2) where X1 stands {_dir(d2)} X2, "
+            short=(f"If an object is {_dir(d1)} another, "
+                   f"it must be {_adj(p1, v1)}."),
+            medium=(f"Whenever X1 stands {_dir(d1)} X2, X1 is required to have {_adj(p1, v1)}."),
+            long=(f"For every ordered pair (X1, X2) where X1 stands {_dir(d1)} X2, "
                   f"X1 must be {_adj(p1, v1)}."),
         )
 
-    if "triple" in variant:
-        p3, v3, d1, d2 = _g(a, "P3'", "V3'", "D1'", "D2'")
+    if variant == "triple_propA_RelC":
+        # Template: :- object(X1), object(X2), X1!=X2, hasRelationship(X1,X2,D2'), not hasProperty(X1,P1',V1').
+        # Meaning: for every pair (X1, X2) with X1 related D2' to X2, X1 must be P1'=V1'.
+        d1, p1, v1, p2, v2, p3, v3, d2 = a.get("D1'", "P1'", "V1'", "P2'", "V2'", "P3'", "V3'", "D2'")
         return dict(
-            short=(f"In every triple ({_adj(p1, v1)}, {_adj(p2, v2)}, {_adj(p3, v3)}) "
-                   f"with X1 {_dir(d1)} X2, consequences on X2 or X3 are enforced."),
-            medium=(f"Whenever three objects satisfy the antecedent conditions "
-                    f"({_adj(p1, v1)}, {_adj(p2, v2)}, {_adj(p3, v3)}) with X1 {_dir(d1)} X2, "
-                    f"additional relational or property constraints on X2/X3 must hold."),
-            long=(f"For every qualifying triple of distinct objects with the antecedent properties "
-                  f"and {_dir(d1)} relation, the consequent conditions involving {_dir(d2)} "
-                  f"and additional properties are required."),
+            short =(f"If X1 is {_obj(p1,v1)}, X2 is {_obj(p2,v2)}, and X3 is {_obj(p3,v3)}, "
+            f"then X1 is {_dir(d1)} X2 and X2 is {_dir(d2)} X3.")
+            long=(f"If there are three objects, the first is {_adj(p1,v1)}, the second is {_adj(p2,v2)} and the third is {_adj(p3,v3)}, then, "
+                   f"it must be that the first is {_dir(d1)} the second and the second is {_dir(d2)} the third."),
+            medium=(f"For every triplet (X1, X2, X3), where X1 is {_obj(p1,v1)}, X2 is {_obj(p2,v2)}, and X3 is {_obj(p3,v3)}, then "
+                  f" X1 must stand {_dir(d1)} X2 and  X2 must stand {_dir(d2)} X3."),
         )
+
+    
+    
+    
+    
 
     return _generic("C5", variant, a)
 
