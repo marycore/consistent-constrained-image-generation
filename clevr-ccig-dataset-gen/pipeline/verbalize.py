@@ -205,13 +205,13 @@ def _c1(variant: str, a: dict) -> dict[str, str]:
             long=(f"At least one object must simultaneously avoid being {_adj(p1, v1)} "
                   f"and avoid being {_adj(p2, v2)}."),
         )
-
+    
     if variant == "2prop_mix_neg":
         p1, v1, p2, v2 = _g(a, "P1'", "V1'", "P2'", "V2'")
         return dict(
-            short=f"No object has {_adj(p1, v1)} and no object has {_not_adj(p2, v2)}.",
-            medium=f"The scene contains at least one object that is neither {_adj(p1, v1)} nor {_adj(p2, v2)}.",
-            long=(f"At least one object must simultaneously avoid being {_adj(p1, v1)} "
+            short=f"There exists an object that is {_adj(p1, v1)} and  {_not_adj(p2, v2)}.",
+            medium=f"The scene contains at least one object that is {_adj(p1, v1)} but not {_adj(p2, v2)}.",
+            long=(f"At least one object must simultaneously be {_adj(p1, v1)} "
                   f"and avoid being {_adj(p2, v2)}."),
         )
 
@@ -232,7 +232,7 @@ def _c1(variant: str, a: dict) -> dict[str, str]:
                    f"is neither {_adj(p3, v3)} nor {_adj(p3, v4)}."),
             medium=(f"The scene contains at least one object that is {_adj(p1, v1)} and {_adj(p2, v2)}, "
                     f"while being neither {_adj(p3, v3)} nor {_adj(p3, v4)}."),
-            long=(f"At least one object must satisfy: {_adj(p1, v1)}, {_adj(p2, v2)}, "
+            long=(f"At least one object must satisfy the following conditions: {_adj(p1, v1)} and {_adj(p2, v2)}, "
                   f"but must not be {_adj(p3, v3)} and must not be {_adj(p3, v4)}."),
         )
 
@@ -253,7 +253,7 @@ def _c1(variant: str, a: dict) -> dict[str, str]:
                    f"is {_not_adj(p3, v3)} and {_not_adj(p4, v4)}."),
             medium=(f"The scene contains at least one object that is {_adj(p1, v1)} and {_adj(p2, v2)}, "
                     f"while being {_not_adj(p3, v3)} and {_not_adj(p4, v4)}."),
-            long=(f"At least one object must satisfy: {_adj(p1, v1)}, {_adj(p2, v2)}, "
+            long=(f"At least one object must satisfy the following requirements: {_adj(p1, v1)} and {_adj(p2, v2)}, "
                   f"while not being {_adj(p3, v3)} and not being {_adj(p4, v4)}."),
         )
 
@@ -332,7 +332,7 @@ def _c2(variant: str, a: dict) -> dict[str, str]:
     if variant == "3prop_val_mix_neg":
         p1, v1, p2, v2, p3, v3, v4 = _g(a, "P1'", "V1'","P2'", "V2'", "P3'", "V3'", "V4'")
         return dict(
-            short=(f"No object must be simultaneously {_adj(p1, v1)} and {_adj(p2, v2)} "
+            short=(f"No object must be simultaneously be {_adj(p1, v1)} and {_adj(p2, v2)} "
                    f"and is neither {_adj(p3, v3)} nor {_adj(p3, v4)}."),
             medium=(f"It is impossible to have an object that is simultaneously {_adj(p1, v1)} and {_adj(p2, v2)} and "
                     f"{_not_adj(p3, v3)} and {_not_adj(p3, v4)}."),
@@ -347,7 +347,7 @@ def _c2(variant: str, a: dict) -> dict[str, str]:
                    f"and is neither {_adj(p3, v3)} nor {_adj(p4, v4)}."),
             medium=(f"It is impossible to have an object that is simultaneously {_adj(p1, v1)} and {_adj(p2, v2)} and "
                     f"{_not_adj(p3, v3)} and {_not_adj(p4, v4)}."),
-            long=(f"The scene requires that any object with the following combination is not present: {_adj(p1, v1)} with {_adj(p2, v2)} "
+            long=(f"The scene requires that any object with the following combination is not present: {_adj(p1, v1)} and {_adj(p2, v2)} "
                   f"and {_not_adj(p3, v3)} and {_not_adj(p4, v4)}."),
         )
         
