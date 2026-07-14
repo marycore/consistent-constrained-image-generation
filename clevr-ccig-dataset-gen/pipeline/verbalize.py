@@ -58,6 +58,12 @@ def _not_obj(p: str, v: str) -> str:
         return f"an object not in {v}"
     return f"an object that is not {v}"
 
+def _not_bare(p: str, v: str) -> str:
+    """'object that is not red', 'an object not in region_1'."""
+    if p == "region":
+        return f"object not in {v}"
+    return f"object that is not {v}"
+
 
 def _bare(p: str, v: str) -> str:
     """
@@ -123,7 +129,7 @@ def _n_obj(n: str) -> str:
 
 
 def _count_word(n: str) -> str:
-    return {"1": "one", "2": "two", "3": "three"}.get(n, n)
+    return {"1": "one", "2": "two", "3": "three", "4": "four", "5": "five"}.get(n, n)
 
 
 def _at_least(n: str) -> str:
@@ -136,8 +142,9 @@ def _at_most(n: str) -> str:
 
 def _exactly(n: str) -> str:
     w = _count_word(n)
-    return f"exactly {w}"
+    return f"exactly {w}" if n != "1" else "exactly one"
 
+   
 
 # ── Per-class verbalizers ───────────────────────────────────────────────────
 
@@ -727,145 +734,153 @@ def _c7(variant: str, a: dict) -> dict[str, str]:
 
 
 def _c8(variant: str, a: dict) -> dict[str, str]:
-    p1, v1, n = _g(a, "P1'", "V1'", "N'")
-
-    if variant == "1prop_exact":
-        return dict(
-            short=f"There are {_exactly(n)} {_objs(p1, v1)} in the scene.",
-            medium=f"The scene must contain {_exactly(n)} {_n_obj(n)} that {('are' if n != '1' else 'is')} {_adj(p1, v1)}.",
-            long=(f"The total count of {_adj(p1, v1)} objects across the entire scene must be "
-                  f"{_exactly(n)} — neither more nor fewer."),
-        )
-
+    
     if variant == "1prop_atleast":
+        p1, v1, n = _g(a, "P1'", "V1'", "N'")
         return dict(
-            short=f"There are {_at_least(n)} {_objs(p1, v1)} in the scene.",
-            medium=f"The scene must contain {_at_least(n)} {_objs(p1, v1)}.",
-            long=(f"The count of {_adj(p1, v1)} objects in the scene must reach "
-                  f"a minimum of {n}."),
+            short=f"There {'is' if n=='1' else 'are'} {_at_least(n)} {_bare(p1, v1) if n=='1' else _objs(p1, v1)} in the scene.",
+            medium=f"The scene must contain {_at_least(n)} {_bare(p1, v1) if n=='1' else _objs(p1, v1)}.",
+            long=(f"The following cardinality constraint is to be satisfied by the scene generated: The count of objects that are {_adj(p1, v1)} in the scene must be "
+                  f"at least {n}."),
         )
-
-    if variant == "1prop_atmost":
-        return dict(
-            short=f"There are {_at_most(n)} {_objs(p1, v1)} in the scene.",
-            medium=f"The scene contains {_at_most(n)} {_objs(p1, v1)}.",
-            long=(f"The count of {_adj(p1, v1)} objects in the scene must not exceed {n}."),
-        )
-
-    if variant == "1prop_exact_neg":
-        return dict(
-            short=f"There are {_exactly(n)} {_not_objs(p1, v1)} in the scene.",
-            medium=f"The scene must contain {_exactly(n)} {_n_obj(n)} that {'is' if n == '1' else 'are'} {_not_adj(p1, v1)}.",
-            long=(f"The count of objects that are not {_adj(p1, v1)} must equal exactly {n}."),
-        )
-
+    
     if variant == "1prop_atleast_neg":
+        p1, v1, n = _g(a, "P1'", "V1'", "N'")
+
         return dict(
-            short=f"There are {_at_least(n)} {_not_objs(p1, v1)} in the scene.",
+            short=f"There {'is' if n == '1' else 'are'} {_at_least(n)} {_not_bare(p1, v1) if n=='1' else _not_objs(p1, v1)} in the scene.",
             medium=f"The scene must contain {_at_least(n)} {_n_obj(n)} that {'is' if n == '1' else 'are'} {_not_adj(p1, v1)}.",
-            long=(f"At least {n} objects in the scene must not be {_adj(p1, v1)}."),
+            long=(f"The following cardinality constraint is to be satisfied by the scene generated: At least {n} {_n_obj(n)} in the scene must not be {_adj(p1, v1)}."),
         )
 
-    if variant == "1prop_atmost_neg":
+    
+    if variant == "1prop_exact":
+        p1, v1, n = _g(a, "P1'", "V1'", "N'")
         return dict(
-            short=f"There are {_at_most(n)} {_not_objs(p1, v1)} in the scene.",
-            medium=f"The scene contains {_at_most(n)} {_n_obj(n)} that {'is' if n == '1' else 'are'} {_not_adj(p1, v1)}.",
-            long=(f"At most {n} objects in the scene may not be {_adj(p1, v1)}."),
-        )
-
-    if variant == "2prop_exact":
-        p2, v2 = _g(a, "P2'", "V2'")
-        return dict(
-            short=f"There are {_exactly(n)} objects that are {_adj(p1, v1)} and {_adj(p2, v2)}.",
-            medium=(f"The scene must contain {_exactly(n)} {_n_obj(n)} satisfying both "
-                    f"{_adj(p1, v1)} and {_adj(p2, v2)}."),
-            long=(f"The count of objects combining {_adj(p1, v1)} with {_adj(p2, v2)} must be "
+            short=f"There {'is' if n=='1' else 'are'} {_exactly(n)} {_bare(p1, v1) if n=='1' else _objs(p1, v1)} in the scene.",
+            medium=f"The scene must contain {_exactly(n)} {_bare(p1, v1) if n=='1' else _objs(p1, v1)}.",
+            long=(f"The following cardinality constraint is to be satisfied by the scene generated: The count of objects that are {_adj(p1, v1)} in the scene must reach "
                   f"exactly {n}."),
         )
+    
+    if variant == "1prop_exact_neg":
+        p1, v1, n = _g(a, "P1'", "V1'", "N'")
 
-    if variant == "2prop_atleast":
-        p2, v2 = _g(a, "P2'", "V2'")
         return dict(
-            short=f"There are {_at_least(n)} objects that are {_adj(p1, v1)} and {_adj(p2, v2)}.",
-            medium=(f"The scene must contain {_at_least(n)} {_n_obj(n)} that {'is' if n == '1' else 'are'} "
-                    f"{_adj(p1, v1)} and {_adj(p2, v2)}."),
-            long=(f"At least {n} objects must simultaneously satisfy {_adj(p1, v1)} "
-                  f"and {_adj(p2, v2)}."),
+            short=f"There {'is' if n == '1' else 'are'} {_exactly(n)} {_not_bare(p1, v1) if n=='1' else _not_objs(p1, v1)} in the scene.",
+            medium=f"The scene must contain {_exactly(n)} {_n_obj(n)} that {'is' if n == '1' else 'are'} {_not_adj(p1, v1)}.",
+            long=(f"The following cardinality constraint is to be satisfied by the scene generated: Exactly {n} {_n_obj(n)} in the scene must not be {_adj(p1, v1)}."),
         )
-
-    if variant == "2prop_atmost":
-        p2, v2 = _g(a, "P2'", "V2'")
+    
+    if variant == "1prop_atmost":
+        p1, v1, n = _g(a, "P1'", "V1'", "N'")
         return dict(
-            short=f"There are {_at_most(n)} objects that are {_adj(p1, v1)} and {_adj(p2, v2)}.",
-            medium=(f"The scene contains {_at_most(n)} {_n_obj(n)} satisfying both "
-                    f"{_adj(p1, v1)} and {_adj(p2, v2)}."),
-            long=(f"At most {n} objects may combine {_adj(p1, v1)} with {_adj(p2, v2)}."),
+            short=f"There {'is' if n=='1' else 'are'} {_at_most(n)} {_bare(p1, v1) if n=='1' else _objs(p1, v1)} in the scene.",
+            medium=f"The scene must contain {_at_most(n)} {_bare(p1, v1) if n=='1' else _objs(p1, v1)}.",
+            long=(f"The following cardinality constraint is to be satisfied by the scene generated: The count of objects that are {_adj(p1, v1)} in the scene must not exceed "
+                  f"{n}."),
         )
+    
+    if variant == "1prop_atmost_neg":
+        p1, v1, n = _g(a, "P1'", "V1'", "N'")
 
-    if variant in ("2prop_exact_neg", "2prop_atleast_neg", "2prop_atmost_neg"):
-        p2, v2 = _g(a, "P2'", "V2'")
-        op = ("exactly" if "exact" in variant
-              else "at least" if "atleast" in variant else "at most")
         return dict(
-            short=f"There are {op} {n} objects that are {_adj(p1, v1)} but not {_adj(p2, v2)}.",
-            medium=(f"The scene must contain {op} {n} {_n_obj(n)} that {'is' if n == '1' else 'are'} "
-                    f"{_adj(p1, v1)} while not being {_adj(p2, v2)}."),
-            long=(f"The count of {_adj(p1, v1)} objects that lack {_adj(p2, v2)} must be {op} {n}."),
+            short=f"There {'is' if n == '1' else 'are'} {_at_most(n)} {_not_bare(p1, v1) if n=='1' else _not_objs(p1, v1)} in the scene.",
+            medium=f"The scene must contain {_at_most(n)} {_n_obj(n)} that {'is' if n == '1' else 'are'} {_not_adj(p1, v1)}.",
+            long=(f"The following cardinality constraint is to be satisfied by the scene generated: Not more than {n} {_n_obj(n)} in the scene can be {_not_adj(p1, v1)}."),
         )
-
-    if variant == "1prop_exact_relational":
-        p2, v2, d1 = _g(a, "P2'", "V2'", "D1'")
-        return dict(
-            short=(f"{_exactly(n).capitalize()} {_objs(p1, v1)} "
-                   f"stand {_dir(d1)} some {_bare(p2, v2)}."),
-            medium=(f"The scene must have {_exactly(n)} {_objs(p1, v1)} "
-                    f"that each stand {_dir(d1)} some {_bare(p2, v2)}."),
-            long=(f"The count of {_objs(p1, v1)} standing {_dir(d1)} any {_bare(p2, v2)} "
-                  f"must equal exactly {n}."),
-        )
-
-    if variant == "1prop_atleast_relational":
-        p2, v2, d1 = _g(a, "P2'", "V2'", "D1'")
-        return dict(
-            short=(f"{_at_least(n).capitalize()} {_objs(p1, v1)} "
-                   f"stand {_dir(d1)} some {_bare(p2, v2)}."),
-            medium=(f"The scene must have {_at_least(n)} {_objs(p1, v1)} "
-                    f"standing {_dir(d1)} some {_bare(p2, v2)}."),
-            long=(f"At least {n} {_objs(p1, v1)} must each stand {_dir(d1)} "
-                  f"at least one {_bare(p2, v2)}."),
-        )
-
-    if variant == "1prop_atmost_relational":
-        p2, v2, d1 = _g(a, "P2'", "V2'", "D1'")
-        return dict(
-            short=(f"{_at_most(n).capitalize()} {_objs(p1, v1)} "
-                   f"stand {_dir(d1)} some {_bare(p2, v2)}."),
-            medium=(f"The scene contains {_at_most(n)} {_objs(p1, v1)} "
-                    f"standing {_dir(d1)} some {_bare(p2, v2)}."),
-            long=(f"No more than {n} {_objs(p1, v1)} may stand {_dir(d1)} "
-                  f"any {_bare(p2, v2)}."),
-        )
-
+    
+    
     if variant in ("1prop_exact_relational_neg", "1prop_atleast_relational_neg",
                    "1prop_atmost_relational_neg"):
-        p2, v2, d1 = _g(a, "P2'", "V2'", "D1'")
+        p1, v1, p2, v2, d1 = _g(a, "P1'", "V1'", "P2'", "V2'", "D1'")
         op = ("exactly" if "exact" in variant
               else "at least" if "atleast" in variant else "at most")
         return dict(
-            short=(f"{op.capitalize()} {n} {_objs(p1, v1)} do NOT "
+            short=(f"There {'is' if n=='1' else 'are'} {op} {n} {_bare(p1, v1) if n=='1' else _objs(p1, v1)} that {'does' if n=='1' else 'do'} not "
                    f"stand {_dir(d1)} any {_bare(p2, v2)}."),
-            medium=(f"The scene has {op} {n} {_objs(p1, v1)} that "
-                    f"do not stand {_dir(d1)} any {_bare(p2, v2)}."),
-            long=(f"The count of {_objs(p1, v1)} that fail to stand {_dir(d1)} "
+            medium=(f"The scene has {op} {n} {_bare(p1, v1) if n=='1' else _objs(p1, v1)} that "
+                    f"{'does' if n=='1' else 'do'} not stand {_dir(d1)} any {_bare(p2, v2)}."),
+            long=(f"The scene must satisfy the following cardinality constraint. The number of {_objs(p1, v1)} that fail to stand {_dir(d1)} "
                   f"any {_bare(p2, v2)} must be {op} {n}."),
         )
 
-    return _generic("C8", variant, a)
+    if variant in ("1prop_exact_relational", "1prop_atleast_relational",
+                   "1prop_atmost_relational"):
+        p1, v1, p2, v2, d1 = _g(a, "P1'", "V1'", "P2'", "V2'", "D1'")
+        op = ("exactly" if "exact" in variant
+              else "at least" if "atleast" in variant else "at most")
+        return dict(
+            short=(f"There {'is' if n=='1' else 'are'} {op} {n} {_bare(p1, v1) if n=='1' else _objs(p1, v1)} that {'is' if n=='1' else 'are'} "
+                   f"standing {_dir(d1)} any {_bare(p2, v2)}."),
+            medium=(f"The scene has {op} {n} {_bare(p1, v1) if n=='1' else _objs(p1, v1)} that "
+                    f"{'is' if n=='1' else 'are'} standing {_dir(d1)} any {_bare(p2, v2)}."),
+            long=(f"The scene must satisfy the following cardinality constraint. The number of {_objs(p1, v1)} that stand {_dir(d1)} "
+                  f"any {_bare(p2, v2)} must be {op} {n}."),
+        )
+    
+    
+    
+    if variant == "2prop_exact":
+        p1, v1, p2, v2, n = _g(a, "P1'", "V1'", "P2'", "V2'","N'")
+        return dict(
+            short=f"There {'is' if n=='1' else 'are'} {_exactly(n)} {_n_obj(n)} that {'is' if n=='1' else 'are'} {_adj(p1, v1) and _adj(p2, v2)}.",
+            medium=f"The scene must contain {_exactly(n)} {_n_obj(n)} that {'is' if n=='1' else 'are'} {_adj(p1, v1) and _adj(p2, v2)} in the scene.",
+            long=(f"The following cardinality constraint is to be satisfied by the scene generated: The count of objects that are {_adj(p1, v1)} and {_adj(p2, v2)} simultaneously in the scene must reach "
+                  f"exactly {n}."),
+        )
+    
+    if variant == "2prop_exact_neg":
+        p1, v1, p2, v2, n = _g(a, "P1'", "V1'", "P2'", "V2'","N'")
+        return dict(
+            short=f"There {'is' if n=='1' else 'are'} {_exactly(n)} {_n_obj(n)} that {'is' if n=='1' else 'are'} {_adj(p1, v1) and _not_adj(p2, v2)}.",
+            medium=f"The scene must contain {_exactly(n)} {_n_obj(n)} that {'is' if n=='1' else 'are'} {_adj(p1, v1) and _not_adj(p2, v2)} in the scene.",
+            long=(f"The following cardinality constraint is to be satisfied by the scene generated: The count of objects that are {_adj(p1, v1)} and {_not_adj(p2, v2)} simultaneously in the scene must reach "
+                  f"exactly {n}."),
+        )
+    
+    if variant == "2prop_atleast":
+        p1, v1, p2, v2, n = _g(a, "P1'", "V1'", "P2'", "V2'","N'")
+        return dict(
+            short=f"There {'is' if n=='1' else 'are'} {_at_least(n)} {_n_obj(n)} that {'is' if n=='1' else 'are'} {_adj(p1, v1) and _adj(p2, v2)}.",
+            medium=f"The scene must contain {_at_least(n)} {_n_obj(n)} that {'is' if n=='1' else 'are'} {_adj(p1, v1) and _adj(p2, v2)} in the scene.",
+            long=(f"The following cardinality constraint is to be satisfied by the scene generated: The count of objects that are {_adj(p1, v1)} and {_adj(p2, v2)} simultaneously in the scene must be "
+                  f"at least {n}."),
+        )
+    
+    if variant == "2prop_atleast_neg":
+        p1, v1, p2, v2, n = _g(a, "P1'", "V1'", "P2'", "V2'","N'")
+        return dict(
+            short=f"There {'is' if n=='1' else 'are'} {_at_least(n)} {_n_obj(n)} that {'is' if n=='1' else 'are'} {_adj(p1, v1) and _not_adj(p2, v2)}.",
+            medium=f"The scene must contain {_at_least(n)} {_n_obj(n)} that {'is' if n=='1' else 'are'} {_adj(p1, v1) and _not_adj(p2, v2)} in the scene.",
+            long=(f"The following cardinality constraint is to be satisfied by the scene generated: The count of objects that are {_adj(p1, v1)} and {_not_adj(p2, v2)} simultaneously in the scene must be "
+                  f"at least {n}."),
+        )
+    
+    if variant == "2prop_atmost":
+        p1, v1, p2, v2, n = _g(a, "P1'", "V1'", "P2'", "V2'","N'")
+        return dict(
+            short=f"There {'is' if n=='1' else 'are'} {_at_most(n)} {_n_obj(n)} that {'is' if n=='1' else 'are'} {_adj(p1, v1) and _adj(p2, v2)}.",
+            medium=f"The scene must contain {_at_most(n)} {_n_obj(n)} that {'is' if n=='1' else 'are'} {_adj(p1, v1) and _adj(p2, v2)} in the scene.",
+            long=(f"The following cardinality constraint is to be satisfied by the scene generated: The count of objects that are {_adj(p1, v1)} and {_adj(p2, v2)} simultaneously in the scene can not exceed "
+                  f"{n}."),
+        )
+    
+    if variant == "2prop_atmost_neg":
+        p1, v1, p2, v2, n = _g(a, "P1'", "V1'", "P2'", "V2'","N'")
+        return dict(
+            short=f"There {'is' if n=='1' else 'are'} {_at_most(n)} {_n_obj(n)} that {'is' if n=='1' else 'are'} {_adj(p1, v1) and _not_adj(p2, v2)}.",
+            medium=f"The scene must contain {_at_most(n)} {_n_obj(n)} that {'is' if n=='1' else 'are'} {_adj(p1, v1) and _not_adj(p2, v2)} in the scene.",
+            long=(f"The following cardinality constraint is to be satisfied by the scene generated: The count of objects that are {_adj(p1, v1)} and {_not_adj(p2, v2)} simultaneously in the scene can not exceed "
+                  f"{n}."),
+        )
+    
+    
+    return None
 
 
 def _c9(variant: str, a: dict) -> dict[str, str]:
-    p1, v1, p2, v2 = _g(a, "P1'", "V1'", "P2'", "V2'")
-
+    
     if variant == "1prop":
         p1, v1, p2, v2 = _g(a, "P1'", "V1'", "P2'", "V2'")
 
