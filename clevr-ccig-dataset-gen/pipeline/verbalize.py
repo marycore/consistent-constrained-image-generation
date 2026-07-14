@@ -594,12 +594,19 @@ def _c5(variant: str, a: dict) -> dict[str, str]:
                   f" X1 must stand {_dir(d1)} X2 and  X2 must stand {_dir(d2)} X3."),
         )
 
-    
-    
-    
-    
+    if variant == "triple_propRelA_relC":
+        d1, p1, v1, p2, v2, p3, v3, d2 = a.get("D1'", "P1'", "V1'", "P2'", "V2'", "P3'", "V3'", "D2'")
+        return dict(
+            short =(f"If X1 is {_obj(p1,v1)}, X2 is {_obj(p2,v2)},  X3 is {_obj(p3,v3)}, and "
+            f"X1 is {_dir(d1)} X2, then X2 must stand {_dir(d2)} X3.")
+            long=(f"If there are three objects, the first is {_adj(p1,v1)}, the second is {_adj(p2,v2)} and the third is {_adj(p3,v3)}, and "
+                   f"it is observed that the first is {_dir(d1)} the second, then it must be ensured that the second is {_dir(d2)} the third."),
+            medium=(f"For every triplet (X1, X2, X3), where X1 is {_obj(p1,v1)}, X2 is {_obj(p2,v2)}, and X3 is {_obj(p3,v3)} and  "
+                  f" X1 is {_dir(d1)} X2, then it is required that X2 stands {_dir(d2)} X3."),
+        )
 
-    return _generic("C5", variant, a)
+    
+    return None
 
 
 def _c6(variant: str, a: dict) -> dict[str, str]:
