@@ -554,10 +554,11 @@ def _c5(variant: str, a: dict) -> dict[str, str]:
         p1, v1, p2, v2, d1 = _g(a, "P1'", "V1'", "P2'", "V2'", "D1'")
         return dict(
             short=(f"If there is {_obj(p1, v1)} and {_obj(p2, v2)}, then the former must be {_dir(d1)} the latter."),
-            long=(f"Whenever there is a pair of objects (X1, X2), such that X1 is {_adj(p1, v1)} and X2 is "
-                    f"{_adj(p2, v2)}, it must be ensured that X1 is always {_dir(d1)} X2."),
             medium=(f"For every pair of distinct objects where one is {_adj(p1, v1)} and the other "
-                  f"is {_adj(p2, v2)}, the first must stand {_dir(d2)} the second."),
+                  f"is {_adj(p2, v2)}, the first must stand {_dir(d1)} the second."),
+            long=(f"Whenever there is a pair of objects - the first is {_adj(p1, v1)} and the second is "
+                    f"{_adj(p2, v2)}, it must be ensured that the first is always {_dir(d1)} the second."),
+            
         )
 
     if variant == "pair_propRelA_propC":
@@ -565,10 +566,11 @@ def _c5(variant: str, a: dict) -> dict[str, str]:
         return dict(
             short=(f"If there is {_obj(p1, v1)} {_dir(d1)} {_obj(p2, v2)}, "
             f"then the latter must also be {_adj(p3, v3)}."),
-            medium=(f"For any pair of objects (X1, X2), if X1 is {_adj(p1, v1)}, X2 is {_adj(p2, v2)}, and X1 is {_dir(d1)} X2, "
-                    f"then X2 must be {_adj(p3, v3)}."),
-            long=(f"For every distinct pair of objects where one is {_adj(p1, v1)}, and the other is {_adj(p2, v2)}, "
-                  f"and the former is {_dir(d1)} latter, it must be additionally ensured that the latter is also {_adj(p3, v3)}."),
+            medium=(f"For every distinct pair of objects where one is {_adj(p1, v1)}, and the other is {_adj(p2, v2)}, "
+                  f"and the former is {_dir(d1)} latter, it must be that the latter is also {_adj(p3, v3)}."),
+            long=(f"For every pair of distinct {_bare(p1, v1)} and {_bare(p2, v2)}, where the {_bare(p1, v1)} is {_dir(d1)} "
+                  f" the {_bare(p2, v2)}, it must be ensured that the {_bare(p2, v2)} is also {_adj(p3, v3)}."),
+            
         )
 
     if variant == "pair_propRelA_RelC":
@@ -577,22 +579,21 @@ def _c5(variant: str, a: dict) -> dict[str, str]:
         return dict(
             short=(f"If there is {_obj(p1, v1)} {_dir(d1)} {_obj(p2, v2)}, "
             f"then it must also be {_dir(d2)} the latter."),
-            medium=(f"If X1 is {_obj(p1, v1)} and it is {_dir(d1)} X2, which is {_obj(p2, v2)}, "
-                    f"then it is also the case that X1 is {_dir(d2)} X2."),
-            long=(f"For every pair (X1, X2) where X1 is {_adj(p1, v1)}, X2 is {_adj(p2, v2)}, "
-                  f"and X1 is {_dir(d1)} X2, the spatial relation {_dir(d2)} must also hold between X1 and X2."),
+            medium=(f"For every distinct pair of objects where one is {_adj(p1, v1)}, and the other is {_adj(p2, v2)}, "
+                  f"and the former is {_dir(d1)} the latter, it must be that the former is also {_dir(d2)} the latter."),
+            long=(f"For every pair of distinct {_bare(p1, v1)} and {_bare(p2, v2)}, where the {_bare(p1, v1)} is {_dir(d1)} "
+                  f" the {_bare(p2, v2)}, it must be ensured that the {_bare(p1, v1)} is also {_dir(d1)} the {_bare(p2, v2)}."),
         )
-
-    
 
     if variant == "pair_relA_propC":
         # Template: :- object(X1), object(X2), X1!=X2, hasRelationship(X1,X2,D2'), not hasProperty(X1,P1',V1').
         # Meaning: for every pair (X1, X2) with X1 related D2' to X2, X1 must be P1'=V1'.
         d1, p1, v1 = a.get("D1'", "P1'", "V1'")
         return dict(
-            short=(f"All objects that are {_dir(d1)} some object, "
+            short=(f"Only objects that are {_adj(p1, v1)} can be {_dir(d1)} any object."),
+            
+            medium=(f"All objects that are {_dir(d1)} some object, "
                    f"must be {_adj(p1, v1)}."),
-            medium=(f"Whenever X1 stands {_dir(d1)} X2, X1 is required to be {_adj(p1, v1)}."),
             long=(f"For every distinct pair of objects where the first stands {_dir(d1)} the second, "
                   f"the first is required to be {_adj(p1, v1)}."),
         )
@@ -602,23 +603,26 @@ def _c5(variant: str, a: dict) -> dict[str, str]:
         # Meaning: for every pair (X1, X2) with X1 related D2' to X2, X1 must be P1'=V1'.
         d1, p1, v1, p2, v2, p3, v3, d2 = a.get("D1'", "P1'", "V1'", "P2'", "V2'", "P3'", "V3'", "D2'")
         return dict(
-            short =(f"If X1 is {_obj(p1,v1)}, X2 is {_obj(p2,v2)}, and X3 is {_obj(p3,v3)}, "
-            f"then X1 is {_dir(d1)} X2 and X2 is {_dir(d2)} X3.")
-            long=(f"If there are three objects, the first is {_adj(p1,v1)}, the second is {_adj(p2,v2)} and the third is {_adj(p3,v3)}, then, "
-                   f"it must be that the first is {_dir(d1)} the second and the second is {_dir(d2)} the third."),
-            medium=(f"For every triplet (X1, X2, X3), where X1 is {_obj(p1,v1)}, X2 is {_obj(p2,v2)}, and X3 is {_obj(p3,v3)}, then "
-                  f" X1 must stand {_dir(d1)} X2 and  X2 must stand {_dir(d2)} X3."),
+            short = (f"If one object is {_adj(p1, v1)}, another is {_adj(p2, v2)}, and a third is {_adj(p3, v3)}, "
+                    f"then the first object must be {_dir(d1)} the second, and the second must be {_dir(d2)} the third."),
+            medium=(f"For every triplet of objects, where the first is {_adj(p1,v1)}, the second is {_adj(p2,v2)}, and the third is {_adj(p3,v3)}, then "
+                  f" the first must stand {_dir(d1)} the second and the second must stand {_dir(d2)} the third."),
+
+            long=(f"If there are three distinct objects such that the first is {_obj(p1,v1)}, the second is {_obj(p2,v2)} and the third is {_obj(p3,v3)}, then, "
+                   f"it must be that the {_obj(p1,v1)} is {_dir(d1)} the {_obj(p2,v2)} and the {_obj(p2,v2)} is {_dir(d2)} the {_obj(p3,v3)}."),
+            
         )
 
     if variant == "triple_propRelA_relC":
         d1, p1, v1, p2, v2, p3, v3, d2 = a.get("D1'", "P1'", "V1'", "P2'", "V2'", "P3'", "V3'", "D2'")
         return dict(
-            short =(f"If X1 is {_obj(p1,v1)}, X2 is {_obj(p2,v2)},  X3 is {_obj(p3,v3)}, and "
-            f"X1 is {_dir(d1)} X2, then X2 must stand {_dir(d2)} X3.")
-            long=(f"If there are three objects, the first is {_adj(p1,v1)}, the second is {_adj(p2,v2)} and the third is {_adj(p3,v3)}, and "
-                   f"it is observed that the first is {_dir(d1)} the second, then it must be ensured that the second is {_dir(d2)} the third."),
-            medium=(f"For every triplet (X1, X2, X3), where X1 is {_obj(p1,v1)}, X2 is {_obj(p2,v2)}, and X3 is {_obj(p3,v3)} and  "
-                  f" X1 is {_dir(d1)} X2, then it is required that X2 stands {_dir(d2)} X3."),
+            
+            short = (f"If one object is {_adj(p1, v1)}, another is {_adj(p2, v2)}, and a third is {_adj(p3, v3)}, and "
+                    f"the first object is {_dir(d1)} the second, then, the second must be {_dir(d2)} the third."),
+            medium=(f"For every triplet of objects, where the first is {_adj(p1,v1)}, the second is {_adj(p2,v2)}, and the third is {_adj(p3,v3)}, and "
+                  f" the first stands {_dir(d1)} the second, then, the second must stand {_dir(d2)} the third."),
+            long=(f"If there are three distinct objects such that the first is {_obj(p1,v1)}, the second is {_obj(p2,v2)} and the third is {_obj(p3,v3)}, and "
+                   f"the {_obj(p1,v1)} is {_dir(d1)} the {_obj(p2,v2)}, then, the {_obj(p2,v2)} must be {_dir(d2)} the {_obj(p3,v3)}."),
         )
 
     
@@ -631,7 +635,7 @@ def _c6(variant: str, a: dict) -> dict[str, str]:
     if variant == "1prop":
         p1, v1, p2, v2, d1 = _g(a, "P1'", "V1'", "P2'", "V2'", "D1'")
         return dict(
-            short=(f"There exists {_quant('Some', p1, v1)} such that it is {_dir(d1)} {_quant('every', p2, v2)} in the scene."),
+            short=(f"There exists {_quant('Some', p1, v1)} such that it is {_dir(d1)} {_quant('every', p2, v2)}."),
             medium=(f"At least one {_bare(p1, v1)} stands {_dir(d1)} every single "
                     f"{_bare(p2, v2)} in the scene."),
             long=(f"There exists at least one {_bare(p1, v1)} that, "
@@ -644,7 +648,7 @@ def _c6(variant: str, a: dict) -> dict[str, str]:
         return dict(
             short=(f"There exists {_quant('some', p1, v1)} such that it is {_dir(d1)} {_not_quant('every', p2, v2)}."),
             medium=(f"At least one {_bare(p1, v1)} exists that is standing {_dir(d1)} "
-                    f"{_not_quant('every', p2, v2)}."),
+                    f"{_not_quant('every', p2, v2)} in the scene."),
             long=(f"There exists at least one {_bare(p1, v1)} that, for every {_not_ bare(p2, v2)} in the scene, stands {_dir(d1)} it."),
         )
 
@@ -653,10 +657,10 @@ def _c6(variant: str, a: dict) -> dict[str, str]:
     if variant == "2prop":
         p1, v1, p2, v2, p3, v3, p4, v4, d1 = _g(a, "P1'", "V1'", "P2'", "V2'", "P3'", "V3'", "P4'", "V4'", "D1'")
         return dict(
-            short=(f"There exists {_quant('Some', p1, v1)} that is {_adj(p2, v2)} such that it is {_dir(d1)} {_quant('every', p2, v2)} that is {_adj(p4, v4)} in the scene."),
+            short=(f"There exists {_quant('Some', p1, v1)} that is {_adj(p2, v2)} such that it is {_dir(d1)} {_quant('every', p2, v2)} that is also {_adj(p4, v4)}."),
             medium=(f"At least one {_bare(p1, v1)} that is {_adj(p2, v2)} stands {_dir(d1)} every single "
-                    f"{_bare(p2, v2)} that is {_adj(p4, v4)} in the scene."),
-            long=(f"There exists at least one {_bare(p1, v1)} that is {_adj(p2, v2)}  that, "
+                    f"{_bare(p2, v2)} that is also {_adj(p4, v4)} in the scene."),
+            long=(f"There exists at least one {_bare(p1, v1)} which is {_adj(p2, v2)}  that, "
                   f"for every {_bare(p2, v2)} that is also {_adj(p4, v4)}  in the scene, stands {_dir(d1)} it."),
         )
 
@@ -664,11 +668,11 @@ def _c6(variant: str, a: dict) -> dict[str, str]:
     if variant == "2prop_neg":
         p1, v1, p2, v2, p3, v3, p4, v4, d1 = _g(a, "P1'", "V1'", "P2'", "V2'", "P3'", "V3'", "P4'", "V4'", "D1'")
         return dict(
-            short=(f"There exists {_quant('Some', p1, v1)} that is {_adj(p2, v2)} such that it is {_dir(d1)} {_quant('every', p2, v2)} that is {_not_adj(p4, v4)} in the scene."),
+            short=(f"There exists {_quant('Some', p1, v1)} that is {_adj(p2, v2)} such that it is {_dir(d1)} {_quant('every', p2, v2)} that is {_not_adj(p4, v4)}."),
             medium=(f"At least one {_bare(p1, v1)} that is {_adj(p2, v2)} stands {_dir(d1)} every single "
                     f"{_bare(p2, v2)} that is {_not_adj(p4, v4)} in the scene."),
-            long=(f"There exists at least one {_bare(p1, v1)} that is {_adj(p2, v2)}  that, "
-                  f"for every {_bare(p2, v2)} that is also {_not_adj(p4, v4)}  in the scene, stands {_dir(d1)} it."),
+            long=(f"There exists at least one {_bare(p1, v1)} which is {_adj(p2, v2)}  that, "
+                  f"for every {_bare(p2, v2)} that is {_not_adj(p4, v4)}  in the scene, stands {_dir(d1)} it."),
         )
     return None
 
@@ -702,7 +706,7 @@ def _c7(variant: str, a: dict) -> dict[str, str]:
         return dict(
             short=(f" {_quant('Every', p1, v1)} that is {_dir(d1)} {_obj(p2, v2)} "
                    f"has some {_bare(p3, v3)} {_dir(d2)} it."),
-            medium=(f"Every object that is {_adj(p1, v1)} and is {_dir(d1)} {_obj(p2, v2)}, has a certain , "
+            medium=(f"Every object that is {_adj(p1, v1)} and is {_dir(d1)} {_obj(p2, v2)}, has a certain "
                     f"{_bare(p3, v3)} {_dir(d2)} it."),
             long=(f"Whenever there is an object that is {_adj(p1, v1)} and standing {_dir(d1)} {_obj(p2, v2)}, "
                   f"there must always exists some {_bare(p3, v3)} standing {_dir(d2)} it."),
@@ -714,7 +718,7 @@ def _c7(variant: str, a: dict) -> dict[str, str]:
         return dict(
             short=(f" {_quant('Every', p1, v1)} that is {_dir(d1)} {_obj(p2, v2)} "
                    f"has some {_not_bare(p3, v3)} {_dir(d2)} it."),
-            medium=(f"Every object that is {_adj(p1, v1)} and is {_dir(d1)} {_obj(p2, v2)}, has a certain , "
+            medium=(f"Every object that is {_adj(p1, v1)} and is {_dir(d1)} {_obj(p2, v2)}, has a certain "
                     f"{_not_bare(p3, v3)} {_dir(d2)} it."),
             long=(f"Whenever there is an object that is {_adj(p1, v1)} and standing {_dir(d1)} {_obj(p2, v2)}, "
                   f"there must always exists some {_not_bare(p3, v3)} standing {_dir(d2)} of it."),
@@ -726,7 +730,7 @@ def _c7(variant: str, a: dict) -> dict[str, str]:
         return dict( 
             short=(f"{_quant('Every', p1, v1)} has {_exactly(n)} {_bare(p2, v2) if n=='1' else _objs(p2, v2)} that {'is' if n=='1' else 'are'} {_dir(d1)} it."),
             medium=(f"For each {_bare(p1, v1)} in the scene, there must exist "
-                    f"exactly {n} objects that are {_adj(p2, v2)} standing {_dir(d1)} it."),
+                    f"exactly {n} {'object' if n=='1' else 'objects'} that {'is' if n=='1' else 'are'} {_adj(p2, v2)} standing {_dir(d1)} it."),
             long=(f"Every object that is {_adj(p1, v1)} is required to have {_exactly(n)} {'witness' if n=='1' else 'witnesses'}: "
                   f"A witness is {_obj(p2, v2)} standing {_dir(d1)} it."),
         )
@@ -737,7 +741,7 @@ def _c7(variant: str, a: dict) -> dict[str, str]:
         return dict( 
             short=(f"{_quant('Every', p1, v1)} has {_exactly(n)} {_not_bare(p2, v2) if n=='1' else _not_objs(p2, v2)} that {'is' if n=='1' else 'are'} {_dir(d1)} it."),
             medium=(f"For each {_bare(p1, v1)} in the scene, there must exist "
-                    f"exactly {n} objects that are {_not_adj(p2, v2)} standing {_dir(d1)} it."),
+                    f"exactly {n} {'object' if n=='1' else 'objects'} that {'is' if n=='1' else 'are'} {_not_adj(p2, v2)} standing {_dir(d1)} it."),
             long=(f"Every object that is {_adj(p1, v1)} is required to have {_exactly(n)} {'witness' if n=='1' else 'witnesses'}: "
                   f"A witness is {_not_obj(p2, v2)} standing {_dir(d1)} it."),
         )
