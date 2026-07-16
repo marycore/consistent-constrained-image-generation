@@ -332,9 +332,6 @@ def _c2(variant: str, a: dict) -> dict[str, str]:
             long=(f"An object that is simultaneously {_adj(p1, v1)} and {_not_adj(p2, v2)} must never "
                   f"appear."),
         )
-            
-            
-           
 
     if variant == "3prop":
         p1, v1, p2, v2, p3, v3 = _g(a, "P1'", "V1'", "P2'", "V2'", "P3'", "V3'")
@@ -367,9 +364,6 @@ def _c2(variant: str, a: dict) -> dict[str, str]:
                   f"and {_not_adj(p3, v3)} and {_not_adj(p4, v4)}."),
         )
         
-        
-        
-
     if variant == "4prop":
         p1, v1, p2, v2, p3, v3, p4, v4 = _g(a, "P1'", "V1'","P2'", "V2'", "P3'", "V3'", "P4'", "V4'")
         
@@ -517,7 +511,6 @@ def _c4(variant: str, a: dict) -> dict[str, str]:
             long=(f"At least one triple of distinct objects must form a 2-hop chain with specific "
                   f"properties: {_obj(p1, v1)} {_dir(d1)} {_obj(p2, v2)} that is {_dir(d2)} {_not_obj(p3, v3)}."),
         )
-
         
     if variant == "1prop_shared":
         p1, v1, p2, v2, p3, v3, d1, d2 = _g(a, "P1'", "V1'", "P2'", "V2'", "P3'", "V3'", "D1'", "D2'")
@@ -542,8 +535,6 @@ def _c4(variant: str, a: dict) -> dict[str, str]:
             long=(f"There exists at least one triple of distinct objects such that the following constraints are satisfied: "
                   f" {_obj(p3, v3)} {_dir(d1)} {_obj(p1, v1)}, and is {_dir(d2)} {_not_obj(p2, v2)}."),
         )
-        
-
     
     return None
 
@@ -586,8 +577,6 @@ def _c5(variant: str, a: dict) -> dict[str, str]:
         )
 
     if variant == "pair_relA_propC":
-        # Template: :- object(X1), object(X2), X1!=X2, hasRelationship(X1,X2,D2'), not hasProperty(X1,P1',V1').
-        # Meaning: for every pair (X1, X2) with X1 related D2' to X2, X1 must be P1'=V1'.
         d1, p1, v1 = a.get("D1'", "P1'", "V1'")
         return dict(
             short=(f"Only objects that are {_adj(p1, v1)} can be {_dir(d1)} any object."),
@@ -599,8 +588,6 @@ def _c5(variant: str, a: dict) -> dict[str, str]:
         )
 
     if variant == "triple_propA_RelC":
-        # Template: :- object(X1), object(X2), X1!=X2, hasRelationship(X1,X2,D2'), not hasProperty(X1,P1',V1').
-        # Meaning: for every pair (X1, X2) with X1 related D2' to X2, X1 must be P1'=V1'.
         d1, p1, v1, p2, v2, p3, v3, d2 = a.get("D1'", "P1'", "V1'", "P2'", "V2'", "P3'", "V3'", "D2'")
         return dict(
             short = (f"If one object is {_adj(p1, v1)}, another is {_adj(p2, v2)}, and a third is {_adj(p3, v3)}, "
@@ -625,13 +612,11 @@ def _c5(variant: str, a: dict) -> dict[str, str]:
                    f"the {_obj(p1,v1)} is {_dir(d1)} the {_obj(p2,v2)}, then, the {_obj(p2,v2)} must be {_dir(d2)} the {_obj(p3,v3)}."),
         )
 
-    
     return None
 
 
 def _c6(variant: str, a: dict) -> dict[str, str]:
     
-    #there exist x(p1,v1) st for all y(p2,v2) X is D1 Y
     if variant == "1prop":
         p1, v1, p2, v2, d1 = _g(a, "P1'", "V1'", "P2'", "V2'", "D1'")
         return dict(
@@ -642,7 +627,6 @@ def _c6(variant: str, a: dict) -> dict[str, str]:
                   f"for every {_bare(p2, v2)} in the scene, stands {_dir(d1)} it."),
         )
 
-    #there exist x(p1,v1) st for all y(p2!=v2) X is D1 Y
     if variant == "1prop_neg":
         p1, v1, p2, v2, d1 = _g(a, "P1'", "V1'", "P2'", "V2'", "D1'")
         return dict(
@@ -652,8 +636,6 @@ def _c6(variant: str, a: dict) -> dict[str, str]:
             long=(f"There exists at least one {_bare(p1, v1)} that, for every {_not_ bare(p2, v2)} in the scene, stands {_dir(d1)} it."),
         )
 
-    
-    #there exist x(p1,v1,p2, v2) st for all y(p3,v3, p4, v4) X is D1 Y
     if variant == "2prop":
         p1, v1, p2, v2, p3, v3, p4, v4, d1 = _g(a, "P1'", "V1'", "P2'", "V2'", "P3'", "V3'", "P4'", "V4'", "D1'")
         return dict(
@@ -664,7 +646,6 @@ def _c6(variant: str, a: dict) -> dict[str, str]:
                   f"for every {_bare(p2, v2)} that is also {_adj(p4, v4)}  in the scene, stands {_dir(d1)} it."),
         )
 
-    #there exist x(p1,v1,p2, v2) st for all y(p3,v3, p4!=v4) X is D1 Y
     if variant == "2prop_neg":
         p1, v1, p2, v2, p3, v3, p4, v4, d1 = _g(a, "P1'", "V1'", "P2'", "V2'", "P3'", "V3'", "P4'", "V4'", "D1'")
         return dict(
@@ -891,7 +872,6 @@ def _c8(variant: str, a: dict) -> dict[str, str]:
                   f"{n}."),
         )
     
-    
     return None
 
 
@@ -933,7 +913,6 @@ def _c9(variant: str, a: dict) -> dict[str, str]:
         )
 
     return None
-
 
 
 # ── Dispatch table ──────────────────────────────────────────────────────────
