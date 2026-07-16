@@ -573,6 +573,8 @@ def _c4(variant: str, a: dict) -> dict[str, str]:
 
 def _c5(variant: str, a: dict) -> dict[str, str]:
     
+    
+    """
     if variant == "pair_propA_relC":
         p1, v1, p2, v2, d1 = _g(a, "P1'", "V1'", "P2'", "V2'", "D1'")
         return dict(
@@ -583,6 +585,26 @@ def _c5(variant: str, a: dict) -> dict[str, str]:
                     f"{_adj(p2, v2)}, it must be ensured that the first is always {_dir(d1)} the second."),
             
         )
+    """
+    if variant == "pair_propA_relC":
+        p1, v1, p2, v2, d1 = _g(a, "P1'", "V1'", "P2'", "V2'", "D1'")
+        return dict(
+            short=(f"At least one object is {_adj(p1, v1)} and a distinct object is {_adj(p2, v2)}, "
+                f"and the former must always be {_dir(d1)} the latter."),
+            medium=(f"There must be at least one object that is {_adj(p1, v1)} and at least one "
+                f"distinct object that is {_adj(p2, v2)}. For every such pair, the first must "
+                f"stand {_dir(d1)} the second."),
+            long=(f"The scene must contain at least one object that is {_adj(p1, v1)} and at "
+                f"least one distinct object that is {_adj(p2, v2)}. "
+                f"Whenever there is a pair of objects - the first is {_adj(p1, v1)} and the second is "
+                f"{_adj(p2, v2)}, it must be ensured that the first is always {_dir(d1)} the second."),
+        )
+
+
+# TILL HERE
+
+
+
 
     if variant == "pair_propRelA_propC":
         p1, v1, p2, v2, d1, p3, v3 = _g(a, "P1'", "V1'", "P2'", "V2'", "D1'", "P3'", "V3'")
