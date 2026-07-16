@@ -379,109 +379,141 @@ def _c2(variant: str, a: dict) -> dict[str, str]:
 
 
 def _c3(variant: str, a: dict) -> dict[str, str]:
-    p1, v1 = _g(a, "P1'", "V1'")
-
-    if variant == "1propA_1propC":
-        p1, v1, p2, v2 = _g(a, "P1'", "V1'", "P2'", "V2'")
-        return dict(
-            short=f"{_quant('Every', p1, v1)} is also {_adj(p2, v2)}.",
-            medium=f"Each object that is {_adj(p1, v1)} must also be {_adj(p2, v2)}.",
-            long=(f"Whenever an object is {_adj(p1, v1)}, it must simultaneously be {_adj(p2, v2)}; "
-                  f"objects that are not {_adj(p1, v1)} are unconstrained."),
-        )
 
     if variant == "1propA_1prop_neg":
         p1, v1, p2, v2 = _g(a, "P1'", "V1'", "P2'", "V2'")
         return dict(
-            short=f"{_quant('Every', p1, v1)} is {_not_adj(p2, v2)}.",
-            medium=f"Each object that is {_adj(p1, v1)} must not be {_adj(p2, v2)}.",
-            long=(f"Whenever an object is {_adj(p1, v1)}, it must avoid being {_adj(p2, v2)}; "
-                  f"the combination of {_adj(p1, v1)} with {_adj(p2, v2)} is forbidden."),
+            short=(f"At least one object is {_adj(p1, v1)}, and "
+                f"{_quant('every', p1, v1)} is {_not_adj(p2, v2)}."),
+            medium=(f"There must be at least one object that is {_adj(p1, v1)}. "
+                f"Each object that is {_adj(p1, v1)} must not be {_adj(p2, v2)}."),
+            long=(f"The scene must contain at least one object that is {_adj(p1, v1)}. "
+                f"Whenever an object is {_adj(p1, v1)}, it must avoid being {_adj(p2, v2)}; "
+                f"the combination {_adj(p1, v1)} with {_adj(p2, v2)} is forbidden."),
         )
 
-    if variant == "1propA_neg_1propC":
+    if variant == "1propA_1propC":
         p1, v1, p2, v2 = _g(a, "P1'", "V1'", "P2'", "V2'")
         return dict(
-            short=f"Every object that is {_not_adj(p1, v1)} must be {_adj(p2, v2)}.",
-            medium=f"Each object that is not {_adj(p1, v1)} is required to be {_adj(p2, v2)}.",
-            long=(f"Among objects that are not {_adj(p1, v1)}, all of them must be {_adj(p2, v2)}; "
-                  f"only {_adj(p1, v1)} objects escape this requirement."),
+            short=(f"At least one object is {_adj(p1, v1)}, and "
+                f"{_quant('every', p1, v1)} is also {_adj(p2, v2)}."),
+            medium=(f"There must be at least one object that is {_adj(p1, v1)}. "
+                f"Each object that is {_adj(p1, v1)} must also be {_adj(p2, v2)}."),
+            long=(f"The scene must contain at least one object that is {_adj(p1, v1)}. "
+                f"Whenever an object is {_adj(p1, v1)}, it must simultaneously be {_adj(p2, v2)}; "
+                f"objects that are not {_adj(p1, v1)} are unconstrained."),
         )
 
     if variant == "1propA_2propC":
         p1, v1, p2, v2, p3, v3 = _g(a, "P1'", "V1'", "P2'", "V2'", "P3'", "V3'")
         return dict(
-            short=f"{_quant('Every', p1, v1)} must be {_adj(p2, v2)} and {_adj(p3, v3)}.",
-            medium=(f"Each object that is {_adj(p1, v1)} must simultaneously satisfy "
+            short=(f"At least one object is {_adj(p1, v1)}, and "
+                f"{_quant('every', p1, v1)} must be {_adj(p2, v2)} and {_adj(p3, v3)}."),
+            medium=(f"There must be at least one object that is {_adj(p1, v1)}. "
+                    f"Each object that is {_adj(p1, v1)} must simultaneously satisfy "
                     f"{_adj(p2, v2)} and {_adj(p3, v3)}."),
-            long=(f"Whenever an object is {_adj(p1, v1)}, it must be both {_adj(p2, v2)} "
-                  f"and {_adj(p3, v3)}; violating either consequent property is forbidden."),
+            long=(f"The scene must contain at least one object that is {_adj(p1, v1)}. "
+                f"Whenever an object is {_adj(p1, v1)}, it must be both {_adj(p2, v2)} "
+                f"and {_adj(p3, v3)}; violating either consequent property is forbidden."),
         )
 
+    
     if variant == "1propA_3propC":
         p1, v1, p2, v2, p3, v3, p4, v4 = _g(a, "P1'", "V1'", "P2'", "V2'", "P3'", "V3'", "P4'", "V4'")
         return dict(
-            short=f"{_quant('Every', p1, v1)} must be {_adj(p2, v2)}, {_adj(p3, v3)}, and {_adj(p4, v4)}.",
-            medium=(f"Each {_bare(p1, v1)} must satisfy all three consequent properties: "
+            short=(f"At least one object is {_adj(p1, v1)}, and "
+                f"{_quant('every', p1, v1)} must be {_adj(p2, v2)}, {_adj(p3, v3)}, and {_adj(p4, v4)}."),
+            medium=(f"There must be at least one object that is {_adj(p1, v1)}. "
+                    f"Each {_bare(p1, v1)} must satisfy all three consequent properties: "
                     f"{_adj(p2, v2)}, {_adj(p3, v3)}, and {_adj(p4, v4)}."),
-            long=(f"The condition {_adj(p1, v1)} triggers three simultaneous requirements: "
-                  f"{_adj(p2, v2)}, {_adj(p3, v3)}, and {_adj(p4, v4)}; any {_bare(p1, v1)} "
-                  f"missing any of these is forbidden."),
+            long=(f"The scene must contain at least one object that is {_adj(p1, v1)}. "
+                f"The condition {_adj(p1, v1)} triggers three simultaneous requirements: "
+                f"{_adj(p2, v2)}, {_adj(p3, v3)}, and {_adj(p4, v4)}; any {_bare(p1, v1)} "
+                f"missing any of these is forbidden."),
         )
 
+
+    if variant == "1propA_neg_1propC":
+        p1, v1, p2, v2 = _g(a, "P1'", "V1'", "P2'", "V2'")
+        return dict(
+            short=(f"At least one object is {_not_adj(p1, v1)}, and every object that is "
+                f"{_not_adj(p1, v1)} must be {_adj(p2, v2)}."),
+            medium=(f"There must be at least one object that is not {_adj(p1, v1)}. "
+                    f"Each object that is not {_adj(p1, v1)} is required to be {_adj(p2, v2)}."),
+            long=(f"The scene must contain at least one object that is not {_adj(p1, v1)}. "
+                f"Among objects that are not {_adj(p1, v1)}, all of them must be {_adj(p2, v2)}; "
+                f"only {_adj(p1, v1)} objects escape this requirement."),
+        )
 
     if variant == "2propA_1propC":
         p1, v1, p2, v2, p3, v3 = _g(a, "P1'", "V1'", "P2'", "V2'", "P3'", "V3'")
         return dict(
-            short=f"Every object that is {_adj(p1, v1)} and {_adj(p2, v2)} is also {_adj(p3, v3)}.",
-            medium=(f"Each object that is both {_adj(p1, v1)} and {_adj(p2, v2)} "
-                    f"must also be {_adj(p3, v3)}."),
-            long=(f"Whenever there is a combination of the following properties, that is, an object is {_adj(p1, v1)} and {_adj(p2, v2)}, "
-                  f"it must additionally be {_adj(p3, v3)}."),
+            short=(f"At least one object is {_adj(p1, v1)} and {_adj(p2, v2)}, and every such object must also {_adj(p3, v3)}."),
+            medium=(f"There must be at least one object that is {_adj(p1, v1)} and {_adj(p2, v2)}. "
+                f"Each object that is both {_adj(p1, v1)} and {_adj(p2, v2)} must also be {_adj(p3, v3)}."),
+            long=(f"The scene must contain at least one object that is {_adj(p1, v1)} and {_adj(p2, v2)}. "
+                f"Whenever there is a combination of the following properties, that is, an object is {_adj(p1, v1)} and {_adj(p2, v2)}, "
+                f"it must additionally be {_adj(p3, v3)}."),
         )
 
-    
     if variant == "2propA_2propC":
         p1, v1, p2, v2, p3, v3, p4, v4 = _g(a, "P1'", "V1'","P2'", "V2'", "P3'", "V3'", "P4'", "V4'")
         return dict(
-            short=(f"Every object that is {_adj(p1, v1)} and {_adj(p2, v2)} must be "
-                   f"{_adj(p3, v3)} and {_adj(p4, v4)}."),
-            medium=(f"Each object that is {_adj(p1, v1)} and {_adj(p2, v2)} must also be "
-                    f"{_adj(p3, v3)} and {_adj(p4, v4)}."),
-            long=(f"Whenever there is a combination of the following properties, that is, the object is {_adj(p1, v1)} and {_adj(p2, v2)}, then it "
-                  f"requires that the object is also {_adj(p3, v3)} and {_adj(p4, v4)}."),
+            short=(f"At least one object is {_adj(p1, v1)} and {_adj(p2, v2)}, and every such "
+                f"object must be {_adj(p3, v3)} and {_adj(p4, v4)}."),
+            medium=(f"There must be at least one object that is {_adj(p1, v1)} and {_adj(p2, v2)}. "
+                f"Each object that is {_adj(p1, v1)} and {_adj(p2, v2)} must also be "
+                f"{_adj(p3, v3)} and {_adj(p4, v4)}."),
+            long=(f"The scene must contain at least one object that is {_adj(p1, v1)} and {_adj(p2, v2)}. "
+                f"Whenever there is a combination of the following properties, that is, the object is {_adj(p1, v1)} and {_adj(p2, v2)}, then it "
+                f"requires that the object is also {_adj(p3, v3)} and {_adj(p4, v4)}."),
         )
-
+    
     if variant == "2propA_neg_2propC":
         p1, v1, p2, v2, p3, v3, p4, v4 = _g(a, "P1'", "V1'", "P2'", "V2'", "P3'", "V3'", "P4'", "V4'")
         return dict(
-            short=(f"Every object that is {_adj(p1, v1)} and {_not_adj(p2, v2)} must be "
-                   f"{_adj(p3, v3)} and {_adj(p4, v4)}."),
-            medium=(f"Each object that is {_adj(p1, v1)} but not {_adj(p2, v2)} must be "
-                    f"{_adj(p3, v3)} and {_adj(p4, v4)}."),
-            long=(f"An object that is {_adj(p1, v1)} while not being {_adj(p2, v2)} must "
-                  f"satisfy being {_adj(p3, v3)} and {_adj(p4, v4)} simultaneously."),
+            short=(f"At least one object is {_adj(p1, v1)} and {_not_adj(p2, v2)}, and every such "
+                f"object must be {_adj(p3, v3)} and {_adj(p4, v4)}."),
+            medium=(f"There must be at least one object that is {_adj(p1, v1)} but not "
+                    f"{_adj(p2, v2)}. Each object that is {_adj(p1, v1)} but not {_adj(p2, v2)} "
+                    f"must be {_adj(p3, v3)} and {_adj(p4, v4)}."),
+            long=(f"The scene must contain at least one object that is {_adj(p1, v1)} while not being {_adj(p2, v2)}. "
+                f"An object that is {_adj(p1, v1)} while not being {_adj(p2, v2)} must "
+                f"satisfy being {_adj(p3, v3)} and {_adj(p4, v4)} simultaneously."),
         )
+    
+    if variant == "3propA_1propC_neg":
+        p1, v1, p2, v2, p3, v3, p4, v4 = _g(a, "P1'", "V1'", "P2'", "V2'", "P3'", "V3'", "P4'", "V4'")
+        return dict(
+            short=(f"At least one object is {_adj(p1, v1)}, {_adj(p2, v2)}, and {_adj(p3, v3)}, "
+                f"and every such object must not be {_adj(p4, v4)}."),
+            medium=(f"There must be at least one object that is {_adj(p1, v1)}, {_adj(p2, v2)}, "
+                    f"and {_adj(p3, v3)}. Each object that is {_adj(p1, v1)}, {_adj(p2, v2)}, and "
+                    f"{_adj(p3, v3)} must not be {_adj(p4, v4)}."),
+            long=(f"The scene must contain at least one object that is {_adj(p1, v1)}, "
+                f"{_adj(p2, v2)}, and {_adj(p3, v3)}. "
+                f"An object satisfying the following three antecedent conditions of being ({_adj(p1, v1)}, "
+                f"{_adj(p2, v2)}, and {_adj(p3, v3)}) is forbidden from being {_adj(p4, v4)}."),
+        )
+
+
 
     if variant == "3propA_1propC":
         p1, v1, p2, v2, p3, v3, p4, v4 = _g(a, "P1'", "V1'", "P2'", "V2'", "P3'", "V3'", "P4'", "V4'")
         return dict(
-            short=(f"Every object that is {_adj(p1, v1)}, {_adj(p2, v2)}, {_adj(p3, v3)} must be {_adj(p4, v4)}."),
-            medium=(f"Each object that is {_adj(p1, v1)}, {_adj(p2, v2)}, and {_adj(p3, v3)} "
-                    f"must also be {_adj(p4, v4)}."),
-            long=(f"An object that is {_adj(p1, v1)}, {_adj(p2, v2)}, and {_adj(p3, v3)} "
-                  f"is required to additionally be {_adj(p4, v4)}."),
+            short=(f"At least one object is {_adj(p1, v1)}, {_adj(p2, v2)}, and {_adj(p3, v3)}, "
+                f"and every such object must be {_adj(p4, v4)}."),
+            medium=(f"There must be at least one object that is {_adj(p1, v1)}, {_adj(p2, v2)}, "
+                    f"and {_adj(p3, v3)}. Each object that is {_adj(p1, v1)}, {_adj(p2, v2)}, and "
+                    f"{_adj(p3, v3)} must also be {_adj(p4, v4)}."),
+            long=(f"The scene must contain at least one object that is {_adj(p1, v1)}, "
+                f"{_adj(p2, v2)}, and {_adj(p3, v3)}. "
+                f"An object that is {_adj(p1, v1)}, {_adj(p2, v2)}, and {_adj(p3, v3)} "
+                f"is required to additionally be {_adj(p4, v4)}."),
         )
 
-    if variant == "3propA_1propC_neg":
-        p1, v1, p2, v2, p3, v3, p4, v4 = _g(a, "P1'", "V1'", "P2'", "V2'", "P3'", "V3'", "P4'", "V4'")
-        return dict(
-            short=(f"Every object that is {_adj(p1, v1)}, {_adj(p2, v2)}, {_adj(p3, v3)} must not be {_adj(p4, v4)}."),
-            medium=(f"Each object that is {_adj(p1, v1)}, {_adj(p2, v2)}, and {_adj(p3, v3)} "
-                    f"must not be {_adj(p4, v4)}."),
-            long=(f"An object satisfying the following three antecedent conditions of being ({_adj(p1, v1)}, "
-                  f"{_adj(p2, v2)}, and {_adj(p3, v3)}) is forbidden from being {_adj(p4, v4)}."),
-        )
+
+
 
     return None
 
