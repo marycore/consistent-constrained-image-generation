@@ -1,16 +1,17 @@
-"""Property domains and ASP background loader for CCIG scene generation."""
+"""Eval-side property domain and ASP background loader for CCIG scene generation.
+
+PROPERTIES derives from common/domain.py (single source of truth for what's actually in the
+CLEVR-CCIG scenes) with one deliberate override: "material" is excluded from the ASP constraint
+search space to keep eval-set generation tractable. This is the only place that exclusion is
+encoded -- finetune_dataset_gen uses the full common/domain.py PROPERTIES, materials included.
+"""
 
 from pathlib import Path
 from typing import Dict, List
 
-PROPERTIES: Dict[str, List[str]] = {
-    "color":    ["gray", "red", "blue", "green", "brown", "purple", "cyan", "yellow"],
-    "shape":    ["cube", "cylinder", "sphere"],
-    "size":     ["small", "large"],
-    #"material": ["rubber", "metal"],
-    "region":   ["reg_0", "reg_1", "reg_2", "reg_3"],
-}
-RELATIONS: List[str] = ["left", "right", "front", "behind"]
+from ..common.domain import PROPERTIES as _ALL_PROPERTIES, DIRECTIONS as RELATIONS
+
+PROPERTIES: Dict[str, List[str]] = {k: v for k, v in _ALL_PROPERTIES.items() if k != "material"}
 COUNTS: List[str] = ["1", "2", "3"]
 
 _BACKGROUND_LP = Path(__file__).parent / "asp_background" / "background.lp"
@@ -22,7 +23,6 @@ def background_asp(n_objects: int = 4) -> str:
     Property facts and choice rules are generated from PROPERTIES (single source
     of truth). Structural rules (layout, relationships, axioms) come from background.lp.
     """
-    #lines = [f"object(0..{n_objects - 1}).", ""]
     lines = [f"object({i})." for i in range(n_objects)]
     for prop, vals in PROPERTIES.items():
         for val in vals:
@@ -39,7 +39,5 @@ def background_asp(n_objects: int = 4) -> str:
             # Skip comment lines and comments
             if not (bl.startswith("%")):
                 lines.append(bl)
-    
-    return "\n".join(lines)
 
-    
+    return "\n".join(lines)

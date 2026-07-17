@@ -17,7 +17,7 @@ import random
 from pathlib import Path
 from typing import Dict, List, Tuple, Set
 
-from domain import PROPERTIES, RELATIONS, COUNTS
+from .domain import PROPERTIES, RELATIONS, COUNTS
 
 # ── Regex patterns ─────────────────────────────────────────────────────────
 

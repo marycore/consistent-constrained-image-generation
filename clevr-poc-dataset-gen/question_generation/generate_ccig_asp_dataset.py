@@ -54,7 +54,7 @@ def parse_args() -> argparse.Namespace:
         default="data/ccig_relationship_axioms.txt",
         help="ASP axioms defining hasRelationship/3.",
     )
-    p.add_argument("--output_jsonl", default="ccig_asp_dataset.jsonl", help="Output JSONL path.")
+    p.add_argument("--output_jsonl", default="../data/ccig_asp_dataset.jsonl", help="Output JSONL path.")
     p.add_argument(
         "--mode",
         choices=["single", "combo"],

@@ -862,7 +862,7 @@ def _c8(variant: str, a: dict) -> dict[str, str]:
     
     if variant in ("1prop_exact_relational_neg", "1prop_atleast_relational_neg",
                    "1prop_atmost_relational_neg"):
-        p1, v1, p2, v2, d1 = _g(a, "P1'", "V1'", "P2'", "V2'", "D1'")
+        p1, v1, p2, v2, d1, n = _g(a, "P1'", "V1'", "P2'", "V2'", "D1'", "N'")
         op = ("exactly" if "exact" in variant
               else "at least" if "atleast" in variant else "at most")
         return dict(
@@ -876,7 +876,7 @@ def _c8(variant: str, a: dict) -> dict[str, str]:
 
     if variant in ("1prop_exact_relational", "1prop_atleast_relational",
                    "1prop_atmost_relational"):
-        p1, v1, p2, v2, d1 = _g(a, "P1'", "V1'", "P2'", "V2'", "D1'")
+        p1, v1, p2, v2, d1, n = _g(a, "P1'", "V1'", "P2'", "V2'", "D1'", "N'")
         op = ("exactly" if "exact" in variant
               else "at least" if "atleast" in variant else "at most")
         return dict(

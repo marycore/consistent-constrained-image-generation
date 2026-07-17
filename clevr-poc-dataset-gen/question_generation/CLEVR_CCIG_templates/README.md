@@ -290,7 +290,7 @@ python3 question_generation/generate_ccig_asp_dataset.py \
   --mode single \
   --instances_per_class 100 \
   --validate_with_clingo \
-  --output_jsonl question_generation/ccig_asp_dataset.jsonl \
+  --output_jsonl ../data/ccig_asp_dataset.jsonl \
   --seed 42
 ```
 
@@ -302,7 +302,7 @@ python3 question_generation/generate_ccig_asp_dataset.py \
   --instances_per_class 100 \
   --family_sampling equal \
   --validate_with_clingo \
-  --output_jsonl question_generation/ccig_asp_dataset.jsonl \
+  --output_jsonl ../data/ccig_asp_dataset.jsonl \
   --seed 42
 ```
 
@@ -315,7 +315,7 @@ python3 question_generation/generate_ccig_asp_dataset.py \
   --constraint_family 1prop \
   --instances_per_class 5 \
   --validate_with_clingo \
-  --output_jsonl question_generation/ccig_asp_dataset_C1_1prop.jsonl
+  --output_jsonl ../data/ccig_asp_dataset_C1_1prop.jsonl
 ```
 
 ### Combo constraints
@@ -325,7 +325,7 @@ python3 question_generation/generate_ccig_asp_dataset.py \
   --mode combo \
   --instances_per_combo 50 \
   --validate_with_clingo \
-  --output_jsonl question_generation/ccig_asp_dataset_combo.jsonl
+  --output_jsonl ../data/ccig_asp_dataset_combo.jsonl
 ```
 
 ---

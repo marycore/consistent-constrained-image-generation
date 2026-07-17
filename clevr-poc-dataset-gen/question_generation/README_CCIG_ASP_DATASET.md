@@ -29,7 +29,7 @@ PYTHONUNBUFFERED=1 python3 question_generation/generate_ccig_asp_dataset.py \
   --clingo_bin clingo \
   --clingo_time_limit 10 \
   --max_attempts_per_instance 100 \
-  --output_jsonl question_generation/ccig_asp_dataset.jsonl \
+  --output_jsonl ../data/ccig_asp_dataset.jsonl \
   --seed 42
 ```
 
@@ -44,7 +44,7 @@ Produces **900 rows** by default (100 × 9 levels L0–L8). Use `--class_filter`
 python3 question_generation/generate_ccig_asp_dataset.py \
   --mode single \
   --instances_per_class 100 \
-  --output_jsonl question_generation/ccig_asp_dataset.jsonl \
+  --output_jsonl ../data/ccig_asp_dataset.jsonl \
   --seed 42
 ```
 
@@ -52,7 +52,7 @@ Then audit:
 
 ```bash
 python3 question_generation/validate_ccig_asp_dataset.py \
-  question_generation/ccig_asp_dataset.jsonl \
+  ../data/ccig_asp_dataset.jsonl \
   --show_unsat \
   --fail_on_unsat
 ```
@@ -119,7 +119,7 @@ python3 question_generation/build_ccig_templates.py
 | `--family_sampling` | `random` | Single mode family policy (when not pinned): `random` or `equal` |
 | `--min_objects` / `--max_objects` | `5` / `9` | Sampled `n_objects` for `object(0..N)` |
 | `--seed` | `42` | RNG seed |
-| `--output_jsonl` | `ccig_asp_dataset.jsonl` | Output path |
+| `--output_jsonl` | `../data/ccig_asp_dataset.jsonl` | Output path |
 | `--validate_with_clingo` | off | Keep only SAT instances |
 | `--clingo_bin` | `clingo` | clingo executable |
 | `--clingo_time_limit` | `10` | Seconds per clingo call (avoids hangs) |
@@ -147,7 +147,7 @@ python3 question_generation/generate_ccig_asp_dataset.py \
   --validate_with_clingo \
   --clingo_bin clingo \
   --max_attempts_per_instance 100 \
-  --output_jsonl question_generation/ccig_asp_dataset.jsonl \
+  --output_jsonl ../data/ccig_asp_dataset.jsonl \
   --seed 42
 ```
 
@@ -159,7 +159,7 @@ python3 question_generation/generate_ccig_asp_dataset.py \
   --class_filter L0 L1 L2 \
   --instances_per_class 50 \
   --validate_with_clingo \
-  --output_jsonl question_generation/ccig_asp_dataset_L0_L2.jsonl
+  --output_jsonl ../data/ccig_asp_dataset_L0_L2.jsonl
 ```
 
 **Pin constraint family** (names in `index.json` → `constraint_families`):
@@ -172,7 +172,7 @@ python3 question_generation/generate_ccig_asp_dataset.py \
   --constraint_family exist \
   --instances_per_class 100 \
   --validate_with_clingo \
-  --output_jsonl question_generation/ccig_asp_dataset_L0_exist.jsonl
+  --output_jsonl ../data/ccig_asp_dataset_L0_exist.jsonl
 
 # L4 forbid_conditional_pair only
 python3 question_generation/generate_ccig_asp_dataset.py \
@@ -181,7 +181,7 @@ python3 question_generation/generate_ccig_asp_dataset.py \
   --constraint_family forbid_conditional_pair \
   --instances_per_class 100 \
   --validate_with_clingo \
-  --output_jsonl question_generation/ccig_asp_dataset_L4_forbid.jsonl
+  --output_jsonl ../data/ccig_asp_dataset_L4_forbid.jsonl
 ```
 
 **Different family per level:**
@@ -193,7 +193,7 @@ python3 question_generation/generate_ccig_asp_dataset.py \
   --constraint_family_map_json '{"L0":"exist","L1":"exist_pair"}' \
   --instances_per_class 50 \
   --validate_with_clingo \
-  --output_jsonl question_generation/ccig_asp_dataset.jsonl
+  --output_jsonl ../data/ccig_asp_dataset.jsonl
 ```
 
 **Balanced families per level** (equal counts, shuffled):
@@ -204,7 +204,7 @@ python3 question_generation/generate_ccig_asp_dataset.py \
   --instances_per_class 100 \
   --family_sampling equal \
   --validate_with_clingo \
-  --output_jsonl question_generation/ccig_asp_dataset.jsonl \
+  --output_jsonl ../data/ccig_asp_dataset.jsonl \
   --seed 42
 ```
 
@@ -215,7 +215,7 @@ python3 question_generation/generate_ccig_asp_dataset.py \
   --mode single \
   --instances_map_json '{"L0":200,"L1":150,"L2":100}' \
   --validate_with_clingo \
-  --output_jsonl question_generation/ccig_asp_dataset.jsonl
+  --output_jsonl ../data/ccig_asp_dataset.jsonl
 ```
 
 ---
@@ -231,7 +231,7 @@ python3 question_generation/generate_ccig_asp_dataset.py \
   --validate_with_clingo \
   --clingo_bin clingo \
   --max_attempts_per_instance 200 \
-  --output_jsonl question_generation/ccig_asp_dataset_combo.jsonl \
+  --output_jsonl ../data/ccig_asp_dataset_combo.jsonl \
   --seed 42
 ```
 
@@ -246,7 +246,7 @@ python3 question_generation/generate_ccig_asp_dataset.py \
   --instances_per_combo 50 \
   --validate_with_clingo \
   --max_attempts_per_instance 300 \
-  --output_jsonl question_generation/ccig_asp_dataset_combo_random.jsonl
+  --output_jsonl ../data/ccig_asp_dataset_combo_random.jsonl
 ```
 
 ---
@@ -275,11 +275,11 @@ Validator assembles the full program (same as generation-time check):
 
 ```bash
 python3 question_generation/validate_ccig_asp_dataset.py \
-  question_generation/ccig_asp_dataset.jsonl \
+  ../data/ccig_asp_dataset.jsonl \
   --show_unsat
 
 python3 question_generation/validate_ccig_asp_dataset.py \
-  question_generation/ccig_asp_dataset.jsonl \
+  ../data/ccig_asp_dataset.jsonl \
   --show_unsat \
   --fail_on_unsat
 ```
@@ -334,7 +334,7 @@ One JSON object per line. Example (single, L4):
 ### UNSAT sidecar (`*_unsat.jsonl`)
 
 With `--validate_with_clingo`, failed resamples are also written to  
-`question_generation/ccig_asp_dataset_unsat.jsonl` (same stem + `_unsat`).
+`../data/ccig_asp_dataset_unsat.jsonl` (same stem + `_unsat`).
 
 Same schema as SAT rows, plus:
 

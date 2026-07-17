@@ -5,14 +5,14 @@
 %:- #count { X : object(X), hasProperty(X, region, R) } >= 4, property(region, R).
 
 % ── Region spatial layout (2×2 grid) ─────────────────────────────────────
-% reg_0=top-left  | reg_1=top-right
-% reg_2=bot-left  | reg_3=bot-right
-right_R(reg_1, reg_0). right_R(reg_3, reg_0).
-right_R(reg_1, reg_2). right_R(reg_3, reg_2).
+% r0=top-left  | r1=top-right
+% r2=bot-left  | r3=bot-right
+right_R(r1, r0). right_R(r3, r0).
+right_R(r1, r2). right_R(r3, r2).
 left_R(R1, R2) :- right_R(R2, R1).
 
-front_R(reg_2, reg_0). front_R(reg_3, reg_0).
-front_R(reg_2, reg_1). front_R(reg_3, reg_1).
+front_R(r2, r0). front_R(r3, r0).
+front_R(r2, r1). front_R(r3, r1).
 behind_R(R1, R2) :- front_R(R2, R1).
 
 % ── Spatial relationships derived from region placement ───────────────────

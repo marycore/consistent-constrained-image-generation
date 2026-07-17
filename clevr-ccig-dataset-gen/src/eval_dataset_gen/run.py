@@ -9,20 +9,23 @@ records to two JSONL files — one for SAT, one for UNSAT.
 
 Usage
 -----
+Run as a module from clevr-ccig-dataset-gen/ (needed for the src.common / src.eval_dataset_gen
+package imports to resolve):
+
 # Generate 10 random instances per template (default):
-    python run.py
+    python -m src.eval_dataset_gen.run
 
 # 20 samples per template, 6 scene objects, custom output:
-    python run.py --samples 20 --n_objects 6 --output ccig_dataset.jsonl
+    python -m src.eval_dataset_gen.run --samples 20 --n_objects 6 --output ccig_dataset.jsonl
 
 # Only C1 and C3 templates:
-    python run.py --classes C1 C3
+    python -m src.eval_dataset_gen.run --classes C1 C3
 
 # Dry run (verbalize without solving):
-    python run.py --no_solve
+    python -m src.eval_dataset_gen.run --no_solve
 
 # Exhaustive enumeration instead of random sampling:
-    python run.py --mode exhaustive
+    python -m src.eval_dataset_gen.run --mode exhaustive
 """
 
 import argparse
@@ -32,18 +35,17 @@ import random
 import hashlib
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).parent))
-
-from domain import background_asp
-from instantiate import load_template, sample_assignment, all_assignments, apply_assignment
-from verbalize import verbalize
-from solve import solve, format_scene
+from .domain import background_asp
+from .instantiate import load_template, sample_assignment, all_assignments, apply_assignment
+from ..common.verbalize import verbalize
+from .solve import solve, format_scene
 
 
 # ── Defaults ────────────────────────────────────────────────────────────────
 
-TEMPLATE_DIR = Path(__file__).parent.parent / "ConstraintTemplates"
-DEFAULT_OUTPUT = Path(__file__).parent.parent / "../data/ccig_dataset.jsonl"
+_REPO_ROOT = Path(__file__).resolve().parents[3]
+TEMPLATE_DIR = Path(__file__).resolve().parent / "constraint_templates"
+DEFAULT_OUTPUT = _REPO_ROOT / "data" / "ccig_dataset.jsonl"
 
 
 # ── Record construction ──────────────────────────────────────────────────────

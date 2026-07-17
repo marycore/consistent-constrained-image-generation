@@ -138,7 +138,7 @@ Behavior:
 
 The batch pipeline reads from `ccig_asp_dataset.jsonl`, **randomly shuffles** the 900 instances (seeded, reproducible), and saves images organised by complexity class and constraint family.
 
-**Dataset:** `clevr-poc-dataset-gen/question_generation/ccig_asp_dataset.jsonl`  
+**Dataset:** `data/ccig_asp_dataset.jsonl`  
 9 complexity levels (L0–L8) × 100 instances each, across 15 constraint families.  
 One text paraphrase is chosen at random per instance each run.
 
