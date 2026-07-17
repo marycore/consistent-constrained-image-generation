@@ -43,7 +43,7 @@ from solve import solve, format_scene
 # ── Defaults ────────────────────────────────────────────────────────────────
 
 TEMPLATE_DIR = Path(__file__).parent.parent / "ConstraintTemplates"
-DEFAULT_OUTPUT = Path(__file__).parent.parent / "ccig_dataset.jsonl"
+DEFAULT_OUTPUT = Path(__file__).parent.parent / "../data/ccig_dataset.jsonl"
 
 
 # ── Record construction ──────────────────────────────────────────────────────
