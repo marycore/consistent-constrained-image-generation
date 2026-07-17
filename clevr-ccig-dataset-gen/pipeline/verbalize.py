@@ -586,6 +586,7 @@ def _c5(variant: str, a: dict) -> dict[str, str]:
             
         )
     """
+    ## I am not sure if this is what we want (at least for the short version). Because the "If" phrase is important to see how the model would understand that. I will keep the original version for now.
     if variant == "pair_propA_relC":
         p1, v1, p2, v2, d1 = _g(a, "P1'", "V1'", "P2'", "V2'", "D1'")
         return dict(
@@ -601,11 +602,8 @@ def _c5(variant: str, a: dict) -> dict[str, str]:
         )
 
 
-# TILL HERE
 
-
-
-
+    """
     if variant == "pair_propRelA_propC":
         p1, v1, p2, v2, d1, p3, v3 = _g(a, "P1'", "V1'", "P2'", "V2'", "D1'", "P3'", "V3'")
         return dict(
@@ -617,7 +615,25 @@ def _c5(variant: str, a: dict) -> dict[str, str]:
                   f" the {_bare(p2, v2)}, it must be ensured that the {_bare(p2, v2)} is also {_adj(p3, v3)}."),
             
         )
+    """
+    ## the same comment applies here!
+    if variant == "pair_propRelA_propC":
+        p1, v1, p2, v2, d1, p3, v3 = _g(a, "P1'", "V1'", "P2'", "V2'", "D1'", "P3'", "V3'")
+        return dict(
+            short=(f"At least one {_bare(p1, v1)} must be {_dir(d1)} a distinct {_bare(p2, v2)}, "
+                f"and the latter must also be {_adj(p3, v3)}."),
+            medium=(f"There must be at least one {_bare(p1, v1)} standing {_dir(d1)} a distinct "
+                    f"{_bare(p2, v2)}. For every such pair, the latter must also be "
+                    f"{_adj(p3, v3)}."),
+            long=(f"The scene must contain at least one {_bare(p1, v1)} that is {_dir(d1)} a "
+                f"distinct {_bare(p2, v2)}. "
+                f"For every pair of distinct {_bare(p1, v1)} and "
+                f"{_bare(p2, v2)}, where the {_bare(p1, v1)} is {_dir(d1)} the {_bare(p2, v2)}, "
+                f"it must be ensured that the {_bare(p2, v2)} is also {_adj(p3, v3)}."),
+        )
+    
 
+    """
     if variant == "pair_propRelA_RelC":
         p1, v1, p2, v2, d1, d2 = _g(a, "P1'", "V1'", "P2'", "V2'", "D1'",  "D2'")
         
@@ -629,7 +645,23 @@ def _c5(variant: str, a: dict) -> dict[str, str]:
             long=(f"For every pair of distinct {_bare(p1, v1)} and {_bare(p2, v2)}, where the {_bare(p1, v1)} is {_dir(d1)} "
                   f" the {_bare(p2, v2)}, it must be ensured that the {_bare(p1, v1)} is also {_dir(d1)} the {_bare(p2, v2)}."),
         )
+    """
+    if variant == "pair_propRelA_RelC":
+        p1, v1, p2, v2, d1, d2 = _g(a, "P1'", "V1'", "P2'", "V2'", "D1'",  "D2'")
+        return dict(
+            short=(f"At least one {_bare(p1, v1)} must be {_dir(d1)} a distinct {_bare(p2, v2)}, "
+                f"and it must also be {_dir(d2)} the latter."),
+            medium=(f"There must be at least one {_bare(p1, v1)} standing {_dir(d1)} a distinct "
+                    f"{_bare(p2, v2)}. For every such pair, the former must also be {_dir(d2)} "
+                    f"the latter."),
+            long=(f"The scene must contain at least one {_bare(p1, v1)} that is {_dir(d1)} a "
+                f"distinct {_bare(p2, v2)}. "
+                f"For every pair of distinct {_bare(p1, v1)} and {_bare(p2, v2)}, where the {_bare(p1, v1)} is {_dir(d1)} "
+                f" the {_bare(p2, v2)}, it must be ensured that the {_bare(p1, v1)} is also {_dir(d1)} the {_bare(p2, v2)}."),
+        )
 
+
+    """
     if variant == "pair_relA_propC":
         d1, p1, v1 = a.get("D1'", "P1'", "V1'")
         return dict(
@@ -640,7 +672,23 @@ def _c5(variant: str, a: dict) -> dict[str, str]:
             long=(f"For every distinct pair of objects where the first stands {_dir(d1)} the second, "
                   f"the first is required to be {_adj(p1, v1)}."),
         )
+    """
+    if variant == "pair_relA_propC":
+        d1, p1, v1 = _g(a, "D1'", "P1'", "V1'")
+        non_vacuity_clause = f"At least one object must be {_dir(d1)} some other object. "
+        return dict(
+            short=non_vacuity_clause +
+                f"Only objects that are {_adj(p1, v1)} can be {_dir(d1)} any object.",
+            medium=non_vacuity_clause +
+                f"All objects that are {_dir(d1)} some object must be {_adj(p1, v1)}.",
+            long=(f"The scene must contain at least one pair of distinct objects where the first "
+                f"stands {_dir(d1)} the second. "
+                f"For every distinct pair of objects where the first stands {_dir(d1)} the second, "
+                f"the first is required to be {_adj(p1, v1)}."),
+        )
 
+
+    """
     if variant == "triple_propA_RelC":
         d1, p1, v1, p2, v2, p3, v3, d2 = a.get("D1'", "P1'", "V1'", "P2'", "V2'", "P3'", "V3'", "D2'")
         return dict(
@@ -653,7 +701,27 @@ def _c5(variant: str, a: dict) -> dict[str, str]:
                    f"it must be that the {_obj(p1,v1)} is {_dir(d1)} the {_obj(p2,v2)} and the {_obj(p2,v2)} is {_dir(d2)} the {_obj(p3,v3)}."),
             
         )
+    """
+    
+    if variant == "triple_propA_RelC":
+        d1, p1, v1, p2, v2, p3, v3, d2 = _g(a, "D1'", "P1'", "V1'", "P2'", "V2'", "P3'", "V3'", "D2'")
+        non_vacuity_clause = (f"There must be at least one {_bare(p1, v1)}, one distinct "
+                            f"{_bare(p2, v2)}, and one distinct {_bare(p3, v3)}. ")
+        return dict(
+            short = non_vacuity_clause + 
+                (f"If one object is {_adj(p1, v1)}, another is {_adj(p2, v2)}, and a third is {_adj(p3, v3)}, "
+                f"then the first object must be {_dir(d1)} the second, and the second must be {_dir(d2)} the third."),
+            medium = non_vacuity_clause + 
+                (f"For every triplet of objects, where the first is {_adj(p1,v1)}, the second is {_adj(p2,v2)}, and the third is {_adj(p3,v3)}, then "
+                f" the first must stand {_dir(d1)} the second and the second must stand {_dir(d2)} the third."),
+            long=(f"The scene must contain at least one {_bare(p1, v1)}, one distinct "
+                f"{_bare(p2, v2)}, and one distinct {_bare(p3, v3)}. "
+                f"If there are three distinct objects such that the first is {_obj(p1,v1)}, the second is {_obj(p2,v2)} and the third is {_obj(p3,v3)}, then, "
+                f"it must be that the {_obj(p1,v1)} is {_dir(d1)} the {_obj(p2,v2)} and the {_obj(p2,v2)} is {_dir(d2)} the {_obj(p3,v3)}."),
+        )
 
+
+    """
     if variant == "triple_propRelA_relC":
         d1, p1, v1, p2, v2, p3, v3, d2 = a.get("D1'", "P1'", "V1'", "P2'", "V2'", "P3'", "V3'", "D2'")
         return dict(
@@ -665,6 +733,26 @@ def _c5(variant: str, a: dict) -> dict[str, str]:
             long=(f"If there are three distinct objects such that the first is {_obj(p1,v1)}, the second is {_obj(p2,v2)} and the third is {_obj(p3,v3)}, and "
                    f"the {_obj(p1,v1)} is {_dir(d1)} the {_obj(p2,v2)}, then, the {_obj(p2,v2)} must be {_dir(d2)} the {_obj(p3,v3)}."),
         )
+    """
+
+    if variant == "triple_propRelA_relC":
+        d1, p1, v1, p2, v2, p3, v3, d2 = _g(a, "D1'", "P1'", "V1'", "P2'", "V2'", "P3'", "V3'", "D2'")
+        non_vacuity_clause = (f"There must be at least one {_bare(p1, v1)} that is {_dir(d1)} a "
+                            f"distinct {_bare(p2, v2)}, and at least one further distinct "
+                            f"{_bare(p3, v3)}. ")
+        return dict(
+            short = non_vacuity_clause + 
+                (f"If one object is {_adj(p1, v1)}, another is {_adj(p2, v2)}, and a third is {_adj(p3, v3)}, and "
+                f"the first object is {_dir(d1)} the second, then, the second must be {_dir(d2)} the third."),
+            medium = non_vacuity_clause +
+                (f"For every triplet of objects, where the first is {_adj(p1,v1)}, the second is {_adj(p2,v2)}, and the third is {_adj(p3,v3)}, and "
+                f" the first stands {_dir(d1)} the second, then, the second must stand {_dir(d2)} the third."),
+            long=(f"The scene must contain at least one {_bare(p1, v1)} that is {_dir(d1)} a "
+                f"distinct {_bare(p2, v2)}, and a further distinct {_bare(p3, v3)}. "
+                f"If there are three distinct objects such that the first is {_obj(p1,v1)}, the second is {_obj(p2,v2)} and the third is {_obj(p3,v3)}, and "
+                f"the {_obj(p1,v1)} is {_dir(d1)} the {_obj(p2,v2)}, then, the {_obj(p2,v2)} must be {_dir(d2)} the {_obj(p3,v3)}."),
+        )
+
 
     return None
 
@@ -713,74 +801,97 @@ def _c6(variant: str, a: dict) -> dict[str, str]:
 
 def _c7(variant: str, a: dict) -> dict[str, str]:
     
-    if variant == "1prop_propRel":
-        p1, v1, p2, v2, d1 = _g(a, "P1'", "V1'", "P2'", "V2'", "D1'")
-
-        return dict( 
-            short=(f"{_quant('Every', p1, v1)} has {_obj(p2, v2)} {_dir(d1)} it."),
-            medium=(f"For each {_bare(p1, v1)} in the scene, there must exist "
-                    f"at least one {_bare(p2, v2)} standing {_dir(d1)} it."),
-            long=(f"Every object that is {_adj(p1, v1)} is required to have a witness: "
-                  f"{_obj(p2, v2)} that stands {_dir(d1)} it."),
-        )
-
-    if variant == "1prop_propRel_neg":
-        p1, v1, p2, v2, d1 = _g(a, "P1'", "V1'", "P2'", "V2'", "D1'")
-
+    if variant == "1prop_exact_neg":
+        p1, v1, p2, v2, d1, n = _g(a, "P1'", "V1'", "P2'", "V2'", "D1'", "N'")
+        non_vacuity_clause = f"There must be at least one object that is {_adj(p1, v1)}. "
         return dict(
-            short=(f"{_not_quant('Every', p1, v1)} has {_obj(p2, v2)} {_dir(d1)} it."),
-            medium=(f"For each {_not_bare(p1, v1)} in the scene, there must be at least one "
-                    f"{_bare(p2, v2)} standing {_dir(d1)} it."),
-            long=(f"Every object that is {_not_adj(p1, v1)} is required to have a witness: {_obj(p2, v2)} "
-                  f"that stands {_dir(d1)} it."),
-        )
-
-    
-    if variant == "propRel_propRel":
-        p1, v1, p2, v2, p3, v3, d1, d2 = _g(a, "P1'", "V1'","P2'", "V2'","P3'", "V3'", "D1'", "D2'")
-        return dict(
-            short=(f" {_quant('Every', p1, v1)} that is {_dir(d1)} {_obj(p2, v2)} "
-                   f"has some {_bare(p3, v3)} {_dir(d2)} it."),
-            medium=(f"Every object that is {_adj(p1, v1)} and is {_dir(d1)} {_obj(p2, v2)}, has a certain "
-                    f"{_bare(p3, v3)} {_dir(d2)} it."),
-            long=(f"Whenever there is an object that is {_adj(p1, v1)} and standing {_dir(d1)} {_obj(p2, v2)}, "
-                  f"there must always exists some {_bare(p3, v3)} standing {_dir(d2)} it."),
-        )
-
-    
-    if variant == "propRel_propRel_neg":
-        p1, v1, p2, v2, p3, v3, d1, d2 = _g(a, "P1'", "V1'","P2'", "V2'","P3'", "V3'", "D1'", "D2'")
-        return dict(
-            short=(f" {_quant('Every', p1, v1)} that is {_dir(d1)} {_obj(p2, v2)} "
-                   f"has some {_not_bare(p3, v3)} {_dir(d2)} it."),
-            medium=(f"Every object that is {_adj(p1, v1)} and is {_dir(d1)} {_obj(p2, v2)}, has a certain "
-                    f"{_not_bare(p3, v3)} {_dir(d2)} it."),
-            long=(f"Whenever there is an object that is {_adj(p1, v1)} and standing {_dir(d1)} {_obj(p2, v2)}, "
-                  f"there must always exists some {_not_bare(p3, v3)} standing {_dir(d2)} of it."),
+            short = non_vacuity_clause +
+                (f"{_quant('Every', p1, v1)} has {_exactly(n)} {_not_bare(p2, v2) if n=='1' else _not_objs(p2, v2)} that {'is' if n=='1' else 'are'} {_dir(d1)} it."),
+            medium = non_vacuity_clause +
+                (f"For each {_bare(p1, v1)} in the scene, there must exist "
+                f"exactly {n} {'object' if n=='1' else 'objects'} that {'is' if n=='1' else 'are'} {_not_adj(p2, v2)} standing {_dir(d1)} it."),
+            long=(f"The scene must contain at least one object that is {_adj(p1, v1)}. "
+                f"Every object that is {_adj(p1, v1)} is required to have {_exactly(n)} {'witness' if n=='1' else 'witnesses'}: "
+                  f"A witness is {_not_obj(p2, v2)} standing {_dir(d1)} it."),
         )
 
     if variant == "1prop_exact":
         p1, v1, p2, v2, d1, n = _g(a, "P1'", "V1'", "P2'", "V2'", "D1'", "N'")
-
-        return dict( 
-            short=(f"{_quant('Every', p1, v1)} has {_exactly(n)} {_bare(p2, v2) if n=='1' else _objs(p2, v2)} that {'is' if n=='1' else 'are'} {_dir(d1)} it."),
-            medium=(f"For each {_bare(p1, v1)} in the scene, there must exist "
-                    f"exactly {n} {'object' if n=='1' else 'objects'} that {'is' if n=='1' else 'are'} {_adj(p2, v2)} standing {_dir(d1)} it."),
-            long=(f"Every object that is {_adj(p1, v1)} is required to have {_exactly(n)} {'witness' if n=='1' else 'witnesses'}: "
-                  f"A witness is {_obj(p2, v2)} standing {_dir(d1)} it."),
+        non_vacuity_clause = f"There must be at least one object that is {_adj(p1, v1)}. "
+        return dict(
+            short = non_vacuity_clause +
+                (f"{_quant('Every', p1, v1)} has {_exactly(n)} {_bare(p2, v2) if n=='1' else _objs(p2, v2)} that {'is' if n=='1' else 'are'} {_dir(d1)} it."),
+            medium = non_vacuity_clause +
+                (f"For each {_bare(p1, v1)} in the scene, there must exist "
+                f"exactly {n} {'object' if n=='1' else 'objects'} that {'is' if n=='1' else 'are'} {_adj(p2, v2)} standing {_dir(d1)} it."),
+            long=(f"The scene must contain at least one object that is {_adj(p1, v1)}. "
+                f"Every object that is {_adj(p1, v1)} is required to have {_exactly(n)} {'witness' if n=='1' else 'witnesses'}: "
+                f"A witness is {_obj(p2, v2)} standing {_dir(d1)} it."),
         )
 
-    if variant == "1prop_exact_neg":
-        p1, v1, p2, v2, d1, n = _g(a, "P1'", "V1'", "P2'", "V2'", "D1'", "N'")
-
-        return dict( 
-            short=(f"{_quant('Every', p1, v1)} has {_exactly(n)} {_not_bare(p2, v2) if n=='1' else _not_objs(p2, v2)} that {'is' if n=='1' else 'are'} {_dir(d1)} it."),
-            medium=(f"For each {_bare(p1, v1)} in the scene, there must exist "
-                    f"exactly {n} {'object' if n=='1' else 'objects'} that {'is' if n=='1' else 'are'} {_not_adj(p2, v2)} standing {_dir(d1)} it."),
-            long=(f"Every object that is {_adj(p1, v1)} is required to have {_exactly(n)} {'witness' if n=='1' else 'witnesses'}: "
-                  f"A witness is {_not_obj(p2, v2)} standing {_dir(d1)} it."),
+    if variant == "1prop_propRel_neg":
+        p1, v1, p2, v2, d1 = _g(a, "P1'", "V1'", "P2'", "V2'", "D1'")
+        non_vacuity_clause = f"There must be at least one object that is {_not_adj(p1, v1)}. "
+        return dict(
+            short = non_vacuity_clause +
+                (f"{_not_quant('Every', p1, v1)} has {_obj(p2, v2)} {_dir(d1)} it."),
+            medium = non_vacuity_clause +
+                (f"For each {_not_bare(p1, v1)} in the scene, there must be at least one "
+                f"{_bare(p2, v2)} standing {_dir(d1)} it."),
+            long=(f"The scene must contain at least one object that is {_not_adj(p1, v1)}. "
+                f"Every object that is {_not_adj(p1, v1)} is required to have a witness: {_obj(p2, v2)} "
+                f"that stands {_dir(d1)} it."),
         )
-        
+
+    if variant == "1prop_propRel":
+        p1, v1, p2, v2, d1 = _g(a, "P1'", "V1'", "P2'", "V2'", "D1'")
+        non_vacuity_clause = f"There must be at least one object that is {_adj(p1, v1)}. "
+        return dict(
+            short= non_vacuity_clause + 
+                (f"{_quant('Every', p1, v1)} has {_obj(p2, v2)} {_dir(d1)} it."),
+            medium= non_vacuity_clause +
+                (f"For each {_bare(p1, v1)} in the scene, there must exist "
+                f"at least one {_bare(p2, v2)} standing {_dir(d1)} it."),
+            long=(f"The scene must contain at least one object that is {_adj(p1, v1)}. "
+                f"Every object that is {_adj(p1, v1)} is required to have a witness: "
+                f"{_obj(p2, v2)} that stands {_dir(d1)} it."),
+        )
+
+    if variant == "propRel_propRel_neg":
+        p1, v1, p2, v2, p3, v3, d1, d2 = _g(a, "P1'", "V1'","P2'", "V2'","P3'", "V3'", "D1'", "D2'")
+        non_vacuity_clause = (f"There must be at least one {_bare(p1, v1)} that is {_dir(d1)} a "
+                            f"distinct {_bare(p2, v2)}. ")
+        return dict(
+            short = non_vacuity_clause +
+                (f" {_quant('Every', p1, v1)} that is {_dir(d1)} {_obj(p2, v2)} "
+                f"has some {_not_bare(p3, v3)} {_dir(d2)} it."),
+            medium = non_vacuity_clause +
+                (f"Every object that is {_adj(p1, v1)} and is {_dir(d1)} {_obj(p2, v2)}, has a certain "
+                f"{_not_bare(p3, v3)} {_dir(d2)} it."),
+            long=(f"The scene must contain at least one {_bare(p1, v1)} that is {_dir(d1)} a "
+                f"distinct {_bare(p2, v2)}. "
+                f"Whenever there is an object that is {_adj(p1, v1)} and standing {_dir(d1)} {_obj(p2, v2)}, "
+                f"there must always exists some {_not_bare(p3, v3)} standing {_dir(d2)} of it."),
+        )
+
+
+    if variant == "propRel_propRel":
+        p1, v1, p2, v2, p3, v3, d1, d2 = _g(a, "P1'", "V1'","P2'", "V2'","P3'", "V3'", "D1'", "D2'")
+        non_vacuity_clause = (f"There must be at least one {_bare(p1, v1)} that is {_dir(d1)} a "
+                            f"distinct {_bare(p2, v2)}. ")
+        return dict(
+            short = non_vacuity_clause
+                (f" {_quant('Every', p1, v1)} that is {_dir(d1)} {_obj(p2, v2)} "
+                f"has some {_bare(p3, v3)} {_dir(d2)} it."),
+            medium = non_vacuity_clause +
+                (f"Every object that is {_adj(p1, v1)} and is {_dir(d1)} {_obj(p2, v2)}, has a certain "
+                f"{_bare(p3, v3)} {_dir(d2)} it."),
+            long=(f"The scene must contain at least one {_bare(p1, v1)} that is {_dir(d1)} a "
+                f"distinct {_bare(p2, v2)}. "
+                f"Whenever there is an object that is {_adj(p1, v1)} and standing {_dir(d1)} {_obj(p2, v2)}, "
+                f"there must always exists some {_bare(p3, v3)} standing {_dir(d2)} it."),
+        )
+
     return None
 
 
@@ -933,37 +1044,53 @@ def _c9(variant: str, a: dict) -> dict[str, str]:
     
     if variant == "1prop":
         p1, v1, p2, v2 = _g(a, "P1'", "V1'", "P2'", "V2'")
-
+        non_vacuity_clause = f"There must be at least one {_bare(p1, v1)} in the scene. "
         return dict(
-            short=(f"The count of {_objs(p1, v1)} equals the count of {_objs(p2, v2)}."),
-            medium=(f"The number of objects that are {_adj(p1, v1)} in the scene must equal "
-                    f"the number of objects that are {_adj(p2, v2)}."),
-            long=(f"The scene enforces a balance: the cardinality of objects thar are {_adj(p1, v1)} "
-                  f"must exactly match the cardinality of objects that are {_adj(p2, v2)} "),
+            short = non_vacuity_clause + 
+                (f"The count of {_objs(p1, v1)} equals the count of {_objs(p2, v2)}."),
+            medium = non_vacuity_clause +
+                (f"The number of objects that are {_adj(p1, v1)} in the scene must equal "
+                f"the number of objects that are {_adj(p2, v2)}."),
+            long = (f"The scene must contain at least one {_bare(p1, v1)}. "
+                f"The scene enforces a balance: the cardinality of objects that are {_adj(p1, v1)} must exactly match the cardinality of objects that are "
+                f"{_adj(p2, v2)}."),
+
         )
 
-    if variant == "2prop":
-        p1, v1, p2, v2, p3, v3, p4, v4 = _g(a, "P1'", "V1'", "P2'", "V2'", "P3'", "V3'", "P4'", "V4'")
-        return dict(
-            short=(f"The count of objects that are both ({_adj(p1, v1)} and {_adj(p2, v2)}) equals "
-                   f"the count of objects that are both ({_adj(p3, v3)} and {_adj(p4, v4)})."),
-            medium=(f"The number of objects that are {_adj(p1, v1)} and {_adj(p2, v2)} simultaneously "
-                    f"must equal the number of objects that are both {_adj(p3, v3)} and {_adj(p4, v4)}."),
-            long=(f"The scene requires equal cardinality between two groups: the first group being the collection of objects that are both "
-                  f"{_adj(p1, v1)} and {_adj(p2, v2)}, and the second group being the collection of objects that are both "
-                  f"{_adj(p3, v3)} and {_adj(p4, v4)}."),
-        )
 
     if variant == "2prop_mix":
         p1, v1, p2, v2, p3, v3, p4, v4 = _g(a, "P1'", "V1'", "P2'", "V2'", "P3'", "V3'", "P4'", "V4'")
+        non_vacuity_clause = (f"There must be at least one object that is {_not_adj(p1, v1)} but {_adj(p2, v2)}. ")
+
         return dict(
-            short=(f"The count of object that are ({_not_adj(p1, v1)} but are {_adj(p2, v2)}) equals "
-                   f"the count of objects that are ({_not_adj(p3, v3)} but {_adj(p4, v4)})."),
-            medium=(f"The number of objects that are {_not_adj(p1, v1)} but {_adj(p2, v2)} "
-                    f"must equal the number that are {_not_adj(p3, v3)} but {_adj(p4, v4)}."),
-            long=(f"The scene balances two groups: the first group is the collection of objects that are not "
+            short = non_vacuity_clause +
+                (f"The count of object that are ({_not_adj(p1, v1)} but are {_adj(p2, v2)}) equals "
+                f"the count of objects that are ({_not_adj(p3, v3)} but {_adj(p4, v4)})."),
+            medium = non_vacuity_clause +
+                (f"The number of objects that are {_not_adj(p1, v1)} but {_adj(p2, v2)} "
+                f"must equal the number that are {_not_adj(p3, v3)} but {_adj(p4, v4)}."),
+            long=(f"The scene must contain at least one object that is {_not_adj(p1, v1)} but {_adj(p2, v2)}. "
+                  f"The scene balances two groups: the first group is the collection of objects that are not "
                   f"{_adj(p1, v1)} but  {_adj(p2, v2)}, and the second group is the collection of objects that are not "
                   f"{_adj(p3, v3)} but {_adj(p4, v4)}."),
+        )
+    
+
+    if variant == "2prop":
+        p1, v1, p2, v2, p3, v3, p4, v4 = _g(a, "P1'", "V1'", "P2'", "V2'", "P3'", "V3'", "P4'", "V4'")
+        non_vacuity_clause = (f"There must be at least one object that is {_adj(p1, v1)} and {_adj(p2, v2)}. ")
+
+        return dict(
+            short = non_vacuity_clause +
+                (f"The count of objects that are both ({_adj(p1, v1)} and {_adj(p2, v2)}) equals "
+                f"the count of objects that are both ({_adj(p3, v3)} and {_adj(p4, v4)})."),
+            medium = non_vacuity_clause +
+                (f"The number of objects that are {_adj(p1, v1)} and {_adj(p2, v2)} simultaneously "
+                f"must equal the number of objects that are both {_adj(p3, v3)} and {_adj(p4, v4)}."),
+            long=(f"The scene must contain at least one object that is {_adj(p1, v1)} and {_adj(p2, v2)}. "
+                f"The scene requires equal cardinality between two groups: the first group being the collection of objects that are both "
+                f"{_adj(p1, v1)} and {_adj(p2, v2)}, and the second group being the collection of objects that are both "
+                f"{_adj(p3, v3)} and {_adj(p4, v4)}."),
         )
 
     return None
