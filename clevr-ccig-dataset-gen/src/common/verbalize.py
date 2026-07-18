@@ -785,7 +785,7 @@ def _c7(variant: str, a: dict) -> dict[str, str]:
         non_vacuity_clause = (f"There must be at least one {_bare(p1, v1)} that is {_dir(d1)} a "
                             f"{_bare(p2, v2)}. ")
         return dict(
-            short = non_vacuity_clause
+            short = non_vacuity_clause +
                 (f"Every such {_bare(p1, v1)} has some {_bare(p3, v3)} {_dir(d2)} it."),
             medium = non_vacuity_clause +
                 (f"Every object that is {_adj(p1, v1)} and is {_dir(d1)} {_obj(p2, v2)}, has a certain "

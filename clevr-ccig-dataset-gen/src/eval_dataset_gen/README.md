@@ -42,10 +42,10 @@ python -m src.eval_dataset_gen.run --no_solve
 
 ```
 
-Outputs two files derived from `--output` (default: `../data/ccig_dataset.jsonl`, i.e. the
+Outputs two files derived from `--output` (default: `../data/ccig_eval_dataset.jsonl`, i.e. the
 repo-root `data/` folder):
-- `ccig_dataset_SAT.jsonl`
-- `ccig_dataset_UNSAT.jsonl`
+- `ccig_eval_dataset_SAT.jsonl`
+- `ccig_eval_dataset_UNSAT.jsonl`
 
 ## Output format
 

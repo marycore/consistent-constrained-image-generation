@@ -16,7 +16,7 @@ package imports to resolve):
     python -m src.eval_dataset_gen.run
 
 # 20 samples per template, 6 scene objects, custom output:
-    python -m src.eval_dataset_gen.run --samples 20 --n_objects 6 --output ccig_dataset.jsonl
+    python -m src.eval_dataset_gen.run --samples 20 --n_objects 6 --output ccig_eval_dataset.jsonl
 
 # Only C1 and C3 templates:
     python -m src.eval_dataset_gen.run --classes C1 C3
@@ -45,7 +45,7 @@ from .solve import solve, format_scene
 
 _REPO_ROOT = Path(__file__).resolve().parents[3]
 TEMPLATE_DIR = Path(__file__).resolve().parent / "constraint_templates"
-DEFAULT_OUTPUT = _REPO_ROOT / "data" / "ccig_dataset.jsonl"
+DEFAULT_OUTPUT = _REPO_ROOT / "data" / "ccig_eval_dataset.jsonl"
 
 
 # ── Record construction ──────────────────────────────────────────────────────
@@ -123,7 +123,7 @@ def run(
     sat_count = unsat_count = total_count = 0
 
     with open(sat_path, "w") as sat_f, open(unsat_path, "w") as unsat_f:
-        for tpl_path in template_files: #for each template of that class - generate 5 sat plus 2 unsat per file 
+        for tpl_path in template_files: #for each template of that class - generate 5 sat plus 2 unsat per file
             if verbose:
                 print(f"Processing {tpl_path.name} …")
 
@@ -132,7 +132,9 @@ def run(
             history_asgn = []
             max_attempts = 1000
             attempts = 0
-            while (sat_count<n_samples and attempts<max_attempts):
+            tpl_sat_count = 0
+            tpl_unsat_count = 0
+            while (tpl_sat_count<n_samples and attempts<max_attempts):
                 attempts  =attempts+1
                 flag = True
                 n_objects = random.randint(3, 9)
@@ -141,10 +143,10 @@ def run(
                     if (asgn, n_objects) not in history_asgn:
                         history_asgn.append((asgn, n_objects))
                         flag  = False
-                        
-                    
+
+
                 instantiated_rule = apply_assignment(rule_text, asgn)
-                print('Instantiated rule:', instantiated_rule)
+                #print('Instantiated rule:', instantiated_rule)
                 background = background_asp(n_objects)
                 full_program = background + instantiated_rule + "\n"
                 try:
@@ -157,35 +159,41 @@ def run(
                 except RuntimeError as e:
                     print(f"  Solver error: {e}", file=sys.stderr)
                     status = "ERROR"
-                
+
                 if status == "SAT":
-                    record_id = _record_id(tpl_path.name, asgn, sat_count)
+                    record_id = _record_id(tpl_path.name, asgn, tpl_sat_count)
+                    tpl_sat_count += 1
                     sat_count += 1
                     for r_m in raw_models:
                         scene = format_scene(r_m)
-                        print(scene)
-                    
-                    
+                        #print(scene)
+
+
                 elif status == "UNSAT":
-                    record_id = _record_id(tpl_path.name, asgn, unsat_count)
+                    record_id = _record_id(tpl_path.name, asgn, tpl_unsat_count)
+                    tpl_unsat_count += 1
                     unsat_count += 1
-                    
+                else:
+                    if verbose:
+                        mark = {"TIMEOUT": "⏱", "UNKNOWN": "?", "ERROR": "!"}.get(status, "?")
+                        print(f"  [{mark}] skipped ({status})")
+                    continue
+
                 total_count += 1
 
                 record = build_record(tpl_path, asgn, rule_text, status, record_id, n_objects)
                 line = json.dumps(record) + "\n"
 
                 if status == "SAT":
-                    print('Wriing sat')
                     sat_f.write(line)
                 elif status == "UNSAT":
                     unsat_f.write(line)
 
                 if verbose:
-                    mark = {"SAT": "✓", "UNSAT": "✗", "TIMEOUT": "⏱", "UNKNOWN": "?"}.get(status, "?")
+                    mark = {"SAT": "✓", "UNSAT": "✗"}.get(status, "?")
                     print(f"  [{mark}] {record_id}")
-            if (sat_count < n_samples):
-                print('Tried max_attempts =1000 times but could produce:', sat_count, ' satisfiable and ', unsat_count, ' unsatisfiable prompts.')
+            if (tpl_sat_count < n_samples):
+                print('Tried max_attempts =1000 times but could produce:', tpl_sat_count, ' satisfiable and ', tpl_unsat_count, ' unsatisfiable prompts.')
     print(
         f"\nDone. {total_count} records written.\n"
         f"  SAT={sat_count}  → {sat_path}\n"
