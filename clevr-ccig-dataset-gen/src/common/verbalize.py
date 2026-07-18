@@ -713,7 +713,7 @@ def _c7(variant: str, a: dict) -> dict[str, str]:
         non_vacuity_clause = f"There must be at least one object that is {_adj(p1, v1)}. "
         return dict(
             short = non_vacuity_clause +
-                (f"{_quant('Every', p1, v1)} has {_exactly(n)} {_not_bare(p2, v2) if n=='1' else _not_objs(p2, v2)} that {'is' if n=='1' else 'are'} {_dir(d1)} it."),
+                (f"Every such object has {_exactly(n)} {_not_bare(p2, v2) if n=='1' else _not_objs(p2, v2)} that {'is' if n=='1' else 'are'} {_dir(d1)} it."),
             medium = non_vacuity_clause +
                 (f"For each {_bare(p1, v1)} in the scene, there must exist "
                 f"exactly {n} {'object' if n=='1' else 'objects'} that {'is' if n=='1' else 'are'} {_not_adj(p2, v2)} standing {_dir(d1)} it."),
@@ -727,7 +727,7 @@ def _c7(variant: str, a: dict) -> dict[str, str]:
         non_vacuity_clause = f"There must be at least one object that is {_adj(p1, v1)}. "
         return dict(
             short = non_vacuity_clause +
-                (f"{_quant('Every', p1, v1)} has {_exactly(n)} {_bare(p2, v2) if n=='1' else _objs(p2, v2)} that {'is' if n=='1' else 'are'} {_dir(d1)} it."),
+                (f"Every such object has {_exactly(n)} {_bare(p2, v2) if n=='1' else _objs(p2, v2)} that {'is' if n=='1' else 'are'} {_dir(d1)} it."),
             medium = non_vacuity_clause +
                 (f"For each {_bare(p1, v1)} in the scene, there must exist "
                 f"exactly {n} {'object' if n=='1' else 'objects'} that {'is' if n=='1' else 'are'} {_adj(p2, v2)} standing {_dir(d1)} it."),
@@ -741,13 +741,13 @@ def _c7(variant: str, a: dict) -> dict[str, str]:
         non_vacuity_clause = f"There must be at least one object that is {_not_adj(p1, v1)}. "
         return dict(
             short = non_vacuity_clause +
-                (f"{_not_quant('Every', p1, v1)} has {_obj(p2, v2)} {_dir(d1)} it."),
+                (f"Every such object has {_obj(p2, v2)} {_dir(d1)} it."),
             medium = non_vacuity_clause +
                 (f"For each {_not_bare(p1, v1)} in the scene, there must be at least one "
                 f"{_bare(p2, v2)} standing {_dir(d1)} it."),
             long=(f"The scene must contain at least one object that is {_not_adj(p1, v1)}. "
-                f"Every object that is {_not_adj(p1, v1)} is required to have a witness: {_obj(p2, v2)} "
-                f"that stands {_dir(d1)} it."),
+                f"Every object that is {_not_adj(p1, v1)} is required to have a witness: "
+                f"A witness is {_obj(p2, v2)} that stands {_dir(d1)} it."),
         )
 
     if variant == "1prop_propRel":
@@ -755,46 +755,42 @@ def _c7(variant: str, a: dict) -> dict[str, str]:
         non_vacuity_clause = f"There must be at least one object that is {_adj(p1, v1)}. "
         return dict(
             short= non_vacuity_clause + 
-                (f"{_quant('Every', p1, v1)} has {_obj(p2, v2)} {_dir(d1)} it."),
+                (f"Every such object has {_obj(p2, v2)} {_dir(d1)} it."),
             medium= non_vacuity_clause +
                 (f"For each {_bare(p1, v1)} in the scene, there must exist "
                 f"at least one {_bare(p2, v2)} standing {_dir(d1)} it."),
             long=(f"The scene must contain at least one object that is {_adj(p1, v1)}. "
                 f"Every object that is {_adj(p1, v1)} is required to have a witness: "
-                f"{_obj(p2, v2)} that stands {_dir(d1)} it."),
+                f"A witness is {_obj(p2, v2)} that stands {_dir(d1)} it."),
         )
 
     if variant == "propRel_propRel_neg":
         p1, v1, p2, v2, p3, v3, d1, d2 = _g(a, "P1'", "V1'","P2'", "V2'","P3'", "V3'", "D1'", "D2'")
         non_vacuity_clause = (f"There must be at least one {_bare(p1, v1)} that is {_dir(d1)} a "
-                            f"distinct {_bare(p2, v2)}. ")
+                            f"{_bare(p2, v2)}. ")
         return dict(
             short = non_vacuity_clause +
-                (f" {_quant('Every', p1, v1)} that is {_dir(d1)} {_obj(p2, v2)} "
-                f"has some {_not_bare(p3, v3)} {_dir(d2)} it."),
+                (f"Every such {_bare(p1, v1)} has some {_not_bare(p3, v3)} {_dir(d2)} it."),
             medium = non_vacuity_clause +
                 (f"Every object that is {_adj(p1, v1)} and is {_dir(d1)} {_obj(p2, v2)}, has a certain "
                 f"{_not_bare(p3, v3)} {_dir(d2)} it."),
-            long=(f"The scene must contain at least one {_bare(p1, v1)} that is {_dir(d1)} a "
-                f"distinct {_bare(p2, v2)}. "
+            long=(f"The scene must contain at least one {_bare(p1, v1)} that is {_dir(d1)} a {_bare(p2, v2)}. "
                 f"Whenever there is an object that is {_adj(p1, v1)} and standing {_dir(d1)} {_obj(p2, v2)}, "
-                f"there must always exists some {_not_bare(p3, v3)} standing {_dir(d2)} of it."),
+                f"there must always exists some {_not_bare(p3, v3)} standing {_dir(d2)} it."),
         )
 
 
     if variant == "propRel_propRel":
         p1, v1, p2, v2, p3, v3, d1, d2 = _g(a, "P1'", "V1'","P2'", "V2'","P3'", "V3'", "D1'", "D2'")
         non_vacuity_clause = (f"There must be at least one {_bare(p1, v1)} that is {_dir(d1)} a "
-                            f"distinct {_bare(p2, v2)}. ")
+                            f"{_bare(p2, v2)}. ")
         return dict(
             short = non_vacuity_clause
-                (f" {_quant('Every', p1, v1)} that is {_dir(d1)} {_obj(p2, v2)} "
-                f"has some {_bare(p3, v3)} {_dir(d2)} it."),
+                (f"Every such {_bare(p1, v1)} has some {_bare(p3, v3)} {_dir(d2)} it."),
             medium = non_vacuity_clause +
                 (f"Every object that is {_adj(p1, v1)} and is {_dir(d1)} {_obj(p2, v2)}, has a certain "
                 f"{_bare(p3, v3)} {_dir(d2)} it."),
-            long=(f"The scene must contain at least one {_bare(p1, v1)} that is {_dir(d1)} a "
-                f"distinct {_bare(p2, v2)}. "
+            long=(f"The scene must contain at least one {_bare(p1, v1)} that is {_dir(d1)} a {_bare(p2, v2)}. "
                 f"Whenever there is an object that is {_adj(p1, v1)} and standing {_dir(d1)} {_obj(p2, v2)}, "
                 f"there must always exists some {_bare(p3, v3)} standing {_dir(d2)} it."),
         )
@@ -807,7 +803,7 @@ def _c8(variant: str, a: dict) -> dict[str, str]:
     if variant == "1prop_atleast":
         p1, v1, n = _g(a, "P1'", "V1'", "N'")
         return dict(
-            short=f"There {'is' if n=='1' else 'are'} {_at_least(n)} {_bare(p1, v1) if n=='1' else _objs(p1, v1)} in the scene.",
+            short=f"There {'is' if n=='1' else 'are'} {_at_least(n)} {_bare(p1, v1) if n=='1' else _objs(p1, v1)}.",
             medium=f"The scene must contain {_at_least(n)} {_bare(p1, v1) if n=='1' else _objs(p1, v1)}.",
             long=(f"The following cardinality constraint is to be satisfied by the scene generated: The count of objects that are {_adj(p1, v1)} in the scene must be "
                   f"at least {n}."),
@@ -817,7 +813,7 @@ def _c8(variant: str, a: dict) -> dict[str, str]:
         p1, v1, n = _g(a, "P1'", "V1'", "N'")
 
         return dict(
-            short=f"There {'is' if n == '1' else 'are'} {_at_least(n)} {_not_bare(p1, v1) if n=='1' else _not_objs(p1, v1)} in the scene.",
+            short=f"There {'is' if n == '1' else 'are'} {_at_least(n)} {_not_bare(p1, v1) if n=='1' else _not_objs(p1, v1)}.",
             medium=f"The scene must contain {_at_least(n)} {_n_obj(n)} that {'is' if n == '1' else 'are'} {_not_adj(p1, v1)}.",
             long=(f"The following cardinality constraint is to be satisfied by the scene generated: At least {n} {_n_obj(n)} in the scene must not be {_adj(p1, v1)}."),
         )
@@ -826,7 +822,7 @@ def _c8(variant: str, a: dict) -> dict[str, str]:
     if variant == "1prop_exact":
         p1, v1, n = _g(a, "P1'", "V1'", "N'")
         return dict(
-            short=f"There {'is' if n=='1' else 'are'} {_exactly(n)} {_bare(p1, v1) if n=='1' else _objs(p1, v1)} in the scene.",
+            short=f"There {'is' if n=='1' else 'are'} {_exactly(n)} {_bare(p1, v1) if n=='1' else _objs(p1, v1)}.",
             medium=f"The scene must contain {_exactly(n)} {_bare(p1, v1) if n=='1' else _objs(p1, v1)}.",
             long=(f"The following cardinality constraint is to be satisfied by the scene generated: The count of objects that are {_adj(p1, v1)} in the scene must reach "
                   f"exactly {n}."),
@@ -836,7 +832,7 @@ def _c8(variant: str, a: dict) -> dict[str, str]:
         p1, v1, n = _g(a, "P1'", "V1'", "N'")
 
         return dict(
-            short=f"There {'is' if n == '1' else 'are'} {_exactly(n)} {_not_bare(p1, v1) if n=='1' else _not_objs(p1, v1)} in the scene.",
+            short=f"There {'is' if n == '1' else 'are'} {_exactly(n)} {_not_bare(p1, v1) if n=='1' else _not_objs(p1, v1)}.",
             medium=f"The scene must contain {_exactly(n)} {_n_obj(n)} that {'is' if n == '1' else 'are'} {_not_adj(p1, v1)}.",
             long=(f"The following cardinality constraint is to be satisfied by the scene generated: Exactly {n} {_n_obj(n)} in the scene must not be {_adj(p1, v1)}."),
         )
@@ -844,19 +840,18 @@ def _c8(variant: str, a: dict) -> dict[str, str]:
     if variant == "1prop_atmost":
         p1, v1, n = _g(a, "P1'", "V1'", "N'")
         return dict(
-            short=f"There {'is' if n=='1' else 'are'} {_at_most(n)} {_bare(p1, v1) if n=='1' else _objs(p1, v1)} in the scene.",
+            short=f"There {'is' if n=='1' else 'are'} {_at_most(n)} {_bare(p1, v1) if n=='1' else _objs(p1, v1)}.",
             medium=f"The scene must contain {_at_most(n)} {_bare(p1, v1) if n=='1' else _objs(p1, v1)}.",
-            long=(f"The following cardinality constraint is to be satisfied by the scene generated: The count of objects that are {_adj(p1, v1)} in the scene must not exceed "
-                  f"{n}."),
+            long=(f"The following cardinality constraint is to be satisfied by the scene generated: The count of objects that are {_adj(p1, v1)} in the scene must not exceed {n}."),
         )
     
     if variant == "1prop_atmost_neg":
         p1, v1, n = _g(a, "P1'", "V1'", "N'")
 
         return dict(
-            short=f"There {'is' if n == '1' else 'are'} {_at_most(n)} {_not_bare(p1, v1) if n=='1' else _not_objs(p1, v1)} in the scene.",
+            short=f"There {'is' if n == '1' else 'are'} {_at_most(n)} {_not_bare(p1, v1) if n=='1' else _not_objs(p1, v1)}.",
             medium=f"The scene must contain {_at_most(n)} {_n_obj(n)} that {'is' if n == '1' else 'are'} {_not_adj(p1, v1)}.",
-            long=(f"The following cardinality constraint is to be satisfied by the scene generated: Not more than {n} {_n_obj(n)} in the scene can be {_not_adj(p1, v1)}."),
+            long=(f"The following cardinality constraint is to be satisfied by the scene generated: The count of objects that are not {_adj(p1, v1)} in the scene must not be more than {n}."),
         )
     
     
@@ -888,62 +883,30 @@ def _c8(variant: str, a: dict) -> dict[str, str]:
                   f"any {_bare(p2, v2)} must be {op} {n}."),
         )
     
-    
-    
-    if variant == "2prop_exact":
+    if variant in ("2prop_exact", "2prop_atleast",
+                   "2prop_atmost"):
         p1, v1, p2, v2, n = _g(a, "P1'", "V1'", "P2'", "V2'","N'")
+        op = ("exactly" if "exact" in variant
+              else "at least" if "atleast" in variant else "at most")
         return dict(
-            short=f"There {'is' if n=='1' else 'are'} {_exactly(n)} {_n_obj(n)} that {'is' if n=='1' else 'are'} {_adj(p1, v1) and _adj(p2, v2)}.",
-            medium=f"The scene must contain {_exactly(n)} {_n_obj(n)} that {'is' if n=='1' else 'are'} {_adj(p1, v1) and _adj(p2, v2)} in the scene.",
+            short=f"There {'is' if n=='1' else 'are'} {op} {n} {_n_obj(n)} that {'is' if n=='1' else 'are'} both {_adj(p1, v1) and _adj(p2, v2)}.",
+            medium=f"The scene must contain {op} {n} {_n_obj(n)} that {'is' if n=='1' else 'are'} both {_adj(p1, v1) and _adj(p2, v2)}.",
             long=(f"The following cardinality constraint is to be satisfied by the scene generated: The count of objects that are {_adj(p1, v1)} and {_adj(p2, v2)} simultaneously in the scene must reach "
-                  f"exactly {n}."),
+                  f"{op} {n}."),
         )
-    
-    if variant == "2prop_exact_neg":
+       
+    if variant in ("2prop_exact_neg", "2prop_atleast_neg",
+                   "2prop_atmost_neg"):
         p1, v1, p2, v2, n = _g(a, "P1'", "V1'", "P2'", "V2'","N'")
+        op = ("exactly" if "exact" in variant
+              else "at least" if "atleast" in variant else "at most")
         return dict(
-            short=f"There {'is' if n=='1' else 'are'} {_exactly(n)} {_n_obj(n)} that {'is' if n=='1' else 'are'} {_adj(p1, v1) and _not_adj(p2, v2)}.",
-            medium=f"The scene must contain {_exactly(n)} {_n_obj(n)} that {'is' if n=='1' else 'are'} {_adj(p1, v1) and _not_adj(p2, v2)} in the scene.",
+            short=f"There {'is' if n=='1' else 'are'} {op} {n} {_n_obj(n)} that {'is' if n=='1' else 'are'} both {_adj(p1, v1) and _not_adj(p2, v2)}.",
+            medium=f"The scene must contain {op} {n} {_n_obj(n)} that {'is' if n=='1' else 'are'} both {_adj(p1, v1) and _not_adj(p2, v2)}.",
             long=(f"The following cardinality constraint is to be satisfied by the scene generated: The count of objects that are {_adj(p1, v1)} and {_not_adj(p2, v2)} simultaneously in the scene must reach "
-                  f"exactly {n}."),
+                  f"{op} {n}."),
         )
-    
-    if variant == "2prop_atleast":
-        p1, v1, p2, v2, n = _g(a, "P1'", "V1'", "P2'", "V2'","N'")
-        return dict(
-            short=f"There {'is' if n=='1' else 'are'} {_at_least(n)} {_n_obj(n)} that {'is' if n=='1' else 'are'} {_adj(p1, v1) and _adj(p2, v2)}.",
-            medium=f"The scene must contain {_at_least(n)} {_n_obj(n)} that {'is' if n=='1' else 'are'} {_adj(p1, v1) and _adj(p2, v2)} in the scene.",
-            long=(f"The following cardinality constraint is to be satisfied by the scene generated: The count of objects that are {_adj(p1, v1)} and {_adj(p2, v2)} simultaneously in the scene must be "
-                  f"at least {n}."),
-        )
-    
-    if variant == "2prop_atleast_neg":
-        p1, v1, p2, v2, n = _g(a, "P1'", "V1'", "P2'", "V2'","N'")
-        return dict(
-            short=f"There {'is' if n=='1' else 'are'} {_at_least(n)} {_n_obj(n)} that {'is' if n=='1' else 'are'} {_adj(p1, v1) and _not_adj(p2, v2)}.",
-            medium=f"The scene must contain {_at_least(n)} {_n_obj(n)} that {'is' if n=='1' else 'are'} {_adj(p1, v1) and _not_adj(p2, v2)} in the scene.",
-            long=(f"The following cardinality constraint is to be satisfied by the scene generated: The count of objects that are {_adj(p1, v1)} and {_not_adj(p2, v2)} simultaneously in the scene must be "
-                  f"at least {n}."),
-        )
-    
-    if variant == "2prop_atmost":
-        p1, v1, p2, v2, n = _g(a, "P1'", "V1'", "P2'", "V2'","N'")
-        return dict(
-            short=f"There {'is' if n=='1' else 'are'} {_at_most(n)} {_n_obj(n)} that {'is' if n=='1' else 'are'} {_adj(p1, v1) and _adj(p2, v2)}.",
-            medium=f"The scene must contain {_at_most(n)} {_n_obj(n)} that {'is' if n=='1' else 'are'} {_adj(p1, v1) and _adj(p2, v2)} in the scene.",
-            long=(f"The following cardinality constraint is to be satisfied by the scene generated: The count of objects that are {_adj(p1, v1)} and {_adj(p2, v2)} simultaneously in the scene can not exceed "
-                  f"{n}."),
-        )
-    
-    if variant == "2prop_atmost_neg":
-        p1, v1, p2, v2, n = _g(a, "P1'", "V1'", "P2'", "V2'","N'")
-        return dict(
-            short=f"There {'is' if n=='1' else 'are'} {_at_most(n)} {_n_obj(n)} that {'is' if n=='1' else 'are'} {_adj(p1, v1) and _not_adj(p2, v2)}.",
-            medium=f"The scene must contain {_at_most(n)} {_n_obj(n)} that {'is' if n=='1' else 'are'} {_adj(p1, v1) and _not_adj(p2, v2)} in the scene.",
-            long=(f"The following cardinality constraint is to be satisfied by the scene generated: The count of objects that are {_adj(p1, v1)} and {_not_adj(p2, v2)} simultaneously in the scene can not exceed "
-                  f"{n}."),
-        )
-    
+
     return None
 
 
@@ -951,7 +914,7 @@ def _c9(variant: str, a: dict) -> dict[str, str]:
     
     if variant == "1prop":
         p1, v1, p2, v2 = _g(a, "P1'", "V1'", "P2'", "V2'")
-        non_vacuity_clause = f"There must be at least one {_bare(p1, v1)} in the scene. "
+        non_vacuity_clause = f"There must be at least one {_bare(p1, v1)}. "
         return dict(
             short = non_vacuity_clause + 
                 (f"The count of {_objs(p1, v1)} equals the count of {_objs(p2, v2)}."),
@@ -971,15 +934,15 @@ def _c9(variant: str, a: dict) -> dict[str, str]:
 
         return dict(
             short = non_vacuity_clause +
-                (f"The count of object that are ({_not_adj(p1, v1)} but are {_adj(p2, v2)}) equals "
+                (f"The count of objects that are ({_not_adj(p1, v1)} but are {_adj(p2, v2)}) equals "
                 f"the count of objects that are ({_not_adj(p3, v3)} but {_adj(p4, v4)})."),
             medium = non_vacuity_clause +
                 (f"The number of objects that are {_not_adj(p1, v1)} but {_adj(p2, v2)} "
-                f"must equal the number that are {_not_adj(p3, v3)} but {_adj(p4, v4)}."),
+                f"must equal the number of objects that are {_not_adj(p3, v3)} but {_adj(p4, v4)}."),
             long=(f"The scene must contain at least one object that is {_not_adj(p1, v1)} but {_adj(p2, v2)}. "
                   f"The scene balances two groups: the first group is the collection of objects that are not "
                   f"{_adj(p1, v1)} but  {_adj(p2, v2)}, and the second group is the collection of objects that are not "
-                  f"{_adj(p3, v3)} but {_adj(p4, v4)}."),
+                  f"{_adj(p3, v3)} but {_adj(p4, v4)}. It is not possible that the size of the first group is not equal to the size of the second group."),
         )
     
 
@@ -997,7 +960,7 @@ def _c9(variant: str, a: dict) -> dict[str, str]:
             long=(f"The scene must contain at least one object that is {_adj(p1, v1)} and {_adj(p2, v2)}. "
                 f"The scene requires equal cardinality between two groups: the first group being the collection of objects that are both "
                 f"{_adj(p1, v1)} and {_adj(p2, v2)}, and the second group being the collection of objects that are both "
-                f"{_adj(p3, v3)} and {_adj(p4, v4)}."),
+                f"{_adj(p3, v3)} and {_adj(p4, v4)}. It is not possible that the size of the first group is not equal to the size of the second group."),
         )
 
     return None
