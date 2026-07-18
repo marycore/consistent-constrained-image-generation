@@ -72,7 +72,6 @@ def build_record(
         "complexity_class": cls,
         "constraint_family": family,
         "prompts": texts,
-        #"asp_code": full_program + instantiated_rule + "\n",
         "instantiated_rule": instantiated_rule,
         "asp_template_file": template_path.name,
         "status": status,
