@@ -54,9 +54,9 @@ def build_record(
     template_path: Path,
     assignment: dict[str, str],
     rule_text: str,
-    full_program: str,
     status: str,
     record_id: str,
+    n_objects: int = 4,
 ) -> dict:
     stem = template_path.stem
 
@@ -71,10 +71,12 @@ def build_record(
         "id": record_id,
         "complexity_class": cls,
         "constraint_family": family,
-        "text": texts,
-        "asp_code": full_program + instantiated_rule + "\n",
+        "prompts": texts,
+        #"asp_code": full_program + instantiated_rule + "\n",
+        "instantiated_rule": instantiated_rule,
         "asp_template_file": template_path.name,
         "status": status,
+        "number_of_objects": n_objects,
     }
 
 
@@ -91,8 +93,6 @@ def run(
     template_dir: Path,
     output_path: Path,
     n_samples: int,
-    n_objects: int,
-    mode: str,
     classes: list[str] | None,
     solve_programs: bool,
     n_models: int,
@@ -173,7 +173,7 @@ def run(
                     
                 total_count += 1
 
-                record = build_record(tpl_path, asgn, rule_text, background, status, record_id)
+                record = build_record(tpl_path, asgn, rule_text, status, record_id, n_objects)
                 line = json.dumps(record) + "\n"
 
                 if status == "SAT":
@@ -225,8 +225,6 @@ if __name__ == "__main__":
         template_dir=args.template_dir,
         output_path=args.output,
         n_samples=args.samples, # is nuber of prompts generated?
-        n_objects=args.n_objects, # no. of objects in each setting?
-        mode=args.mode, #exhaustive or few samples -> use only few samples
         classes=args.classes, #complexity
         solve_programs=not args.no_solve,
         n_models=args.n_models, #is this no of plausible scene configurations for a setting? we probably do not need this now
