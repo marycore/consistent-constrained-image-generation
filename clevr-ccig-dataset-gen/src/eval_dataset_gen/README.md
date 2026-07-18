@@ -40,8 +40,6 @@ python -m src.eval_dataset_gen.run --classes C1 C3 C8
 # Skip clingo solving (NL verbalization only, no SAT/UNSAT)
 python -m src.eval_dataset_gen.run --no_solve
 
-# Enumerate all valid assignments exhaustively instead of random sampling
-python -m src.eval_dataset_gen.run --mode exhaustive
 ```
 
 Outputs two files derived from `--output` (default: `../data/ccig_dataset.jsonl`, i.e. the
