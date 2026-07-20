@@ -9,7 +9,7 @@ from __future__ import annotations
 
 from typing import Dict, List, Optional, Tuple
 
-from ..common import domain
+from ..common import domain_clevr as domain
 
 Scene = Dict[str, object]  # {"objects": {obj_id: {prop: val}}, "relations": [{"from","to","direction"}]}
 

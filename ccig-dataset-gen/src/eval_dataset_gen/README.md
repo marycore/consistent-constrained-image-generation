@@ -17,16 +17,16 @@ for the sibling pipeline that captions existing images instead.
 
 | File | Role |
 |------|------|
-| `domain.py` | Property/value/direction domains (derives from `../common/domain.py`, excluding `material`); background ASP program generator |
+| `domain.py` | Property/value/direction domains (derives from `../common/domain_clevr.py`, excluding `material`); background ASP program generator |
 | `instantiate.py` | Template loading, placeholder extraction, valid assignment sampling |
 | `../common/verbalize.py` | NL verbalization for all 9 constraint classes (C1–C9) — shared with `finetune_dataset_gen`, which grounds it against real scenes instead of instantiating it randomly |
 | `solve.py` | Clingo wrapper; scene formatter for grounded answer sets |
-| `run.py` | CLI entry point orchestrating the full pipeline |
+| `run.py` | CLI entry point orchestrating the full pipeline; `--domain` (default `clevr`) tags each output record with which domain's vocabulary was used |
 
 ## Run
 
 ```bash
-cd clevr-ccig-dataset-gen
+cd ccig-dataset-gen
 
 # Default: 10 random samples per template, 4-object scenes
 python -m src.eval_dataset_gen.run
@@ -39,6 +39,9 @@ python -m src.eval_dataset_gen.run --classes C1 C3 C8
 
 # Skip clingo solving (NL verbalization only, no SAT/UNSAT)
 python -m src.eval_dataset_gen.run --no_solve
+
+# Tag output records with a domain (default: clevr;)
+python -m src.eval_dataset_gen.run --domain clevr
 
 ```
 
@@ -54,15 +57,17 @@ Each line in both files is one JSON record:
 ```json
 {
   "id": "C1-1prop-a3f9b2-000",
+  "domain": "clevr",
   "complexity_class": "C1",
   "constraint_family": "1prop",
-  "text": {
+  "prompts": {
     "short": "A red object is in the scene.",
     "medium": "The scene contains at least one red object.",
     "long": "..."
   },
-  "asp_code": "...",
+  "instantiated_rule": ":- #count { X : object(X), hasProperty(X, color, red)} = 0.",
   "asp_template_file": "C1_1prop.txt",
-  "status": "SAT"
+  "status": "SAT",
+  "number_of_objects": 4
 }
 ```

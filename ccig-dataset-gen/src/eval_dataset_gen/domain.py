@@ -1,15 +1,16 @@
 """Eval-side property domain and ASP background loader for CCIG scene generation.
 
-PROPERTIES derives from common/domain.py (single source of truth for what's actually in the
-CLEVR-CCIG scenes) with one deliberate override: "material" is excluded from the ASP constraint
+PROPERTIES derives from common/domain_clevr.py (single source of truth for what's actually in
+the CCIG scenes) with one deliberate override: "material" is excluded from the ASP constraint
 search space to keep eval-set generation tractable. This is the only place that exclusion is
-encoded -- finetune_dataset_gen uses the full common/domain.py PROPERTIES, materials included.
+encoded -- finetune_dataset_gen uses the full common/domain_clevr.py PROPERTIES, materials
+included.
 """
 
 from pathlib import Path
 from typing import Dict, List
 
-from ..common.domain import PROPERTIES as _ALL_PROPERTIES, DIRECTIONS as RELATIONS
+from ..common.domain_clevr import PROPERTIES as _ALL_PROPERTIES, DIRECTIONS as RELATIONS
 
 PROPERTIES: Dict[str, List[str]] = {k: v for k, v in _ALL_PROPERTIES.items() if k != "material"}
 COUNTS: List[str] = ["1", "2", "3"]

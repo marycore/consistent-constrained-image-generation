@@ -16,7 +16,7 @@ import random
 from itertools import combinations
 from typing import Dict, Iterator, List, Optional, Tuple
 
-from ..common import domain
+from ..common import domain_clevr as domain
 from ..common import verbalize
 from . import scene_queries as q
 from .scene_queries import Scene

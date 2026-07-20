@@ -270,20 +270,3 @@ def apply_assignment(rule: str, assignment: Dict[str, str]) -> str:
     return out
 
 
-#Testing instantiate.py - after instantiation remove all ineq with dash vars
-#constraints_path = Path('/users/sbsh670/CCIG_Eval/clevr-ccig-dataset-gen/ConstraintTemplates')
-#count = 0
-#seed = 49
-#for txt_file in constraints_path.glob("*.txt"):
-    
-#    count = count+1
-#    if count<=10: continue
-#    if count>20: break
-#    desc, rule = load_template(txt_file)
-#    print('\n----RULE----', rule)
-#    phs, pair_pv = placeholders(rule)
-#    ineqs = inequalities(rule)
-#    rng = random.Random(seed)
-#    asgn = sample_assignment(rule, rng)
-#    apply_assignment(rule, asgn)
-

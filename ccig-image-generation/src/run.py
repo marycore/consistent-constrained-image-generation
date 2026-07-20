@@ -17,7 +17,7 @@ def main() -> None:
         "--dataset", required=True, help="Path to a ccig_eval_dataset_{SAT,UNSAT}.jsonl file"
     )
     parser.add_argument("--prompt-field", default="medium", choices=["short", "medium", "long"])
-    parser.add_argument("--out", default="outputs")
+    parser.add_argument("--out", default="../data/generated_images")
     parser.add_argument("--limit", type=int, default=None)
     args = parser.parse_args()
 

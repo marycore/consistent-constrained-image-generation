@@ -57,11 +57,12 @@ def build_record(
     status: str,
     record_id: str,
     n_objects: int = 4,
+    domain: str = "clevr",
 ) -> dict:
     stem = template_path.stem
 
     cls = stem.split("_")[0]
-    
+
     family = stem.split("_", 1)[1] if "_" in stem else ""
 
     instantiated_rule = apply_assignment(rule_text, assignment)
@@ -69,6 +70,7 @@ def build_record(
 
     return {
         "id": record_id,
+        "domain": domain,
         "complexity_class": cls,
         "constraint_family": family,
         "prompts": texts,
@@ -99,6 +101,7 @@ def run(
     clingo_bin: str,
     seed: int,
     verbose: bool,
+    domain: str = "clevr",
 ) -> None:
     rng = random.Random(seed)
 
@@ -181,7 +184,7 @@ def run(
 
                 total_count += 1
 
-                record = build_record(tpl_path, asgn, rule_text, status, record_id, n_objects)
+                record = build_record(tpl_path, asgn, rule_text, status, record_id, n_objects, domain)
                 line = json.dumps(record) + "\n"
 
                 if status == "SAT":
@@ -210,6 +213,8 @@ def _parse_args() -> argparse.Namespace:
         description="Generate the CCIG constraint dataset from ASP template files.",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
+    parser.add_argument("--domain", choices=["clevr"], default="clevr",
+                        help="Which domain's property/value vocabulary to generate against.")
     parser.add_argument("--template_dir", type=Path, default=TEMPLATE_DIR)
     parser.add_argument("--output", type=Path, default=DEFAULT_OUTPUT,
                         help="Base output path; _SAT.jsonl and _UNSAT.jsonl are derived from it.")
@@ -239,4 +244,5 @@ if __name__ == "__main__":
         clingo_bin=args.clingo,
         seed=args.seed,
         verbose=args.verbose,
+        domain=args.domain,
     )

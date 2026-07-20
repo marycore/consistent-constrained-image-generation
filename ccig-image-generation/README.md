@@ -34,15 +34,15 @@ python -m src.run --model gemini-2.0-flash --dataset ../data/ccig_eval_dataset_S
 
 Options:
 - `--prompt-field {short,medium,long}` — which NL description to use as the prompt (default `medium`)
-- `--out` — output root (default `outputs/`)
+- `--out` — output root (default `../data/generated_images`, i.e. the repo-root `data/` folder)
 - `--limit` — cap the number of prompts processed
 
 ## Output
 
-Images and a manifest are written to `outputs/<model>/`:
-- `outputs/<model>/<prompt_id>.png`
-- `outputs/<model>/manifest.jsonl` — one record per prompt: `id`, `model`, `prompt`, `image_path`,
-  `success`, `error`
+Images and a manifest are written to `data/generated_images/<model>/`:
+- `data/generated_images/<model>/<prompt_id>.png`
+- `data/generated_images/<model>/manifest.jsonl` — one record per prompt: `id`, `model`, `prompt`,
+  `image_path`, `success`, `error`
 
 ## Adding a model
 
