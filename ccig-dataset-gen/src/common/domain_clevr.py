@@ -23,3 +23,27 @@ PROPERTIES: dict[str, list[str]] = {
 }
 
 DIRECTIONS: list[str] = ["left", "right", "front", "behind"]
+
+# 2x2 grid layout, matching the region atoms baked into the rendered scene data
+# and the layout comment in eval_dataset_gen/asp_background/background.lp.
+REGION_LAYOUT: dict[str, str] = {
+    "r0": "top-left",
+    "r1": "top-right",
+    "r2": "bottom-left",
+    "r3": "bottom-right",
+}
+
+
+def scene_setup_text(n_objects: int = 4) -> str:
+    colors = ", ".join(PROPERTIES["color"])
+    shapes = ", ".join(PROPERTIES["shape"])
+    sizes = ", ".join(PROPERTIES["size"])
+    regions = "; ".join(f"{r} ({pos})" for r, pos in REGION_LAYOUT.items())
+
+    return (
+        f"Generate a CLEVR-style scene with {n_objects} objects. "
+        f"The scene is divided into 4 regions arranged in a 2x2 grid: {regions}. "
+        f"Each object has a color (one of: {colors}), a shape (one of: {shapes}), "
+        f"and a size (one of: {sizes}), and is placed in one of the 4 regions. "
+        f"The scene must additionally satisfy the following constraint:"
+    )

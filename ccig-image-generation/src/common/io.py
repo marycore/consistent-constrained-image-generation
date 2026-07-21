@@ -18,6 +18,8 @@ def load_prompts(path: str | Path, prompt_field: str = "medium") -> Iterator[Pro
             yield PromptRecord(
                 id=rec["id"],
                 text=rec["prompts"][prompt_field],
+                number_of_objects=rec["number_of_objects"],
+                domain=rec["domain"],
                 status=rec["status"],
                 complexity_class=rec["complexity_class"],
             )

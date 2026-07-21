@@ -36,9 +36,9 @@ import hashlib
 from pathlib import Path
 
 from .domain import background_asp
-from .instantiate import load_template, sample_assignment, all_assignments, apply_assignment
+from .instantiate import load_template, sample_assignment, apply_assignment
 from ..common.verbalize import verbalize
-from .solve import solve, format_scene
+from .solve import solve
 
 
 # ── Defaults ────────────────────────────────────────────────────────────────
@@ -167,9 +167,9 @@ def run(
                     record_id = _record_id(tpl_path.name, asgn, tpl_sat_count)
                     tpl_sat_count += 1
                     sat_count += 1
-                    for r_m in raw_models:
-                        scene = format_scene(r_m)
-                        #print(scene)
+                    #for r_m in raw_models:
+                    #    scene = format_scene(r_m)
+                    #    print(scene)
 
 
                 elif status == "UNSAT":
