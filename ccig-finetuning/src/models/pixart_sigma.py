@@ -9,9 +9,9 @@ from ._diffusers_common import DiffusersLoraTrainer
 
 
 class PixArtSigmaTrainer(DiffusersLoraTrainer):
-    # Training step ported from the proven pixart_sigma runner in
-    # ImageGenerator/src/categories/latent_diffusion_open/pixart_sigma/runner.py
-    # (same PixArtTransformer2DModel family as PixArt-alpha, adjusted for -Sigma).
+    # Forward-pass args verified against PixArtTransformer2DModel.forward's actual
+    # signature (hidden_states, encoder_hidden_states, timestep, added_cond_kwargs,
+    # encoder_attention_mask, return_dict) in the installed diffusers version.
     name = "pixart-sigma"
     hf_repo = "PixArt-alpha/PixArt-Sigma-XL-2-1024-MS"
     pipeline_cls = PixArtSigmaPipeline

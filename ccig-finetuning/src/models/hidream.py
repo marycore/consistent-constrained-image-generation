@@ -9,12 +9,18 @@ from ._diffusers_common import DiffusersLoraTrainer
 
 
 class HiDreamI1Trainer(DiffusersLoraTrainer):
-    # UNVERIFIED: no prior working reference for HiDream-I1 in this repo (unlike
-    # pixart-sigma/sd3.5-large/flux, ported from proven runners). HiDream uses a
-    # flow-matching scheduler and FOUR text encoders (incl. a gated Llama-3.1-8B);
-    # `pipe.encode_prompt` below assumes a similar (embeds, pooled_embeds, ...) return
-    # shape to SD3.5/Flux, which may not hold. Requires `huggingface-cli login` with
-    # access granted to both HiDream and the Llama checkpoint. Verify before trusting.
+    # HiDream-I1's transformer forward takes `timesteps`/`encoder_hidden_states_t5`/
+    # `encoder_hidden_states_llama3`/`pooled_embeds` (not the single `encoder_hidden_states`
+    # + `pooled_projections` used by SD3.5/FLUX) and does its own internal patchify --
+    # HiDreamImagePipeline.__call__ passes unpacked (B,C,H,W) latents directly, no
+    # img_ids/packing needed. Its default scheduler is UniPCMultistepScheduler
+    # (prediction_type="epsilon", has add_noise() -- standard DDPM forward process, not
+    # flow-matching like SD3.5/FLUX). The pipeline also negates the raw transformer
+    # output (`noise_pred = -noise_pred`) before treating it as the predicted noise, so
+    # the training target here is -noise, not noise.
+    # The Llama-3.1 text encoder (text_encoder_4) ships inside this repo itself (not
+    # pulled from the separately-gated meta-llama/Llama-3.1-8B-Instruct repo), and this
+    # repo is not gated -- no extra HF access/login needed beyond the usual.
     name = "hidream-i1"
     hf_repo = "HiDream-ai/HiDream-I1-Full"
     pipeline_cls = HiDreamImagePipeline
@@ -33,25 +39,26 @@ class HiDreamI1Trainer(DiffusersLoraTrainer):
             timesteps = torch.randint(
                 0, pipe.scheduler.config.num_train_timesteps, (bsz,), device=device
             )
-            sigma = (
-                (timesteps.float() / pipe.scheduler.config.num_train_timesteps)
-                .view(-1, 1, 1, 1)
-                .to(device=device, dtype=dtype)
-            )
-            noisy_latents = sigma * noise + (1.0 - sigma) * latents
+            noisy_latents = pipe.scheduler.add_noise(latents, noise, timesteps)
 
-            encoded = pipe.encode_prompt(
-                texts, device=device, num_images_per_prompt=1, do_classifier_free_guidance=False
+            # prompt_2/3/4 (CLIP-G, T5, Llama3) default to `prompt` (CLIP-L) when omitted.
+            (
+                prompt_embeds_t5,
+                _,
+                prompt_embeds_llama3,
+                _,
+                pooled_prompt_embeds,
+                _,
+            ) = pipe.encode_prompt(
+                prompt=texts, device=device, num_images_per_prompt=1, do_classifier_free_guidance=False
             )
-            prompt_embeds = encoded[0]
-            pooled_prompt_embeds = encoded[2] if len(encoded) >= 3 else encoded[1]
 
         model_pred = transformer(
             hidden_states=noisy_latents,
-            timestep=timesteps,
-            encoder_hidden_states=prompt_embeds,
-            pooled_projections=pooled_prompt_embeds,
+            timesteps=timesteps,
+            encoder_hidden_states_t5=prompt_embeds_t5,
+            encoder_hidden_states_llama3=prompt_embeds_llama3,
+            pooled_embeds=pooled_prompt_embeds,
             return_dict=True,
         ).sample
-        flow_target = noise - latents
-        return torch.nn.functional.mse_loss(model_pred.float(), flow_target.float())
+        return torch.nn.functional.mse_loss(model_pred.float(), (-noise).float())

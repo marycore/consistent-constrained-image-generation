@@ -19,22 +19,36 @@ outputs/               # checkpoints land here: outputs/<model>/<run_name>/
 
 ## Models
 
-| model            | status      | notes                                              |
-|-------------------|-------------|------------------------------------------------------|
-| `pixart-sigma`    | verified    | `PixArtSigmaPipeline`, DDPM training step ported from a proven runner |
-| `sd3.5-large`     | verified    | `StableDiffusion3Pipeline`, flow-matching training step ported from a proven runner |
-| `flux.1-dev`      | verified    | `FluxPipeline`, packed-latent flow-matching step ported from a proven runner |
-| `flux.1-schnell`  | verified    | `FluxPipeline`, same training step as `flux.1-dev`   |
-| `sana`            | unverified  | `SanaPipeline`, best-effort flow-matching step, not run end-to-end |
-| `hidream-i1`      | unverified  | `HiDreamImagePipeline`, best-effort flow-matching step; needs gated Llama text encoder access |
-| `janus-pro`       | stub        | not diffusers-based; see `src/models/janus_pro.py`   |
-| `show-o`          | stub        | not diffusers-based; see `src/models/showo.py`       |
+| model            | status      | gated? | notes                                     |
+|-------------------|-------------|--------|----------------------------------------------|
+| `pixart-sigma`    | signature-checked | no | `PixArtSigmaPipeline`, DDPM training step |
+| `sd3.5-large`     | signature-checked | yes | `StableDiffusion3Pipeline`, flow-matching training step |
+| `flux.1-dev`      | signature-checked | yes | `FluxPipeline`, packed-latent flow-matching step, guidance-distilled |
+| `flux.1-schnell`  | signature-checked | yes | `FluxPipeline`, same training step as `flux.1-dev`, not guidance-distilled |
+| `sana`            | signature-checked | no | `SanaPipeline`, DPM-solver (non-flow-matching) training step |
+| `hidream-i1`      | signature-checked | no | `HiDreamImagePipeline`, dual T5/Llama3 text encoders (Llama bundled in this repo, not gated), DPM-solver (non-flow-matching) training step, no latent packing |
+| `qwen-image`      | signature-checked | no | `QwenImagePipeline`, packed-latent flow-matching step, guidance-distilled |
+| `janus-pro`       | stub        | no | not diffusers-based; see `src/models/janus_pro.py`   |
+| `show-o`          | stub        | no | not diffusers-based; see `src/models/showo.py`       |
+| `bagel`           | stub        | no | not diffusers-based; see `src/models/bagel.py`       |
 
-"Verified" models port their training step (noise process, transformer forward signature,
-prompt encoding) from a working prior implementation in
-`ImageGenerator/src/categories/{latent_diffusion_open,rectified_flow_open}/`. "Unverified"
-models follow the same pattern by analogy but haven't been run end-to-end -- check the
-installed `diffusers` version's transformer forward signature before trusting the result.
+"gated" is per the Hugging Face Hub API (checked directly, not assumed) -- gated repos need you
+to accept the model's license on its Hub page while logged in, then `huggingface-cli login`
+locally before `from_pretrained` will succeed.
+
+"Signature-checked" means each model's `_training_step` was written and cross-checked against
+the *actual* transformer `forward()` signature, scheduler class, and pipeline `encode_prompt`
+return values by introspecting the installed `diffusers` package (`python -c "import
+inspect, diffusers; ..."`) -- not assumed by analogy between models. That catches real
+mismatches: e.g. `SanaPipeline`'s scheduler is DPMSolverMultistep (has `add_noise()`), not
+flow-matching like SD3.5/FLUX; `HiDreamImageTransformer2DModel.forward` takes
+`encoder_hidden_states_t5`/`encoder_hidden_states_llama3`/`pooled_embeds` (not the
+`encoder_hidden_states`/`pooled_projections` used elsewhere) and needs no latent packing;
+FLUX.1-dev's guidance-distilled transformer requires a `guidance` tensor at every forward call
+or it raises inside `time_text_embed`. None of these have been run end-to-end on real GPU
+hardware yet, though -- that's the remaining gap between "should be correct" and "verified by
+a completed training run." If a run surfaces a mismatch, fix it in that model's file and
+update this table.
 
 All models share the model-agnostic parts in `src/models/_diffusers_common.py` (pipeline
 loading, LoRA injection via `peft`, dataset/dataloader, optimizer loop, checkpoint saving).
@@ -48,7 +62,7 @@ extra positional ids, pooled projections, ...), so each model implements its own
 ```bash
 cd ccig-finetuning
 pip install -r requirements.txt
-huggingface-cli login   # required for gated repos (e.g. hidream-i1's Llama text encoder)
+huggingface-cli login   # required for gated repos: sd3.5-large, flux.1-dev, flux.1-schnell
 ```
 
 ## Run

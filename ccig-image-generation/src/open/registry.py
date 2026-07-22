@@ -1,10 +1,12 @@
 from __future__ import annotations
 
+from .bagel import BagelModel
 from .base import OpenImageModel
 from .flux import FluxDevModel, FluxSchnellModel
 from .hidream import HiDreamI1Model
 from .janus_pro import JanusProModel
 from .pixart_sigma import PixArtSigmaModel
+from .qwen_image import QwenImageModel
 from .sana import SanaModel
 from .sd35_large import SD35LargeModel
 from .showo import ShowoModel
@@ -16,8 +18,10 @@ MODEL_REGISTRY: dict[str, type[OpenImageModel]] = {
     "flux.1-schnell": FluxSchnellModel,
     "sana": SanaModel,
     "hidream-i1": HiDreamI1Model,
+    "qwen-image": QwenImageModel,
     "janus-pro": JanusProModel,
     "show-o": ShowoModel,
+    "bagel": BagelModel,
 }
 
 

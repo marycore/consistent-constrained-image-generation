@@ -8,27 +8,13 @@ from diffusers import FluxPipeline
 from ._diffusers_common import DiffusersLoraTrainer
 
 
-# FLUX uses a packed-patch latent format; these convert between the standard
-# (B, C, H, W) VAE latent space and FLUX's (B, H//2*W//2, C*4) packed form.
-# Ported from ImageGenerator/src/categories/rectified_flow_open/flux_1_dev/runner.py.
-def _flux_pack_latents(latents: torch.Tensor) -> torch.Tensor:
-    B, C, H, W = latents.shape
-    latents = latents.view(B, C, H // 2, 2, W // 2, 2)
-    latents = latents.permute(0, 2, 4, 1, 3, 5).reshape(B, (H // 2) * (W // 2), C * 4)
-    return latents
-
-
-def _flux_prepare_img_ids(bsz: int, latent_h: int, latent_w: int, device) -> torch.Tensor:
-    """Spatial position IDs for FLUX RoPE: (B, H//2*W//2, 3)."""
-    h_p, w_p = latent_h // 2, latent_w // 2
-    img_ids = torch.zeros(h_p, w_p, 3, device=device)
-    img_ids[..., 1] = torch.arange(h_p, device=device).float()[:, None]
-    img_ids[..., 2] = torch.arange(w_p, device=device).float()[None, :]
-    return img_ids.reshape(h_p * w_p, 3).unsqueeze(0).expand(bsz, -1, -1)
-
-
 class FluxBaseTrainer(DiffusersLoraTrainer):
     pipeline_cls = FluxPipeline
+    # FLUX.1-dev is guidance-distilled (transformer.config.guidance_embeds == True) and
+    # requires a `guidance` tensor at every forward pass, including training; schnell is
+    # not guidance-distilled and passes guidance=None. See FluxPipeline.__call__'s
+    # "handle guidance" block for the reference behavior this mirrors.
+    guidance_scale: float = 3.5
 
     def _training_step(self, pipe: Any, transformer: Any, batch: dict) -> torch.Tensor:
         device = next(transformer.parameters()).device
@@ -39,13 +25,17 @@ class FluxBaseTrainer(DiffusersLoraTrainer):
         with torch.no_grad():
             latents = pipe.vae.encode(pixel_values).latent_dist.sample()
             latents = latents * pipe.vae.config.scaling_factor
-            _, _, lat_h, lat_w = latents.shape
+            bsz, num_channels, lat_h, lat_w = latents.shape
 
-            packed_latents = _flux_pack_latents(latents)
+            # Use FluxPipeline's own packing helpers (`_pack_latents` converts
+            # (B,C,H,W) -> (B, H//2*W//2, C*4) patches; `_prepare_latent_image_ids`
+            # builds the matching RoPE position ids) instead of a hand-rolled
+            # reimplementation, so this stays correct if diffusers changes the format.
+            packed_latents = pipe._pack_latents(latents, bsz, num_channels, lat_h, lat_w)
             noise = torch.randn_like(latents)
-            packed_noise = _flux_pack_latents(noise)
+            packed_noise = pipe._pack_latents(noise, bsz, num_channels, lat_h, lat_w)
+            img_ids = pipe._prepare_latent_image_ids(bsz, lat_h // 2, lat_w // 2, device, dtype)
 
-            bsz = latents.shape[0]
             timesteps = torch.randint(
                 0, pipe.scheduler.config.num_train_timesteps, (bsz,), device=device
             )
@@ -56,16 +46,16 @@ class FluxBaseTrainer(DiffusersLoraTrainer):
             )
             noisy_packed = sigma * packed_noise + (1.0 - sigma) * packed_latents
 
-            encoded = pipe.encode_prompt(
-                texts, device=device, num_images_per_prompt=1, max_sequence_length=512
+            # encode_prompt(prompt, prompt_2=None, ...) -> (prompt_embeds, pooled_prompt_embeds,
+            # text_ids); prompt_2 defaults to prompt when omitted. text_ids is already
+            # unbatched (seq_len, 3), matching what the transformer expects.
+            prompt_embeds, pooled_prompt_embeds, text_ids = pipe.encode_prompt(
+                prompt=texts, device=device, num_images_per_prompt=1, max_sequence_length=512
             )
-            if len(encoded) >= 3:
-                prompt_embeds, pooled_prompt_embeds, text_ids = encoded[0], encoded[1], encoded[2]
-            else:
-                prompt_embeds, pooled_prompt_embeds = encoded[0], encoded[1]
-                text_ids = torch.zeros(bsz, prompt_embeds.shape[1], 3, device=device)
 
-            img_ids = _flux_prepare_img_ids(bsz, lat_h, lat_w, device)
+            guidance = None
+            if transformer.config.guidance_embeds:
+                guidance = torch.full((bsz,), self.guidance_scale, device=device, dtype=torch.float32)
 
         pred_packed = transformer(
             hidden_states=noisy_packed,
@@ -74,6 +64,7 @@ class FluxBaseTrainer(DiffusersLoraTrainer):
             timestep=timesteps,
             img_ids=img_ids,
             txt_ids=text_ids,
+            guidance=guidance,
             return_dict=True,
         ).sample
         # Note: lora_target_modules ["to_k","to_q","to_v","to_out.0"] may miss FLUX's

@@ -9,8 +9,9 @@ from ._diffusers_common import DiffusersLoraTrainer
 
 
 class SD35LargeTrainer(DiffusersLoraTrainer):
-    # Training step ported from the proven sd3_5 runner in
-    # ImageGenerator/src/categories/latent_diffusion_open/sd3_5/runner.py.
+    # SD3.5's scheduler is FlowMatchEulerDiscreteScheduler, which has no add_noise() --
+    # confirmed by introspecting the installed diffusers version. Uses the flow-matching
+    # forward process directly instead: x_t = sigma*noise + (1-sigma)*x_0.
     name = "sd3.5-large"
     hf_repo = "stabilityai/stable-diffusion-3.5-large"
     pipeline_cls = StableDiffusion3Pipeline

@@ -6,9 +6,9 @@ from ._diffusers_common import DiffusersImageModel
 
 
 class HiDreamI1Model(DiffusersImageModel):
-    # Note: HiDream-I1's text encoder is a gated Llama-3.1-8B-Instruct checkpoint.
-    # `from_pretrained` below assumes the environment is authenticated for both
-    # repos (`huggingface-cli login`) with access to the Llama checkpoint granted.
+    # Its Llama-3.1 text encoder (text_encoder_4) ships bundled inside this repo, not
+    # pulled from the separately-gated meta-llama/Llama-3.1-8B-Instruct repo -- this
+    # repo itself is not gated, verified via the HF Hub API (`gated: false`).
     name = "hidream-i1"
     hf_repo = "HiDream-ai/HiDream-I1-Full"
     pipeline_cls = HiDreamImagePipeline
