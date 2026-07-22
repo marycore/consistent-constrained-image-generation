@@ -3,17 +3,22 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 
-from src.closed.registry import MODEL_REGISTRY, build_model
+from src.closed.registry import MODEL_REGISTRY as CLOSED_MODEL_REGISTRY
+from src.closed.registry import build_model as build_closed_model
 from src.common.io import append_manifest, load_prompts
 from src.common.scene_setup import scene_setup_text
 from src.common.types import GenerationRecord
+from src.open.registry import MODEL_REGISTRY as OPEN_MODEL_REGISTRY
+from src.open.registry import build_model as build_open_model
+
+ALL_MODELS = sorted({**CLOSED_MODEL_REGISTRY, **OPEN_MODEL_REGISTRY})
 
 
 def main() -> None:
     parser = argparse.ArgumentParser(
-        description="Generate images for CCIG eval prompts using a closed-source model."
+        description="Generate images for CCIG eval prompts using a text-to-image model."
     )
-    parser.add_argument("--model", required=True, choices=sorted(MODEL_REGISTRY))
+    parser.add_argument("--model", required=True, choices=ALL_MODELS)
     parser.add_argument(
         "--dataset", help="Path to a ccig_eval_dataset_{SAT,UNSAT}.jsonl file",
         default="../data/ccig_eval_dataset_SAT.jsonl"
@@ -21,9 +26,19 @@ def main() -> None:
     parser.add_argument("--prompt-field", default="medium", choices=["short", "medium", "long"])
     parser.add_argument("--out", default="../data/generated_images")
     parser.add_argument("--limit", type=int, default=None)
+    parser.add_argument(
+        "--checkpoint", default=None,
+        help="Path to a LoRA finetuned checkpoint directory (open-source models only), "
+        "as produced by ccig-finetuning.",
+    )
     args = parser.parse_args()
 
-    model = build_model(args.model)
+    if args.model in OPEN_MODEL_REGISTRY:
+        model = build_open_model(args.model, checkpoint=args.checkpoint)
+    else:
+        if args.checkpoint is not None:
+            parser.error(f"--checkpoint is not supported for closed model '{args.model}'")
+        model = build_closed_model(args.model)
     out_dir = Path(args.out) / args.model
     out_dir.mkdir(parents=True, exist_ok=True)
     manifest_path = out_dir / "manifest.jsonl"
