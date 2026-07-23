@@ -27,6 +27,8 @@ class PixArtSigmaTrainer(DiffusersLoraTrainer):
         texts = batch["prompt"]
 
         with torch.no_grad():
+
+            # Encode the images to latents and sample noise
             latents = pipe.vae.encode(pixel_values).latent_dist.sample()
             latents = latents * pipe.vae.config.scaling_factor
             noise = torch.randn_like(latents)
@@ -34,8 +36,10 @@ class PixArtSigmaTrainer(DiffusersLoraTrainer):
             timesteps = torch.randint(
                 0, self._noise_scheduler.config.num_train_timesteps, (bsz,), device=device
             )
+            # Add noise to the latents according to the noise schedule and the sampled timesteps.
             noisy_latents = self._noise_scheduler.add_noise(latents, noise, timesteps)
 
+            # Encode the prompts to embeddings and build the added_cond_kwargs for PixArt's adaln_single.
             prompt_embeds, prompt_attention_mask, _, _ = pipe.encode_prompt(
                 texts,
                 device=device,
@@ -43,8 +47,7 @@ class PixArtSigmaTrainer(DiffusersLoraTrainer):
                 do_classifier_free_guidance=False,
                 max_sequence_length=120,
             )
-            # PixArt's adaln_single expects resolution/aspect-ratio micro-conditions
-            # during training too.
+            # PixArt's adaln_single expects resolution/aspect-ratio micro-conditions during training too.
             resolution = pixel_values.shape[-1]
             resolution_cond = torch.tensor(
                 [resolution, resolution], device=device, dtype=prompt_embeds.dtype
@@ -54,6 +57,7 @@ class PixArtSigmaTrainer(DiffusersLoraTrainer):
             )
             added_cond_kwargs = {"resolution": resolution_cond, "aspect_ratio": aspect_ratio_cond}
 
+        # Forward pass through the transformer and compute the MSE loss against the noise.
         pred = transformer(
             noisy_latents,
             encoder_hidden_states=prompt_embeds,
@@ -65,4 +69,6 @@ class PixArtSigmaTrainer(DiffusersLoraTrainer):
         if pred.shape[1] == latents.shape[1] * 2:
             # learned-variance models predict [noise_pred, variance_pred] concatenated.
             pred = pred.chunk(2, dim=1)[0]
+            
+        # The loss is computed against the original noise, not the noisy latents, as per PixArt's training objective.
         return torch.nn.functional.mse_loss(pred.float(), noise.float())

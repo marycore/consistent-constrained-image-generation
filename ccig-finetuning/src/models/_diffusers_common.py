@@ -27,7 +27,11 @@ class _ImagePromptDataset(Dataset):
 
     def __getitem__(self, idx: int) -> dict:
         ex = self.examples[idx]
+
+        # Open the image, convert to RGB, and resize to the target resolution.
         image = Image.open(ex.image_path).convert("RGB").resize((self.resolution, self.resolution))
+
+        # Convert to [-1, 1] float32 tensor in CHW order, as expected by the VAE encoder.
         pixel_values = torch.from_numpy(np.array(image)).permute(2, 0, 1).float() / 127.5 - 1.0
         return {"pixel_values": pixel_values, "prompt": ex.prompt}
 
@@ -52,26 +56,36 @@ class DiffusersLoraTrainer(LoraTrainer):
     lora_target_modules: ClassVar[list[str]] = ["to_k", "to_q", "to_v", "to_out.0"]
 
     def _load_pipeline(self) -> Any:
+        # Load the diffusers pipeline from the HuggingFace repo, on GPU if available.
         pipe = self.pipeline_cls.from_pretrained(self.hf_repo, torch_dtype=self.torch_dtype)
         pipe.to("cuda" if torch.cuda.is_available() else "cpu")
         return pipe
 
     def train(self, config: TrainConfig) -> Path:
         torch.manual_seed(config.seed)
+
+        # Load the diffusers pipeline and inject LoRA into the transformer.
         pipe = self._load_pipeline()
 
+        # LoRA config: rank, alpha, init method, and which transformer modules to inject into.
         lora_config = LoraConfig(
             r=config.lora_rank,
             lora_alpha=config.lora_alpha,
             init_lora_weights="gaussian",
             target_modules=self.lora_target_modules,
         )
+
+        # Inject LoRA into the transformer and freeze the VAE (we don't finetune it).
         transformer = get_peft_model(pipe.transformer, lora_config)
+        # Set the transformer to training mode, and the VAE to eval mode (no gradients).
         pipe.transformer = transformer
         transformer.train()
+        
+        # Freeze the VAE's parameters to avoid computing gradients for them.
         pipe.vae.eval()
         pipe.vae.requires_grad_(False)
 
+        # Dataset, dataloader, and optimizer setup.
         dataset = _ImagePromptDataset(config, config.resolution)
         loader = DataLoader(dataset, batch_size=config.batch_size, shuffle=True)
         optimizer = torch.optim.AdamW(
@@ -82,6 +96,7 @@ class DiffusersLoraTrainer(LoraTrainer):
             while True:
                 yield from dl
 
+        # Training loop: forward pass, loss, backward, optimizer step, logging.
         step = 0
         for batch in _cycle(loader):
             if step >= config.max_steps:
@@ -94,6 +109,7 @@ class DiffusersLoraTrainer(LoraTrainer):
             if step % 50 == 0 or step == config.max_steps:
                 print(f"[{self.name}] step {step}/{config.max_steps} loss={loss.item():.4f}")
 
+        # Save the LoRA weights in a directory that ccig-image-generation can load with its `--checkpoint` flag.
         out_dir = config.checkpoint_dir
         out_dir.mkdir(parents=True, exist_ok=True)
         transformer.save_pretrained(str(out_dir))
