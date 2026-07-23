@@ -13,15 +13,15 @@ from ..common import domain_clevr as domain
 
 Scene = Dict[str, object]  # {"objects": {obj_id: {prop: val}}, "relations": [{"from","to","direction"}]}
 
-
+#list of obj ids
 def object_ids(scene: Scene) -> List[str]:
     return list(scene["objects"].keys())  # type: ignore[index]
 
-
+#value of a certain prop for a certain oid
 def object_value(scene: Scene, obj_id: str, prop: str) -> str:
     return scene["objects"][obj_id][prop]  # type: ignore[index]
 
-
+#all prop_value pairs in the scene de-duplicated
 def present_prop_values(scene: Scene) -> List[Tuple[str, str]]:
     """All (prop, val) pairs actually held by at least one object, deduplicated."""
     seen = set()
@@ -33,28 +33,28 @@ def present_prop_values(scene: Scene) -> List[Tuple[str, str]]:
                 out.append((prop, val))
     return out
 
-
+#return oids with prop=val
 def objects_with(scene: Scene, prop: str, val: str) -> List[str]:
     return [oid for oid, attrs in scene["objects"].items() if attrs[prop] == val]  # type: ignore[union-attr]
 
-
+#return oids where prop!=val
 def objects_without(scene: Scene, prop: str, val: str) -> List[str]:
     return [oid for oid, attrs in scene["objects"].items() if attrs[prop] != val]  # type: ignore[union-attr]
 
-
+#count no of ois with prop=val
 def count_with(scene: Scene, prop: str, val: str) -> int:
     return len(objects_with(scene, prop, val))
 
-
+#count no of ois with prop!=val
 def count_without(scene: Scene, prop: str, val: str) -> int:
     return len(objects_without(scene, prop, val))
 
-
+#check whether all objs have prop=val
 def all_share(scene: Scene, prop: str, val: str) -> bool:
     ids = object_ids(scene)
     return bool(ids) and all(object_value(scene, oid, prop) == val for oid in ids)
 
-
+#prop,val that is shared by all objects
 def uniform_property(scene: Scene) -> Optional[Tuple[str, str]]:
     """A (prop, val) pair every object in the scene shares, if one exists."""
     for prop, val in present_prop_values(scene):
@@ -62,7 +62,7 @@ def uniform_property(scene: Scene) -> Optional[Tuple[str, str]]:
             return prop, val
     return None
 
-
+#what are the values held by prop in the scene other than val
 def other_value(prop: str, val: str, exclude: Optional[str] = None) -> Optional[str]:
     """Any domain value for `prop` other than `val` (and `exclude`, if given)."""
     for candidate in domain.PROPERTIES[prop]:
@@ -78,7 +78,8 @@ def object_matching_none_of(scene: Scene, prop: str, values: List[str]) -> Optio
             return oid
     return None
 
-
+#obj-id stands left of oid - list of oids to which obj_id stands left of or list o oids that are right of obj_id
+#list of oids such that left(obj_id, oid) is true
 def neighbors(scene: Scene, obj_id: str, direction: str) -> List[str]:
     """Objects that `obj_id` stands `direction` of, i.e. edges obj_id --direction--> target."""
     return [
@@ -123,7 +124,7 @@ def find_2hop_chains(
                 out.append((o1, o2, o3))
     return out
 
-
+#there exist subject_id for all x 
 def universal_relation_holds(scene: Scene, subject_id: str, direction: str, prop2: str, val2: str) -> bool:
     """True if `subject_id` stands `direction` of *every* object matching prop2=val2 (excluding itself)."""
     targets = [oid for oid in objects_with(scene, prop2, val2) if oid != subject_id]

@@ -109,28 +109,41 @@ def _ground_c1(scene: Scene, rng: random.Random) -> Iterator[Tuple[str, dict]]:
 
 def _ground_c2(scene: Scene, rng: random.Random) -> Iterator[Tuple[str, dict]]:
     uniform_pairs = [(p, v) for p, v in q.present_prop_values(scene) if q.all_share(scene, p, v)]
-
     if uniform_pairs:
         p1, v1 = rng.choice(uniform_pairs)
         yield "1prop", {"P1'": p1, "V1'": v1}
 
-    for prop in rng.sample(PROPS, len(PROPS)):
-        absent = [v for v in domain.PROPERTIES[prop] if q.count_with(scene, prop, v) == 0]
-        if absent:
-            yield "1prop_neg", {"P1'": prop, "V1'": rng.choice(absent)}
-            if len(absent) >= 2:
-                v1, v2 = rng.sample(absent, 2)
-                yield "1prop_2val_neg", {"P1'": prop, "V1'": v1, "V2'": v2}
-            break
-
     if len(uniform_pairs) >= 2:
         (p1, v1), (p2, v2) = rng.sample(uniform_pairs, 2)
         yield "2prop", {"P1'": p1, "V1'": v1, "P2'": p2, "V2'": v2}
+    
     if len(uniform_pairs) >= 3:
         (p1, v1), (p2, v2), (p3, v3) = rng.sample(uniform_pairs, 3)
         yield "3prop", {"P1'": p1, "V1'": v1, "P2'": p2, "V2'": v2, "P3'": p3, "V3'": v3}
+    
+    if len(uniform_pairs) >= 4:
+        (p1, v1), (p2, v2), (p3, v3), (p4, v4) = rng.sample(uniform_pairs, 4)
+        yield "4prop", {"P1'": p1, "V1'": v1, "P2'": p2, "V2'": v2, "P3'": p3, "V3'": v3, "P4'": p4, "V4'": v4}
 
-    # 2prop_neg: no object simultaneously has (p1=v1) and (p2=v2)
+    
+    absent_pairs = []
+    for prop in rng.sample(PROPS, len(PROPS)):
+        absent_vals = [v for v in domain.PROPERTIES[prop] if q.count_with(scene, prop, v) == 0]
+        for val in absent_vals:
+            absent_pairs.append((prop, val))
+    
+    if absent_pairs:
+        p1, v1 = rng.choice(absent_pairs)
+        yield "1prop_neg", {"P1'": p1, "V1'": v1}
+    
+        if len(absent_pairs)>=2:
+            for (p2,v2) in absent_pairs:
+                if p1==p2 and v1!=v2:
+                    yield "1prop_2val_neg", {"P1'": prop, "V1'": v1, "V2'": v2}    
+                    break  
+    
+    #2prop_neg: no object simultaneously has (p1=v1) and (p2=v2)
+    
     present = q.present_prop_values(scene)
     for (p1, v1), (p2, v2) in combinations(rng.sample(present, min(len(present), 6)), 2):
         if p1 == p2:
@@ -139,22 +152,7 @@ def _ground_c2(scene: Scene, rng: random.Random) -> Iterator[Tuple[str, dict]]:
             yield "2prop_neg", {"P1'": p1, "V1'": v1, "P2'": p2, "V2'": v2}
             break
 
-    # 2prop_mix_neg: no object has (p1=v1) and NOT(p2=v2) simultaneously, i.e. every p1=v1 object is p2=v2
-    for p1, v1 in rng.sample(present, min(len(present), 6)):
-        antecedent = q.objects_with(scene, p1, v1)
-        if not antecedent:
-            continue
-        for p2 in PROPS:
-            if p2 == p1:
-                continue
-            v2 = q.uniform_value_in_subset(scene, antecedent, p2)
-            if v2 is not None:
-                yield "2prop_mix_neg", {"P1'": p1, "V1'": v1, "P2'": p2, "V2'": v2}
-                break
-        else:
-            continue
-        break
-
+    
 
 # ── C3: conditional (antecedent nonempty -> universal consequent) ──────────
 
@@ -167,7 +165,7 @@ def _ground_c3(scene: Scene, rng: random.Random) -> Iterator[Tuple[str, dict]]:
         antecedent = q.objects_with(scene, p1, v1)
         neg_antecedent = q.objects_without(scene, p1, v1)
         other_props = [p for p in PROPS if p != p1]
-
+        found = False
         for p2 in rng.sample(other_props, len(other_props)):
             v2 = q.uniform_value_in_subset(scene, antecedent, p2)
             if v2 is not None:
@@ -195,11 +193,12 @@ def _ground_c3(scene: Scene, rng: random.Random) -> Iterator[Tuple[str, dict]]:
                                 "P1'": p1, "V1'": v1, "P2'": p2, "V2'": v2,
                                 "P3'": p3, "V3'": v3, "P4'": p4, "V4'": v4,
                             }
-            break  # one p2 is enough to try the multi-prop extensions per (p1,v1)
-        if any(True for _ in []):  # pragma: no cover - unreachable, keeps structure explicit
-            pass
-
-    # two-property antecedents
+                            found = True
+                            break  # one p2 is enough to try the multi-prop extensions per (p1,v1)
+        if found:
+            break    
+        
+    #two-property antecedents
     for (p1, v1), (p2, v2) in combinations(rng.sample(present, min(len(present), 6)), 2):
         if p1 == p2:
             continue
@@ -207,13 +206,18 @@ def _ground_c3(scene: Scene, rng: random.Random) -> Iterator[Tuple[str, dict]]:
         if not antecedent:
             continue
         other_props = [p for p in PROPS if p not in (p1, p2)]
+        found = False
+        found_2 = False
         for p3 in rng.sample(other_props, len(other_props)):
             v3 = q.uniform_value_in_subset(scene, antecedent, p3)
             if v3 is not None:
                 yield "2propA_1propC", {
                     "P1'": p1, "V1'": v1, "P2'": p2, "V2'": v2, "P3'": p3, "V3'": v3,
                 }
+                found_2 = True
                 remaining = [p for p in other_props if p != p3]
+
+                
                 if remaining:
                     p4 = remaining[0]
                     v4 = q.uniform_value_in_subset(scene, antecedent, p4)
@@ -222,7 +226,8 @@ def _ground_c3(scene: Scene, rng: random.Random) -> Iterator[Tuple[str, dict]]:
                             "P1'": p1, "V1'": v1, "P2'": p2, "V2'": v2,
                             "P3'": p3, "V3'": v3, "P4'": p4, "V4'": v4,
                         }
-                break
+                        
+                break #whether you get v4 or not you break out from the loop
 
         v2_other = q.other_value(p2, v2)
         if v2_other:
@@ -243,8 +248,10 @@ def _ground_c3(scene: Scene, rng: random.Random) -> Iterator[Tuple[str, dict]]:
                             "P1'": p1, "V1'": v1, "P2'": p2, "V2'": v2_other,
                             "P3'": p3, "V3'": v3, "P4'": p4, "V4'": v4,
                         }
-                    break
-        break  # one pair is enough
+                        found = True
+                    break#whether you get v4 or not you break
+        if found or found_2:
+            break  # one pair is enough
 
     # three-property antecedent
     if len(present) >= 3:
@@ -271,8 +278,8 @@ def _ground_c3(scene: Scene, rng: random.Random) -> Iterator[Tuple[str, dict]]:
                         "P1'": p1, "V1'": v1, "P2'": p2, "V2'": v2,
                         "P3'": p3, "V3'": v3, "P4'": p4, "V4'": v4_neg,
                     }
-                break
-            break
+                break 
+            break #you break out even if you dont get a matching prompt
 
 
 # ── C4: 2-hop / shared-subject relational chains ────────────────────────────
@@ -283,15 +290,30 @@ def _ground_c4(scene: Scene, rng: random.Random) -> Iterator[Tuple[str, dict]]:
 
     for d1 in rng.sample(directions, len(directions)):
         for d2 in rng.sample(directions, len(directions)):
+            found_1 = False
             for (p1, v1), (p2, v2), (p3, v3) in _sample_triples(present, rng):
+                if not(v1 != v2 and v1 != v3 and v2 != v3):
+                    continue
                 chains = q.find_2hop_chains(scene, p1, v1, d1, p2, v2, d2, p3, v3)
                 if chains:
                     yield "1prop_2hop", {
                         "P1'": p1, "V1'": v1, "P2'": p2, "V2'": v2, "P3'": p3, "V3'": v3,
                         "D1'": d1, "D2'": d2,
                     }
+                    found_1 = True
                     break
-
+            if found_1:
+                break
+        if found_1:
+                break
+                
+                    
+    for d1 in rng.sample(directions, len(directions)):
+        for d2 in rng.sample(directions, len(directions)):
+            found_2 = False
+            for (p1, v1), (p2, v2), (p3, v3) in _sample_triples(present, rng):
+                if not(v1 != v2):
+                    continue
                 v3_other = q.other_value(p3, v3)
                 if v3_other:
                     for o1, o2 in q.find_relation_pairs(scene, p1, v1, d1, p2, v2):
@@ -301,30 +323,18 @@ def _ground_c4(scene: Scene, rng: random.Random) -> Iterator[Tuple[str, dict]]:
                                     "P1'": p1, "V1'": v1, "P2'": p2, "V2'": v2,
                                     "P3'": p3, "V3'": v3_other, "D1'": d1, "D2'": d2,
                                 }
+                                found_2 = True
                                 break
-                        else:
-                            continue
-                        break
-
-                for o3 in q.object_ids(scene):
-                    n1_candidates = [o for o in q.neighbors(scene, o3, d1) if q.object_value(scene, o, p1) == v1]
-                    if not n1_candidates:
-                        continue
-                    o1 = n1_candidates[0]
-                    n2_candidates = [
-                        o for o in q.neighbors(scene, o3, d2)
-                        if q.object_value(scene, o, p2) == v2 and o != o1
-                    ]
-                    if n2_candidates:
-                        yield "1prop_shared", {
-                            "P1'": p1, "V1'": v1, "P2'": p2, "V2'": v2,
-                            "P3'": p3, "V3'": q.object_value(scene, o3, p3), "D1'": d1, "D2'": d2,
-                        }
-                        break
+                            
+                        if found_2:
+                            break
+                if found_2:
+                    break
+            if found_2:
                 break
+        if found_2:
             break
-        break
-
+                
 
 def _sample_triples(present: List[Tuple[str, str]], rng: random.Random, k: int = 4):
     sample = rng.sample(present, min(len(present), k))
@@ -334,13 +344,19 @@ def _sample_triples(present: List[Tuple[str, str]], rng: random.Random, k: int =
         yield c, a, b
 
 
-# ── C5: pairwise / triple relational, existential + universal consequent ───
+# ── C5: pairwise examples - not including egs for triple───
 
 def _ground_c5(scene: Scene, rng: random.Random) -> Iterator[Tuple[str, dict]]:
     present = q.present_prop_values(scene)
     directions = domain.DIRECTIONS
+    directions_inv = domain.DIRECTIONS_INV
 
     for (p1, v1), (p2, v2) in combinations(rng.sample(present, min(len(present), 6)), 2):
+        if v1==v2:
+            continue
+        found_1= False
+        found_2 = False
+        found_3 = False
         for d1 in directions:
             pairs = q.find_relation_pairs(scene, p1, v1, d1, p2, v2)
             if not pairs:
@@ -354,67 +370,35 @@ def _ground_c5(scene: Scene, rng: random.Random) -> Iterator[Tuple[str, dict]]:
             ]
             if all_pairs and len(pairs) == len(all_pairs):
                 yield "pair_propA_relC", {"P1'": p1, "V1'": v1, "P2'": p2, "V2'": v2, "D1'": d1}
+                found_1= True
+            
 
             o2_side = [o2 for _, o2 in pairs]
             for p3 in PROPS:
+                if p3==p2: continue
                 v3 = q.uniform_value_in_subset(scene, o2_side, p3)
                 if v3 is not None:
                     yield "pair_propRelA_propC", {
                         "P1'": p1, "V1'": v1, "P2'": p2, "V2'": v2, "D1'": d1, "P3'": p3, "V3'": v3,
                     }
+                    found_2 = True
                     break
 
+
             for d2 in directions:
-                if d2 == d1:
+                if d2 == d1 or d2 == directions_inv[d1]:
                     continue
-                if all(o1 in q.neighbors(scene, o1, d2) or o2 in q.neighbors(scene, o1, d2) for o1, o2 in pairs):
-                    pass  # placeholder to keep structure; real check below
                 if all(o2 in q.neighbors(scene, o1, d2) for o1, o2 in pairs):
                     yield "pair_propRelA_RelC", {
                         "P1'": p1, "V1'": v1, "P2'": p2, "V2'": v2, "D1'": d1, "D2'": d2,
                     }
+                    found_3 = True
                     break
-            break
-        break
-
-    for d1 in directions:
-        sources = [o1 for o1, _ in q.related_pairs(scene, d1)]
-        if not sources:
-            continue
-        for p1 in PROPS:
-            v1 = q.uniform_value_in_subset(scene, sources, p1)
-            if v1 is not None:
-                yield "pair_relA_propC", {"D1'": d1, "P1'": p1, "V1'": v1}
+                
+            if found_1 or found_2 or found_3:
                 break
-        break
-
-    for (p1, v1), (p2, v2), (p3, v3) in _sample_triples(present, rng):
-        for d1 in directions:
-            for d2 in directions:
-                triples = [
-                    (o1, o2, o3)
-                    for o1 in q.objects_with(scene, p1, v1)
-                    for o2 in q.objects_with(scene, p2, v2)
-                    for o3 in q.objects_with(scene, p3, v3)
-                    if len({o1, o2, o3}) == 3
-                ]
-                if not triples:
-                    continue
-                if all(o2 in q.neighbors(scene, o1, d1) and o3 in q.neighbors(scene, o2, d2) for o1, o2, o3 in triples):
-                    yield "triple_propA_RelC", {
-                        "P1'": p1, "V1'": v1, "P2'": p2, "V2'": v2, "P3'": p3, "V3'": v3,
-                        "D1'": d1, "D2'": d2,
-                    }
-                    break
-                first_leg = [(o1, o2, o3) for o1, o2, o3 in triples if o2 in q.neighbors(scene, o1, d1)]
-                if first_leg and all(o3 in q.neighbors(scene, o2, d2) for _, o2, o3 in first_leg):
-                    yield "triple_propRelA_relC", {
-                        "P1'": p1, "V1'": v1, "P2'": p2, "V2'": v2, "P3'": p3, "V3'": v3,
-                        "D1'": d1, "D2'": d2,
-                    }
-                    break
+        if found_1 or found_2 or found_3: 
             break
-        break
 
 
 # ── C6: existential subject with universal relation to a target class ──────
@@ -423,21 +407,25 @@ def _ground_c6(scene: Scene, rng: random.Random) -> Iterator[Tuple[str, dict]]:
     present = q.present_prop_values(scene)
     directions = domain.DIRECTIONS
 
+    found_1 = False
     for p1, v1 in rng.sample(present, len(present)):
         for o1 in q.objects_with(scene, p1, v1):
             for d1 in directions:
                 for p2, v2 in present:
+                    if v1==v2: continue
                     if q.universal_relation_holds(scene, o1, d1, p2, v2):
                         yield "1prop", {"P1'": p1, "V1'": v1, "P2'": p2, "V2'": v2, "D1'": d1}
+                        found_1 = True
                         break
-                else:
-                    continue
+                    else:
+                        continue
+                if found_1:
+                    break
+            if found_1:
                 break
-            else:
-                continue
+        if found_1:
             break
-        break
-
+        
     for p1, v1 in present:
         for o1 in q.objects_with(scene, p1, v1):
             for d1 in directions:
@@ -448,7 +436,8 @@ def _ground_c6(scene: Scene, rng: random.Random) -> Iterator[Tuple[str, dict]]:
                         if targets and all(t in stands_to for t in targets):
                             yield "1prop_neg", {"P1'": p1, "V1'": v1, "P2'": p2, "V2'": v2, "D1'": d1}
                             return
-        break
+
+        
 
 
 # ── C7: witness relations (existential/counting) ────────────────────────────
@@ -461,81 +450,70 @@ def _ground_c7(scene: Scene, rng: random.Random) -> Iterator[Tuple[str, dict]]:
         antecedent = q.objects_with(scene, p1, v1)
         if not antecedent:
             continue
-        for d1 in directions:
-            for p2, v2 in present:
-                if all(
-                    any(q.object_value(scene, n, p2) == v2 for n in q.neighbors(scene, o1, d1))
-                    for o1 in antecedent
-                ):
+        for p2, v2 in present:
+            if v1==v2: continue
+            targets = q.objects_with(scene, p2, v2)  
+            for d1 in directions:
+                if all(any(o1 in q.neighbors(scene, t, d1) for t in targets)  for o1 in antecedent):
                     yield "1prop_propRel", {"P1'": p1, "V1'": v1, "P2'": p2, "V2'": v2, "D1'": d1}
-                    break
-
-                if all(
-                    any(q.object_value(scene, n, p2) != v2 for n in q.neighbors(scene, o1, d1))
-                    or not q.neighbors(scene, o1, d1)
-                    for o1 in antecedent
-                ) and any(q.neighbors(scene, o1, d1) for o1 in antecedent):
-                    yield "1prop_propRel_neg", {"P1'": p1, "V1'": v1, "P2'": p2, "V2'": v2, "D1'": d1}
-                    break
-            break
-        break
-
-    for p1, v1 in present:
-        antecedent = q.objects_with(scene, p1, v1)
-        if not antecedent:
-            continue
-        for d1 in directions:
-            counts = {o1: len(q.neighbors(scene, o1, d1)) for o1 in antecedent}
-            for p2, v2 in present:
-                exact_counts = {
-                    o1: sum(1 for n in q.neighbors(scene, o1, d1) if q.object_value(scene, n, p2) == v2)
-                    for o1 in antecedent
-                }
-                distinct = set(exact_counts.values())
-                if len(distinct) == 1 and next(iter(distinct)) >= 1:
-                    n = next(iter(distinct))
-                    yield "1prop_exact", {
-                        "P1'": p1, "V1'": v1, "P2'": p2, "V2'": v2, "D1'": d1, "N'": _n_str(n),
-                    }
-                    break
-            break
-        break
-
+                    break  
+        
 
 # ── C8: counting (no relation + relational witness counts) ─────────────────
 
 def _ground_c8(scene: Scene, rng: random.Random) -> Iterator[Tuple[str, dict]]:
     present = q.present_prop_values(scene)
+    found_1 = False
+    found_2 = False
 
     for p1, v1 in rng.sample(present, len(present)):
         n = q.count_with(scene, p1, v1)
         if n > 0:
+            found_1 = True
             yield "1prop_exact", {"P1'": p1, "V1'": v1, "N'": _n_str(n)}
             yield "1prop_atleast", {"P1'": p1, "V1'": v1, "N'": _n_str(n)}
             yield "1prop_atmost", {"P1'": p1, "V1'": v1, "N'": _n_str(n)}
+            if n>2:
+                yield "1prop_atleast", {"P1'": p1, "V1'": v1, "N'": _n_str(n-1)}
         n_without = q.count_without(scene, p1, v1)
         if n_without > 0:
+            found_2 = True
             yield "1prop_exact_neg", {"P1'": p1, "V1'": v1, "N'": _n_str(n_without)}
             yield "1prop_atleast_neg", {"P1'": p1, "V1'": v1, "N'": _n_str(n_without)}
             yield "1prop_atmost_neg", {"P1'": p1, "V1'": v1, "N'": _n_str(n_without)}
-        break
+            if n_without > 3:
+                yield "1prop_atleast_neg", {"P1'": p1, "V1'": v1, "N'": _n_str(n-1)}
+            
+        if found_1 or found_2:
+            break
 
+    found_1 = False
+    found_2 = False
     for (p1, v1), (p2, v2) in combinations(rng.sample(present, min(len(present), 6)), 2):
         if p1 == p2:
             continue
         n_both = len(q.subset_matching(scene, [(p1, v1), (p2, v2)]))
         if n_both > 0:
+            found_1 = True
             yield "2prop_exact", {"P1'": p1, "V1'": v1, "P2'": p2, "V2'": v2, "N'": _n_str(n_both)}
             yield "2prop_atleast", {"P1'": p1, "V1'": v1, "P2'": p2, "V2'": v2, "N'": _n_str(n_both)}
             yield "2prop_atmost", {"P1'": p1, "V1'": v1, "P2'": p2, "V2'": v2, "N'": _n_str(n_both)}
+            if n_both > 2:
+                yield "2prop_atleast", {"P1'": p1, "V1'": v1, "P2'": p2, "V2'": v2, "N'": _n_str(n_both-1)}
         n_mix = len([o for o in q.objects_with(scene, p1, v1) if q.object_value(scene, o, p2) != v2])
         if n_mix > 0:
+            found_2 = True
             yield "2prop_exact_neg", {"P1'": p1, "V1'": v1, "P2'": p2, "V2'": v2, "N'": _n_str(n_mix)}
             yield "2prop_atleast_neg", {"P1'": p1, "V1'": v1, "P2'": p2, "V2'": v2, "N'": _n_str(n_mix)}
             yield "2prop_atmost_neg", {"P1'": p1, "V1'": v1, "P2'": p2, "V2'": v2, "N'": _n_str(n_mix)}
-        break
+            if n_mix > 2:
+                yield "2prop_atleast_neg", {"P1'": p1, "V1'": v1, "P2'": p2, "V2'": v2, "N'": _n_str(n_mix-1)}
+        if found_1 or found_2:
+            break
 
     for (p1, v1), (p2, v2) in combinations(rng.sample(present, min(len(present), 6)), 2):
+        if v1==v2: continue
+        found=False
         for d1 in domain.DIRECTIONS:
             group = q.objects_with(scene, p1, v1)
             n_rel = sum(
@@ -543,6 +521,7 @@ def _ground_c8(scene: Scene, rng: random.Random) -> Iterator[Tuple[str, dict]]:
                 if any(q.object_value(scene, n, p2) == v2 for n in q.neighbors(scene, o1, d1))
             )
             if n_rel > 0:
+                found = True
                 yield "1prop_exact_relational", {
                     "P1'": p1, "V1'": v1, "P2'": p2, "V2'": v2, "D1'": d1, "N'": _n_str(n_rel),
                 }
@@ -557,8 +536,10 @@ def _ground_c8(scene: Scene, rng: random.Random) -> Iterator[Tuple[str, dict]]:
                 yield "1prop_exact_relational_neg", {
                     "P1'": p1, "V1'": v1, "P2'": p2, "V2'": v2, "D1'": d1, "N'": _n_str(n_not_rel),
                 }
+            if found:
+                break
+        if found:
             break
-        break
 
 
 # ── C9: cardinality balance between two groups ──────────────────────────────
@@ -567,7 +548,7 @@ def _ground_c9(scene: Scene, rng: random.Random) -> Iterator[Tuple[str, dict]]:
     present = q.present_prop_values(scene)
 
     for (p1, v1), (p2, v2) in combinations(rng.sample(present, min(len(present), 6)), 2):
-        if p1 == p2 or q.count_with(scene, p1, v1) == 0:
+        if v1 == v2 or q.count_with(scene, p1, v1) == 0:
             continue
         if q.count_with(scene, p1, v1) == q.count_with(scene, p2, v2):
             yield "1prop", {"P1'": p1, "V1'": v1, "P2'": p2, "V2'": v2}
@@ -575,6 +556,9 @@ def _ground_c9(scene: Scene, rng: random.Random) -> Iterator[Tuple[str, dict]]:
 
     for combo in combinations(rng.sample(present, min(len(present), 6)), 4):
         (p1, v1), (p2, v2), (p3, v3), (p4, v4) = combo
+        if p1==p2: continue
+        if p3==p4: continue
+        if v1==v3: continue
         if len({p1, p2, p3, p4}) < 4:
             continue
         group_a = q.subset_matching(scene, [(p1, v1), (p2, v2)])
@@ -587,6 +571,9 @@ def _ground_c9(scene: Scene, rng: random.Random) -> Iterator[Tuple[str, dict]]:
 
     for combo in combinations(rng.sample(present, min(len(present), 6)), 4):
         (p1, v1), (p2, v2), (p3, v3), (p4, v4) = combo
+        if p1==p2: continue
+        if p3==p4: continue
+        if v2==v4: continue
         if len({p1, p2, p3, p4}) < 4:
             continue
         group_a = [o for o in q.objects_without(scene, p1, v1) if q.object_value(scene, o, p2) == v2]

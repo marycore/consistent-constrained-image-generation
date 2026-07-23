@@ -23,6 +23,8 @@ PROPERTIES: dict[str, list[str]] = {
 }
 
 DIRECTIONS: list[str] = ["left", "right", "front", "behind"]
+DIRECTIONS_INV: dict[str,str] = {"left": "right", "right":"left", "front":"behind", "behind":"front"}
+
 
 # 2x2 grid layout, matching the region atoms baked into the rendered scene data
 # and the layout comment in eval_dataset_gen/asp_background/background.lp.

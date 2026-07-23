@@ -4,4 +4,6 @@ c6_forbid_2_prop_satisfied :- object(X), hasProperty(X, P1', V1'), hasProperty(X
 :- not c6_forbid_2_prop_satisfied.
 
 %% The following constraint(s) are added to avoid generating scneces that are only vacuously true!
-:- #count{Y: object(Y), hasProperty(Y, P3', V3'), not hasProperty(Y, P4', V4')}=0.
+:- #count{Y: object(Y), hasProperty(Y, P3', V3'), not hasProperty(Y, P4', V4'), P3'!=P4'}=0.
+
+%% shouldn't we add P3!=P4
