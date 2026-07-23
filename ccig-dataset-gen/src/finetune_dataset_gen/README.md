@@ -54,32 +54,21 @@ classes there, or change how facts are read from the source JSON in Step 1
 ```bash
 cd clevr-ccig-dataset-gen
 
-# Default: compiles every image in data/finetune-dataset/images against its scene record
-python -m src.finetune_dataset_gen.compile_dataset
+python -m src.finetune_dataset_gen.compile_dataset --scenes (path to clevr train scenesjson file)  --out (path to dir where output json file is to be saved)
 
-# Control how many grounded constraints go into each caption
-python -m src.finetune_dataset_gen.compile_dataset --constraints_per_image 1       # exactly 1
-python -m src.finetune_dataset_gen.compile_dataset --constraints_per_image random  # 1..max_constraints, randomized per image
-python -m src.finetune_dataset_gen.compile_dataset --constraints_per_image all     # every satisfiable constraint found (long captions)
+Eg:
+python -m src.finetune_dataset_gen.compile_dataset --scenes /users/sbsh670/data/clevr/CLEVR_v1.0/scenes/CLEVR_train_scenes.json --out /users/sbsh670/data/ccig_finetune
 
-# Restrict to specific classes, change verbalization granularity, smoke-test on a few images
-python -m src.finetune_dataset_gen.compile_dataset --classes C1 C8 --granularity short --limit 50
-```
-
-Defaults (overridable via `--scenes`/`--images`/`--out`) resolve to the repo-root `data/`
-folder: `data/finetune-dataset/original-clevr-train-scenes.json`, `data/finetune-dataset/images/`,
-`data/finetune-dataset/finetune-dataset.json`.
 
 ## Output format
 
 ```json
 {
   "id": 0,
-  "image": "CLEVR_train_000000.png",
-  "text": "There are 6 objects in the scene. There must be at least one object in r0 standing to the right of a distinct small object. For every such pair, the latter must also be cube.",
+  "image_filename": "CLEVR_train_000000.png",
+  "image_id":0,
+  "prompt": "There are 6 objects in the scene. There must be at least one object in r0 standing to the right of a distinct small object. For every such pair, the latter must also be cube.",
   "n_objects": 6,
-  "constraints": [
-    {"class": "C5", "variant": "pair_propRelA_propC", "short": "...", "medium": "...", "long": "..."}
-  ]
+  
 }
 ```
