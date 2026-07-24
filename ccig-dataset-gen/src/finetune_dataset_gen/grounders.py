@@ -195,6 +195,8 @@ def _ground_c3(scene: Scene, rng: random.Random) -> Iterator[Tuple[str, dict]]:
                             }
                             found = True
                             break  # one p2 is enough to try the multi-prop extensions per (p1,v1)
+            if found:
+                break
         if found:
             break    
         
@@ -228,7 +230,7 @@ def _ground_c3(scene: Scene, rng: random.Random) -> Iterator[Tuple[str, dict]]:
                         }
                         
                 break #whether you get v4 or not you break out from the loop
-
+             
         v2_other = q.other_value(p2, v2)
         if v2_other:
             neg_antecedent = q.subset_matching(scene, [(p1, v1)])
@@ -438,14 +440,12 @@ def _ground_c6(scene: Scene, rng: random.Random) -> Iterator[Tuple[str, dict]]:
                             return
 
         
-
-
 # ── C7: witness relations (existential/counting) ────────────────────────────
-
 def _ground_c7(scene: Scene, rng: random.Random) -> Iterator[Tuple[str, dict]]:
     present = q.present_prop_values(scene)
     directions = domain.DIRECTIONS
-
+    
+    found = False
     for p1, v1 in rng.sample(present, len(present)):
         antecedent = q.objects_with(scene, p1, v1)
         if not antecedent:
@@ -453,12 +453,73 @@ def _ground_c7(scene: Scene, rng: random.Random) -> Iterator[Tuple[str, dict]]:
         for p2, v2 in present:
             if v1==v2: continue
             targets = q.objects_with(scene, p2, v2)  
+            targets_neg = q.objects_without(scene, p2, v2)
+            for d1 in directions:
+                count = sum(any(o1 in q.neighbors(scene, t, d1) for t in targets) for o1 in antecedent)
+                count_neg = sum(any(o1 in q.neighbors(scene, t, d1) for t in targets_neg) for o1 in antecedent)
+                
+                if count>0:
+                    found = True
+                    yield "1prop_exact", {"P1'": p1, "V1'": v1, "P2'": p2, "V2'": v2, "D1'": d1, "N'":count}
+                    
+                if count_neg>0:
+                    found = True
+                    yield "1prop_exact_neg", {"P1'": p1, "V1'": v1, "P2'": p2, "V2'": v2, "D1'": d1, "N'":count_neg}
+                
+                if all(any(o1 in q.neighbors(scene, t, d1) for t in targets)  for o1 in antecedent):
+                    found = True
+                    yield "1prop_propRel", {"P1'": p1, "V1'": v1, "P2'": p2, "V2'": v2, "D1'": d1}
+                    break 
+
+            if found:
+                break
+        if found:
+            break
+    
+    found = False
+    for p1, v1 in rng.sample(present, len(present)):
+        antecedent = q.objects_without(scene, p1, v1)
+        if not antecedent:
+            continue
+        for p2, v2 in present:
+            targets = q.objects_with(scene, p2, v2)  
             for d1 in directions:
                 if all(any(o1 in q.neighbors(scene, t, d1) for t in targets)  for o1 in antecedent):
-                    yield "1prop_propRel", {"P1'": p1, "V1'": v1, "P2'": p2, "V2'": v2, "D1'": d1}
-                    break  
-        
+                    found = True
+                    yield "1prop_propRel_neg", {"P1'": p1, "V1'": v1, "P2'": p2, "V2'": v2, "D1'": d1}
+                    break    
+            if found:
+                break
+        if found:
+            break
 
+    found = False
+    for p1, v1 in rng.sample(present, len(present)):
+        p1v1 = q.objects_with(scene, p1, v1)
+        for p2, v2 in present:
+            if v1==v2: continue
+            p2v2 = q.objects_with(scene, p2, v2)
+            for d1 in domain.DIRECTIONS:
+                antecedent = [o for o in p1v1 if any(t in q.neighbors(scene, o, d1) for t in p2v2)]
+                if not antecedent: continue
+                for p3, v3 in present:
+                    if v1==v3: continue
+                    if v2==v3: continue
+                    p3v3 = q.objects_with(scene, p3, v3)
+                    for d2 in domain.DIRECTIONS:
+                        if all(any(o in q.neighbors(scene, t, d2) for t in p3v3) for o in antecedent):
+                            found = True
+                            yield "propRel_propRel", {"P1'": p1, "V1'": v1, "P2'": p2, "V2'": v2, "D1'": d1, "D2'": d2, "P3'": p3, "V3'": v3}
+                            break
+                    if found:
+                        break    
+                if found:
+                    break
+            if found:
+                break
+        if found:
+            break
+    
 # ── C8: counting (no relation + relational witness counts) ─────────────────
 
 def _ground_c8(scene: Scene, rng: random.Random) -> Iterator[Tuple[str, dict]]:
@@ -471,18 +532,16 @@ def _ground_c8(scene: Scene, rng: random.Random) -> Iterator[Tuple[str, dict]]:
         if n > 0:
             found_1 = True
             yield "1prop_exact", {"P1'": p1, "V1'": v1, "N'": _n_str(n)}
-            yield "1prop_atleast", {"P1'": p1, "V1'": v1, "N'": _n_str(n)}
-            yield "1prop_atmost", {"P1'": p1, "V1'": v1, "N'": _n_str(n)}
-            if n>2:
-                yield "1prop_atleast", {"P1'": p1, "V1'": v1, "N'": _n_str(n-1)}
+            yield "1prop_atleast", {"P1'": p1, "V1'": v1, "N'": _n_str(random.randint(1, n - 1))}
+            yield "1prop_atmost", {"P1'": p1, "V1'": v1, "N'": _n_str(random.randint(n, n+2))}
+            
         n_without = q.count_without(scene, p1, v1)
         if n_without > 0:
             found_2 = True
             yield "1prop_exact_neg", {"P1'": p1, "V1'": v1, "N'": _n_str(n_without)}
-            yield "1prop_atleast_neg", {"P1'": p1, "V1'": v1, "N'": _n_str(n_without)}
-            yield "1prop_atmost_neg", {"P1'": p1, "V1'": v1, "N'": _n_str(n_without)}
-            if n_without > 3:
-                yield "1prop_atleast_neg", {"P1'": p1, "V1'": v1, "N'": _n_str(n-1)}
+            yield "1prop_atleast_neg", {"P1'": p1, "V1'": v1, "N'": _n_str(random.randint(1, n_without - 1))}
+            yield "1prop_atmost_neg", {"P1'": p1, "V1'": v1, "N'": _n_str(random.randint(n_without, n_without+2))}
+            
             
         if found_1 or found_2:
             break
@@ -496,18 +555,16 @@ def _ground_c8(scene: Scene, rng: random.Random) -> Iterator[Tuple[str, dict]]:
         if n_both > 0:
             found_1 = True
             yield "2prop_exact", {"P1'": p1, "V1'": v1, "P2'": p2, "V2'": v2, "N'": _n_str(n_both)}
-            yield "2prop_atleast", {"P1'": p1, "V1'": v1, "P2'": p2, "V2'": v2, "N'": _n_str(n_both)}
-            yield "2prop_atmost", {"P1'": p1, "V1'": v1, "P2'": p2, "V2'": v2, "N'": _n_str(n_both)}
-            if n_both > 2:
-                yield "2prop_atleast", {"P1'": p1, "V1'": v1, "P2'": p2, "V2'": v2, "N'": _n_str(n_both-1)}
+            yield "2prop_atleast", {"P1'": p1, "V1'": v1, "P2'": p2, "V2'": v2, "N'": _n_str(random.randint(1, n_both))}
+            yield "2prop_atmost", {"P1'": p1, "V1'": v1, "P2'": p2, "V2'": v2, "N'": _n_str(random.randint(n_both, n_both+2))}
+            
         n_mix = len([o for o in q.objects_with(scene, p1, v1) if q.object_value(scene, o, p2) != v2])
         if n_mix > 0:
             found_2 = True
             yield "2prop_exact_neg", {"P1'": p1, "V1'": v1, "P2'": p2, "V2'": v2, "N'": _n_str(n_mix)}
-            yield "2prop_atleast_neg", {"P1'": p1, "V1'": v1, "P2'": p2, "V2'": v2, "N'": _n_str(n_mix)}
-            yield "2prop_atmost_neg", {"P1'": p1, "V1'": v1, "P2'": p2, "V2'": v2, "N'": _n_str(n_mix)}
-            if n_mix > 2:
-                yield "2prop_atleast_neg", {"P1'": p1, "V1'": v1, "P2'": p2, "V2'": v2, "N'": _n_str(n_mix-1)}
+            yield "2prop_atleast_neg", {"P1'": p1, "V1'": v1, "P2'": p2, "V2'": v2, "N'": _n_str(random.randint(1, n_mix))}
+            yield "2prop_atmost_neg", {"P1'": p1, "V1'": v1, "P2'": p2, "V2'": v2, "N'": _n_str(random.randint(n_mix, n_mix+2))}
+            
         if found_1 or found_2:
             break
 
@@ -515,6 +572,8 @@ def _ground_c8(scene: Scene, rng: random.Random) -> Iterator[Tuple[str, dict]]:
         if v1==v2: continue
         found=False
         for d1 in domain.DIRECTIONS:
+            #=no. of objects in group that does not have inv(d1) to some y (p2, v2)
+            d2 = domain.DIRECTIONS_INV[d1]
             group = q.objects_with(scene, p1, v1)
             n_rel = sum(
                 1 for o1 in group
@@ -526,21 +585,27 @@ def _ground_c8(scene: Scene, rng: random.Random) -> Iterator[Tuple[str, dict]]:
                     "P1'": p1, "V1'": v1, "P2'": p2, "V2'": v2, "D1'": d1, "N'": _n_str(n_rel),
                 }
                 yield "1prop_atleast_relational", {
-                    "P1'": p1, "V1'": v1, "P2'": p2, "V2'": v2, "D1'": d1, "N'": _n_str(n_rel),
+                    "P1'": p1, "V1'": v1, "P2'": p2, "V2'": v2, "D1'": d1, "N'": _n_str(random.randint(1,n_rel)),
                 }
                 yield "1prop_atmost_relational", {
-                    "P1'": p1, "V1'": v1, "P2'": p2, "V2'": v2, "D1'": d1, "N'": _n_str(n_rel),
+                    "P1'": p1, "V1'": v1, "P2'": p2, "V2'": v2, "D1'": d1, "N'": _n_str(random.randint(n_rel, n_rel+2)),
                 }
-            n_not_rel = len(group) - n_rel
-            if n_not_rel > 0:
+                
                 yield "1prop_exact_relational_neg", {
-                    "P1'": p1, "V1'": v1, "P2'": p2, "V2'": v2, "D1'": d1, "N'": _n_str(n_not_rel),
+                    "P1'": p1, "V1'": v1, "P2'": p2, "V2'": v2, "D1'": d2, "N'": _n_str(n_rel),
+                }
+                yield "1prop_atleast_relational_neg", {
+                    "P1'": p1, "V1'": v1, "P2'": p2, "V2'": v2, "D1'": d2, "N'": _n_str(random.randint(1,n_rel)),
+                }
+                yield "1prop_atmost_relational_neg", {
+                    "P1'": p1, "V1'": v1, "P2'": p2, "V2'": v2, "D1'": d2, "N'": _n_str(random.randint(n_rel, n_rel+2)),
                 }
             if found:
                 break
         if found:
             break
-
+    
+    
 
 # ── C9: cardinality balance between two groups ──────────────────────────────
 
