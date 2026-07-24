@@ -132,8 +132,9 @@ def run(
 
             _, rule_text = load_template(tpl_path)
 
+            
             history_asgn = []
-            max_attempts = 1000
+            max_attempts = 1000 
             attempts = 0
             tpl_sat_count = 0
             tpl_unsat_count = 0
@@ -149,7 +150,6 @@ def run(
 
 
                 instantiated_rule = apply_assignment(rule_text, asgn)
-                #print('Instantiated rule:', instantiated_rule)
                 background = background_asp(n_objects)
                 full_program = background + instantiated_rule + "\n"
                 try:
