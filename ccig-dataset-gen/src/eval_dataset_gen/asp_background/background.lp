@@ -25,13 +25,13 @@ hasRelationship(X, Y, front)  :- object(X), object(Y), X != Y,
 hasRelationship(X, Y, behind) :- object(X), object(Y), X != Y,
     hasProperty(X, region, R1), hasProperty(Y, region, R2), behind_R(R1, R2).
 
-% Same-region objects: disjunctive left/right and front/behind
+% Spatial relationships among objects: disjunctive left/right and front/behind
 hasRelationship(X, Y, left); hasRelationship(X, Y, right) :-
     object(X), object(Y), X != Y,
-    hasProperty(X, region, R), hasProperty(Y, region, R).
+    hasProperty(X, region, R1), hasProperty(Y, region, R2).
 hasRelationship(X, Y, front); hasRelationship(X, Y, behind) :-
     object(X), object(Y), X != Y,
-    hasProperty(X, region, R), hasProperty(Y, region, R).
+    hasProperty(X, region, R1), hasProperty(Y, region, R2).
 
 % Anti-symmetry
 :- hasRelationship(X1, X2, R), hasRelationship(X2, X1, R), X1 != X2.

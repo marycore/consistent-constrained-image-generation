@@ -35,17 +35,20 @@ REGION_LAYOUT: dict[str, str] = {
     "r3": "bottom-right",
 }
 
-
-def scene_setup_text(n_objects: int = 4) -> str:
+def system_prompt_text() -> str:
     colors = ", ".join(PROPERTIES["color"])
     shapes = ", ".join(PROPERTIES["shape"])
     sizes = ", ".join(PROPERTIES["size"])
+    materials = ", ".join(PROPERTIES["material"])
     regions = "; ".join(f"{r} ({pos})" for r, pos in REGION_LAYOUT.items())
 
     return (
-        f"Generate a CLEVR-style scene with {n_objects} objects. "
-        f"The scene is divided into 4 regions arranged in a 2x2 grid: {regions}. "
-        f"Each object has a color (one of: {colors}), a shape (one of: {shapes}), "
+        f"Generate a CLEVR style scene with a white background that is divided into 4 regions arranged in a 2x2 grid: {regions}. "
+        f"Each object has a color (one of: {colors}), a shape (one of: {shapes}), a material (one of: {materials}), "
         f"and a size (one of: {sizes}), and is placed in one of the 4 regions. "
-        f"The scene must additionally satisfy the following constraint:"
+        f"The scene must additionally satisfy the following constraint: "
     )
+
+
+def scene_setup_text(n_objects: int = 4) -> str:
+    return (f"{system_prompt_text()} The scene is with {n_objects} objects. ")

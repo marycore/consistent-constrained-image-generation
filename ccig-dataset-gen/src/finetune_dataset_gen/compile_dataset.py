@@ -15,6 +15,8 @@ from typing import Any, List, Dict, Optional, Union, Tuple
 from PIL import Image, ImageDraw, ImageFont
 import matplotlib.pyplot as plt
 
+from common.domain_clevr import system_prompt_text
+
 _REPO_DATA_DIR = Path(__file__).resolve().parents[3] / "data"
 
 import argparse
@@ -74,16 +76,6 @@ def annotate_with_regions(src_images_train, destination_train_images):
             print(f"Annotated image saved to: {annotated_image_path}")
 
 
-def build_caption(n_objects: int, selected: List[dict], granularity: str) -> str:
-    print('Selected:', selected)
-    preamble = (f"Generate a CLEVR style image with geometric shapes satisfying the following constraints." 
-                f"There are {n_objects} objects in the scene. The scene has 4 equally sized regions - r0 (top left), r1 (top right), r2 (bottom left) and r3 (bottom right). "
-                "The shapes allowed are cylinder, sphere and cube of size small or large and material metal or rubber. "
-                "The colors can be one of gray, red, blue, green, brown, purple, cyan and yellow.")
-    sentences = [c[granularity] for c in selected]
-    return " ".join([preamble] + sentences)
-
-#find region given pixel coords of an object in scene
 def find_region(x, y):
    
     image_width = 480
@@ -157,11 +149,8 @@ def compile_dataset(
     
     rng = random.Random(seed)
     out_records = []
-    gen_prompt = (f"Generate a CLEVR style image with geometric shapes satisfying the following constraints." 
-                f"The scene has 4 equally sized regions - r0 (top left), r1 (top right), r2 (bottom left) and r3 (bottom right). "
-                "The shapes allowed are cylinder, sphere and cube of size small or large and material metal or rubber. "
-                "The colors can be one of gray, red, blue, green, brown, purple, cyan and yellow.")
 
+    gen_prompt = system_prompt_text()
     # Load the CLEVR scenes JSON file
     with scenes_path.open("r", encoding="utf-8") as f:
         data = json.load(f)
