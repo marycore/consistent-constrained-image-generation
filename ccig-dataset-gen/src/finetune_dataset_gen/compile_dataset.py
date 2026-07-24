@@ -182,6 +182,9 @@ def compile_dataset(
                 "image_filename": image_filename,
                 "prompt": gen_prompt + f' There are {n_objects} objects in the scene. '+ inst[style],
                 "n_objects": n_objects,
+                "style": style,
+                "class":inst['class'],
+                "variant":inst['variant'],
                 })
                 i = i+1
         break
