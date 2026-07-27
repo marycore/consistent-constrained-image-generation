@@ -33,6 +33,7 @@ def main() -> None:
     )
     args = parser.parse_args()
 
+    is_closed_model = args.model in CLOSED_MODEL_REGISTRY
     if args.model in OPEN_MODEL_REGISTRY:
         model = build_open_model(args.model, checkpoint=args.checkpoint)
     else:
@@ -53,7 +54,9 @@ def main() -> None:
 
 
         image_path = out_dir / f"{item.id}-{args.prompt_field}.png"
-        setup_text = scene_setup_text(item.number_of_objects, item.domain)
+        setup_text = scene_setup_text(
+            item.number_of_objects, item.domain, with_background=is_closed_model
+        )
         full_prompt = f"{setup_text} {item.text}"
         try:
             image = model.generate(full_prompt)
