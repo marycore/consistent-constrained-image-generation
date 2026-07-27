@@ -47,6 +47,10 @@ _REPO_ROOT = Path(__file__).resolve().parents[3]
 TEMPLATE_DIR = Path(__file__).resolve().parent / "constraint_templates"
 DEFAULT_OUTPUT = _REPO_ROOT / "data" / "ccig_eval_dataset.jsonl"
 
+#template files not valid for coco domain
+not_coco = ['C1_4prop_mix_neg', 'C1_4prop', 'C2_4prop_neg', 'C2_4prop',
+            'C3_1propA_3propC', 'C3_2propA_2propC', 'C3_2propA_neg_2propC',
+            'C3_3propA_1propC', 'C3_3propA_1propC_neg']
 
 # ── Record construction ──────────────────────────────────────────────────────
 
@@ -80,6 +84,35 @@ def build_record(
         "number_of_objects": n_objects,
     }
 
+def build_combo_record(
+    cls: list[str]
+    template_pth: list[Path],
+    prompts: str,
+    instantiated_rules: list[str]
+    status: str,
+    record_id: str,
+    n_objects: int = 4,
+    domain: str = "clevr",
+) -> dict:
+    
+    families = []
+    for p in template_pth:
+        stem = p.stem
+        family = stem.split("_", 1)[1] if "_" in stem else ""
+        families.append(family)
+    
+    return {
+        "id": record_id,
+        "domain": domain,
+        "complexity_class": [f"C{c}" for c in cls],
+        "constraint_family": families,
+        "prompts": " ".join(prompts),
+        "instantiated_rule": instantiated_rules,
+        "asp_template_file": template_pth,
+        "status": status,
+        "number_of_objects": n_objects,
+    }
+
 
 def _record_id(template_name: str, assignment: dict, idx: int) -> str:
     content = json.dumps({"t": template_name, "a": assignment}, sort_keys=True)
@@ -102,43 +135,132 @@ def run(
     seed: int,
     verbose: bool,
     domain: str = "clevr",
+    combo: int,
 ) -> None:
     rng = random.Random(seed)
 
+    
     template_files = sorted(
         p for p in template_dir.glob("*.txt")
         if "OLD" not in p.name and p.name != "README.txt"
     )
+
+
     if classes:
         template_files = [p for p in template_files
                           if any(p.name.startswith(c + "_") for c in classes)]
 
+        if domain=='coco':
+            template_files = [p for p in template_files if p.stem not in not_coco]
+    
     if not template_files:
         print(f"No template files found in {template_dir}", file=sys.stderr)
         sys.exit(1)
 
+    class_files = defaultdict(list)
+    for p in template_files:
+        class_num = int(p.name.split("_")[0][1:])  
+        class_files[class_num].append(p)
+    class_files = dict(class_files)
+
+    output_dir = Path(output_path)  # directory path provided by user
+    output_dir.mkdir(parents=True, exist_ok=True)
+
+    sat_path = output_dir / f"{combo}_scenes_SAT.json"
+    unsat_path = output_dir / f"{combo}_scenes_UNSAT.json"
     
-    output_path.parent.mkdir(parents=True, exist_ok=True)
-
-    sat_path  = output_path.with_stem(output_path.stem + "_SAT")
-    unsat_path = output_path.with_stem(output_path.stem + "_UNSAT")
-
     sat_count = unsat_count = total_count = 0
-
+    
+    max_attempts = 1000
+    attempts = 0
     with open(sat_path, "w") as sat_f, open(unsat_path, "w") as unsat_f:
+        #for combinations of templates 
+        while(sat_count<n_samples and attempts<max_attempts):
+                if combo==1:
+                    break
+                attempts  =attempts+1
+                n_objects = random.randint(3, 9)
+                classes = random.sample(range(1, 10), combo)
+                selected_templates = []
+                for c in classes:
+                    file = random.choice(class_files[c])
+                    selected_templates.append(file)
+                
+                
+                asgns = []
+                prompts = []
+                instantiated_rules = []
+                background = background_asp(domain, n_objects)
+                full_program = background
+                for tpl_path in selected_templates: 
+                    stem = tpl_path.stem
+                    attempts = attempts + 1
+                    _, rule_text = load_template(tpl_path)
+                    asgn = sample_assignment(rule_text, rng)
+                    instantiated_rule = apply_assignment(rule_text, asgn)
+                    text = verbalize(stem, asgn)
+                    asgns.append(asgn)
+                    instantiated_rules.append(instantiated_rule)
+                    prompts.append(text)
+                    full_program = full_program + instantiated_rule + "\n"
+
+                
+                try:
+                    status, raw_models = solve(
+                            full_program,
+                            n_models=n_models,
+                            time_limit=time_limit,
+                            clingo_bin=clingo_bin,
+                            )
+                except RuntimeError as e:
+                    print(f"  Solver error: {e}", file=sys.stderr)
+                    status = "ERROR"
+
+                if status == "SAT":
+                    record_id = _record_id(tpl_path.name, asgn, tpl_sat_count)
+                    sat_count += 1
+                    total_count+=1
+                    #for r_m in raw_models:
+                    #    scene = format_scene(r_m)
+                    #    print(scene)
+
+
+                elif status == "UNSAT":
+                    record_id = _record_id(tpl_path.name, asgn, tpl_unsat_count)
+                    unsat_count += 1
+                    total_count+=1
+
+                
+                record = build_combo_record(classes, selected_templates, prompts, instantiated_rules, status, record_id, n_objects, domain)
+                line = json.dumps(record) + "\n"
+
+                if status == "SAT":
+                    sat_f.write(line)
+                elif status == "UNSAT":
+                    unsat_f.write(line)
+        if (sat_count < n_samples):
+                print('Tried max_attempts =2000 times but could produce:', sat_count, ' satisfiable and ', unsat_count, ' unsatisfiable prompts.')
+        
+        
         for tpl_path in template_files: #for each template of that class - generate 5 sat plus 2 unsat per file
+            if combo>1: 
+                break
             if verbose:
                 print(f"Processing {tpl_path.name} …")
 
             _, rule_text = load_template(tpl_path)
 
-            
+            stem = template_path.stem
+            cls = stem.split("_")[0]
+            family = stem.split("_", 1)[1] if "_" in stem else ""
+
             history_asgn = []
-            max_attempts = 1000 
+            max_attempts = 2000 
             attempts = 0
             tpl_sat_count = 0
             tpl_unsat_count = 0
             while (tpl_sat_count<n_samples and attempts<max_attempts):
+                
                 attempts  =attempts+1
                 flag = True
                 n_objects = random.randint(3, 9)
@@ -150,8 +272,9 @@ def run(
 
 
                 instantiated_rule = apply_assignment(rule_text, asgn)
-                background = background_asp(n_objects)
+                background = background_asp(domain, n_objects)
                 full_program = background + instantiated_rule + "\n"
+                text = verbalize(stem, asgn)
                 try:
                     status, raw_models = solve(
                             full_program,
@@ -167,6 +290,7 @@ def run(
                     record_id = _record_id(tpl_path.name, asgn, tpl_sat_count)
                     tpl_sat_count += 1
                     sat_count += 1
+                    combo_sat_count +=1
                     #for r_m in raw_models:
                     #    scene = format_scene(r_m)
                     #    print(scene)
@@ -184,7 +308,8 @@ def run(
 
                 total_count += 1
 
-                record = build_record(tpl_path, asgn, rule_text, status, record_id, n_objects, domain)
+                record = build_combo_record([cls], [tpl_path], [text], [instantiated_rule], status, record_id, n_objects, domain)
+                
                 line = json.dumps(record) + "\n"
 
                 if status == "SAT":
@@ -215,6 +340,8 @@ def _parse_args() -> argparse.Namespace:
     )
     parser.add_argument("--domain", choices=["clevr"], default="clevr",
                         help="Which domain's property/value vocabulary to generate against.")
+    parser.add_argument("--combo", type=int, default=1,
+                        help="the number of constraints per prompt to be satisfied.")
     parser.add_argument("--template_dir", type=Path, default=TEMPLATE_DIR)
     parser.add_argument("--output", type=Path, default=DEFAULT_OUTPUT,
                         help="Base output path; _SAT.jsonl and _UNSAT.jsonl are derived from it.")
@@ -245,4 +372,5 @@ if __name__ == "__main__":
         seed=args.seed,
         verbose=args.verbose,
         domain=args.domain,
+        combo = args.combo,
     )

@@ -156,6 +156,7 @@ def compile_dataset(
         data = json.load(f)
     scene_records = data['scenes']
     i=0
+    img=0
     for rec in scene_records:
         image_id = rec["image_index"]
         image_filename = rec["image_filename"]
@@ -176,7 +177,11 @@ def compile_dataset(
                 "variant":inst['variant'],
                 })
                 i = i+1
-        break
+        
+        print('generated prompts for image:', image_id)
+        img = img+1
+        if img>23000:
+            break
     
     json_path = out_path / "finetune_prompts_clevr_train.json"
     with json_path.open("w", encoding="utf-8") as f:
