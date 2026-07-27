@@ -17,7 +17,8 @@ import random
 from pathlib import Path
 from typing import Dict, List, Tuple, Set
 
-from .domain import PROPERTIES, RELATIONS, COUNTS
+from .domain import load_domain, COUNTS
+
 
 # ── Regex patterns ─────────────────────────────────────────────────────────
 
@@ -106,7 +107,7 @@ def _paired_p(v_ph: str, pair_pv) -> str:
     
 
 
-def _domain(ph: str, partial: Dict[str, str], pair_pv: List[Tuple[str, str]]) -> List[str]:
+def _domain(PROPERTIES:Dict[str, List[str]],  ph: str, partial: Dict[str, str], pair_pv: List[Tuple[str, str]]) -> List[str]:
     """
     Return the value domain for a placeholder, given the partial assignment so far.
     For V placeholders, the domain is the property values of the paired P placeholder.
@@ -132,7 +133,7 @@ def _violates(candidate: Dict[str, str], ineqs: Set[frozenset]) -> bool:
 
 # ── Assignment generation ───────────────────────────────────────────────────
 
-def sample_assignment(rule: str, rng: random.Random) -> Dict[str, str]:
+def sample_assignment(domain:str, rule: str, rng: random.Random) -> Dict[str, str]:
     """
     Sample one valid random assignment for all primed placeholders in rule.
 
@@ -141,6 +142,14 @@ def sample_assignment(rule: str, rng: random.Random) -> Dict[str, str]:
 
     Raises RuntimeError if a valid assignment cannot be found after many attempts.
     """
+    domain_module = load_domain(domain)
+    # Domain-specific vocabulary
+    _ALL_PROPERTIES = domain_module.PROPERTIES
+    RELATIONS = domain_module.DIRECTIONS
+    
+    PROPERTIES: Dict[str, List[str]] = {k: v for k, v in _ALL_PROPERTIES.items() if k != "material"}
+
+
     phs, pair_pv = placeholders(rule)
     ineqs = inequalities(rule)
     
@@ -168,7 +177,7 @@ def sample_assignment(rule: str, rng: random.Random) -> Dict[str, str]:
 
         # Fill V placeholders (depend on paired P)
         for ph in v_phs:
-            domain = _domain(ph, asgn, pair_pv)
+            domain = _domain(PROPERTIES, ph, asgn, pair_pv)
             excluded = {asgn[o] for o in asgn if frozenset([ph, o]) in ineqs}
             choices = [v for v in domain if v not in excluded]
             if not choices:
@@ -201,60 +210,21 @@ def sample_assignment(rule: str, rng: random.Random) -> Dict[str, str]:
         f"Placeholders: {phs}\nInequalities: {ineqs}"
     )
 
-
-def all_assignments(rule: str) -> List[Dict[str, str]]:
-    """
-    Enumerate every valid assignment of primed placeholders in rule (exhaustive).
-
-    Warning: can be large for templates with many placeholders. Use sample_assignment
-    for dataset generation and this function only for analysis or small templates.
-    """
-    phs = placeholders(rule)
-    ineqs = inequalities(rule)
-
-    p_phs = [ph for ph in phs if ph.startswith("P")]
-    v_phs = [ph for ph in phs if ph.startswith("V")]
-    d_phs = [ph for ph in phs if ph.startswith("D")]
-    n_phs = [ph for ph in phs if ph.startswith("N")]
-
-    results: list[dict[str, str]] = []
-
-    for p_vals in itertools.product(*[list(PROPERTIES.keys()) for _ in p_phs]):
-        p_asgn = dict(zip(p_phs, p_vals))
-        if _violates(p_asgn, ineqs):
-            continue
-
-        v_domains = [PROPERTIES[p_asgn.get(_paired_p(v_ph), list(PROPERTIES)[0])] for v_ph in v_phs]
-        for v_vals in itertools.product(*v_domains):
-            v_asgn = dict(zip(v_phs, v_vals))
-            combined = {**p_asgn, **v_asgn}
-            if _violates(combined, ineqs):
-                continue
-
-            for d_vals in itertools.product(*[list(RELATIONS) for _ in d_phs]):
-                d_asgn = dict(zip(d_phs, d_vals))
-                combined = {**p_asgn, **v_asgn, **d_asgn}
-                if _violates(combined, ineqs):
-                    continue
-
-                for n_vals in itertools.product(*[list(COUNTS) for _ in n_phs]):
-                    n_asgn = dict(zip(n_phs, n_vals))
-                    full = {**combined, **n_asgn}
-                    if not _violates(full, ineqs):
-                        results.append(full)
-
-    return results
-
-
 # ── Rule instantiation ──────────────────────────────────────────────────────
 
-def apply_assignment(rule: str, assignment: Dict[str, str]) -> str:
+def apply_assignment(domain:str, rule: str, assignment: Dict[str, str]) -> str:
     """
     Substitute all primed placeholders in rule with their assigned values.
 
     Longer placeholder names are replaced first to avoid partial matches
     (e.g. P1' before P1 if both existed, though all placeholders end with ').
     """
+    domain_module = load_domain(domain)
+    # Domain-specific vocabulary
+    _ALL_PROPERTIES = domain_module.PROPERTIES
+    
+    PROPERTIES: Dict[str, List[str]] = {k: v for k, v in _ALL_PROPERTIES.items() if k != "material"}
+
     out = rule
     out = _REMOVE_INEQ_RE.sub("",out)
     # Remove a comma immediately before a period

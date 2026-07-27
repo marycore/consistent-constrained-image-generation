@@ -34,7 +34,7 @@ import sys
 import random
 import hashlib
 from pathlib import Path
-
+from collections import defaultdict
 from .domain import background_asp
 from .instantiate import load_template, sample_assignment, apply_assignment
 from ..common.verbalize import verbalize
@@ -85,15 +85,19 @@ def build_record(
     }
 
 def build_combo_record(
-    cls: list[str]
+    cls: list[str],
     template_pth: list[Path],
-    prompts: str,
-    instantiated_rules: list[str]
+    prompts: list[dict[str,str]],
+    instantiated_rules: list[str],
     status: str,
     record_id: str,
     n_objects: int = 4,
     domain: str = "clevr",
 ) -> dict:
+    
+    name_files = []
+    for p in template_pth:
+        name_files.append(p.name)
     
     families = []
     for p in template_pth:
@@ -106,9 +110,9 @@ def build_combo_record(
         "domain": domain,
         "complexity_class": [f"C{c}" for c in cls],
         "constraint_family": families,
-        "prompts": " ".join(prompts),
+        "prompts": prompts,
         "instantiated_rule": instantiated_rules,
-        "asp_template_file": template_pth,
+        "asp_template_file": name_files,
         "status": status,
         "number_of_objects": n_objects,
     }
@@ -135,7 +139,7 @@ def run(
     seed: int,
     verbose: bool,
     domain: str = "clevr",
-    combo: int,
+    combo: int = 1
 ) -> None:
     rng = random.Random(seed)
 
@@ -196,8 +200,8 @@ def run(
                     stem = tpl_path.stem
                     attempts = attempts + 1
                     _, rule_text = load_template(tpl_path)
-                    asgn = sample_assignment(rule_text, rng)
-                    instantiated_rule = apply_assignment(rule_text, asgn)
+                    asgn = sample_assignment(domain, rule_text, rng)
+                    instantiated_rule = apply_assignment(domain, rule_text, asgn)
                     text = verbalize(stem, asgn)
                     asgns.append(asgn)
                     instantiated_rules.append(instantiated_rule)
@@ -238,7 +242,8 @@ def run(
                     sat_f.write(line)
                 elif status == "UNSAT":
                     unsat_f.write(line)
-        if (sat_count < n_samples):
+        
+        if (combo>1 and sat_count < n_samples):
                 print('Tried max_attempts =2000 times but could produce:', sat_count, ' satisfiable and ', unsat_count, ' unsatisfiable prompts.')
         
         
@@ -250,7 +255,7 @@ def run(
 
             _, rule_text = load_template(tpl_path)
 
-            stem = template_path.stem
+            stem = tpl_path.stem
             cls = stem.split("_")[0]
             family = stem.split("_", 1)[1] if "_" in stem else ""
 
@@ -265,13 +270,13 @@ def run(
                 flag = True
                 n_objects = random.randint(3, 9)
                 while (flag):
-                    asgn = sample_assignment(rule_text, rng) #generate an assignment for the rule class - rule_text
+                    asgn = sample_assignment(domain, rule_text, rng) #generate an assignment for the rule class - rule_text
                     if (asgn, n_objects) not in history_asgn:
                         history_asgn.append((asgn, n_objects))
                         flag  = False
 
 
-                instantiated_rule = apply_assignment(rule_text, asgn)
+                instantiated_rule = apply_assignment(domain, rule_text, asgn)
                 background = background_asp(domain, n_objects)
                 full_program = background + instantiated_rule + "\n"
                 text = verbalize(stem, asgn)
@@ -290,7 +295,6 @@ def run(
                     record_id = _record_id(tpl_path.name, asgn, tpl_sat_count)
                     tpl_sat_count += 1
                     sat_count += 1
-                    combo_sat_count +=1
                     #for r_m in raw_models:
                     #    scene = format_scene(r_m)
                     #    print(scene)

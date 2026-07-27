@@ -6,7 +6,7 @@ search space to keep eval-set generation tractable. This is the only place that 
 encoded -- finetune_dataset_gen uses the full common/domain_clevr.py PROPERTIES, materials
 included.
 """
-
+import importlib
 from pathlib import Path
 from typing import Dict, List
 
