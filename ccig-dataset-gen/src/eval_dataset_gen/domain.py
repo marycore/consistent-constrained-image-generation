@@ -34,7 +34,7 @@ def background_asp(domain:str, n_objects: int = 4) -> str:
     # Domain-specific vocabulary
     _ALL_PROPERTIES = domain_module.PROPERTIES
     
-    PROPERTIES: Dict[str, List[str]] = {k: v for k, v in _ALL_PROPERTIES.items() if k != "material"}
+    PROPERTIES: Dict[str, List[str]] = {k: v for k, v in _ALL_PROPERTIES.items() if k != "size"}
 
     
     lines = [f"object({i})." for i in range(n_objects)]

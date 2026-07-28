@@ -147,7 +147,7 @@ def sample_assignment(domain:str, rule: str, rng: random.Random) -> Dict[str, st
     _ALL_PROPERTIES = domain_module.PROPERTIES
     RELATIONS = domain_module.DIRECTIONS
     
-    PROPERTIES: Dict[str, List[str]] = {k: v for k, v in _ALL_PROPERTIES.items() if k != "material"}
+    PROPERTIES: Dict[str, List[str]] = {k: v for k, v in _ALL_PROPERTIES.items() if k != "size"}
 
 
     phs, pair_pv = placeholders(rule)
@@ -223,7 +223,7 @@ def apply_assignment(domain:str, rule: str, assignment: Dict[str, str]) -> str:
     # Domain-specific vocabulary
     _ALL_PROPERTIES = domain_module.PROPERTIES
     
-    PROPERTIES: Dict[str, List[str]] = {k: v for k, v in _ALL_PROPERTIES.items() if k != "material"}
+    PROPERTIES: Dict[str, List[str]] = {k: v for k, v in _ALL_PROPERTIES.items() if k != "size"}
 
     out = rule
     out = _REMOVE_INEQ_RE.sub("",out)
