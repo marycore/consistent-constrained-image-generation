@@ -28,8 +28,8 @@ for the sibling pipeline that captions existing images instead.
 ```bash
 cd ccig-dataset-gen
 
-python -m src.eval_dataset_gen.run --classes C1 C2 C3 C4 C5 C6 C7 C8 C9 --samples 1  --output /users/sbsh670/data/ccig_evalData
-
+python -m src.eval_dataset_gen.run --classes C1 C2 C3 C4 C5 C6 C7 C8 C9 --samples 1  --output /users/sbsh670/data/ccig_evalData --combo 1 --domain coco
+ 
 # Default: 10 random samples per template, 4-object scenes
 python -m src.eval_dataset_gen.run
 

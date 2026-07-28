@@ -104,11 +104,16 @@ def build_combo_record(
         stem = p.stem
         family = stem.split("_", 1)[1] if "_" in stem else ""
         families.append(family)
+    if not(isinstance(cls[0], int)):
+        complexity_classes = cls    
+    else:
+        complexity_classes = [f"C{c}" for c in cls] 
+
     
     return {
         "id": record_id,
         "domain": domain,
-        "complexity_class": [f"C{c}" for c in cls],
+        "complexity_class": complexity_classes,
         "constraint_family": families,
         "prompts": prompts,
         "instantiated_rule": instantiated_rules,
@@ -166,12 +171,11 @@ def run(
         class_num = int(p.name.split("_")[0][1:])  
         class_files[class_num].append(p)
     class_files = dict(class_files)
-
     output_dir = Path(output_path)  # directory path provided by user
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    sat_path = output_dir / f"{combo}_scenes_SAT.json"
-    unsat_path = output_dir / f"{combo}_scenes_UNSAT.json"
+    sat_path = output_dir / f"{domain}_{combo}_scenes_SAT.json"
+    unsat_path = output_dir / f"{domain}_{combo}_scenes_UNSAT.json"
     
     sat_count = unsat_count = total_count = 0
     
@@ -192,20 +196,23 @@ def run(
                 
                 
                 asgns = []
-                prompts = []
+                prompts = {'short': '', 'medium': '', 'long': ''}
                 instantiated_rules = []
                 background = background_asp(domain, n_objects)
                 full_program = background
-                for tpl_path in selected_templates: 
+                cons = 0
+                for tpl_path in selected_templates:
+                    cons = cons+1 
                     stem = tpl_path.stem
-                    attempts = attempts + 1
                     _, rule_text = load_template(tpl_path)
                     asgn = sample_assignment(domain, rule_text, rng)
                     instantiated_rule = apply_assignment(domain, rule_text, asgn)
                     text = verbalize(stem, asgn)
+                    prompts['short'] = prompts['short'] + ' Constraint ' + str(cons) + ':' + text['short'] + '\n'
+                    prompts['medium'] = prompts['medium'] + ' Constraint ' + str(cons) + ':' + text['medium'] + '\n'
+                    prompts['long'] = prompts['long'] + ' Constraint ' + str(cons) + ':' + text['long'] + '\n'
                     asgns.append(asgn)
                     instantiated_rules.append(instantiated_rule)
-                    prompts.append(text)
                     full_program = full_program + instantiated_rule + "\n"
 
                 
@@ -221,8 +228,9 @@ def run(
                     status = "ERROR"
 
                 if status == "SAT":
-                    record_id = _record_id(tpl_path.name, asgn, tpl_sat_count)
+                    #record_id = _record_id(tpl_path.name, asgn, tpl_sat_count)
                     sat_count += 1
+                    record_id = sat_count
                     total_count+=1
                     #for r_m in raw_models:
                     #    scene = format_scene(r_m)
@@ -230,8 +238,9 @@ def run(
 
 
                 elif status == "UNSAT":
-                    record_id = _record_id(tpl_path.name, asgn, tpl_unsat_count)
+                    #record_id = _record_id(tpl_path.name, asgn, tpl_unsat_count)
                     unsat_count += 1
+                    record_id = unsat_count
                     total_count+=1
 
                 
@@ -292,18 +301,20 @@ def run(
                     status = "ERROR"
 
                 if status == "SAT":
-                    record_id = _record_id(tpl_path.name, asgn, tpl_sat_count)
+                    #record_id = _record_id(tpl_path.name, asgn, tpl_sat_count)
                     tpl_sat_count += 1
                     sat_count += 1
+                    record_id = sat_count
                     #for r_m in raw_models:
                     #    scene = format_scene(r_m)
                     #    print(scene)
 
 
                 elif status == "UNSAT":
-                    record_id = _record_id(tpl_path.name, asgn, tpl_unsat_count)
+                    #_record_id(tpl_path.name, asgn, tpl_unsat_count)
                     tpl_unsat_count += 1
                     unsat_count += 1
+                    record_id = unsat_count
                 else:
                     if verbose:
                         mark = {"TIMEOUT": "⏱", "UNKNOWN": "?", "ERROR": "!"}.get(status, "?")
@@ -312,7 +323,7 @@ def run(
 
                 total_count += 1
 
-                record = build_combo_record([cls], [tpl_path], [text], [instantiated_rule], status, record_id, n_objects, domain)
+                record = build_combo_record([cls], [tpl_path], text, [instantiated_rule], status, record_id, n_objects, domain)
                 
                 line = json.dumps(record) + "\n"
 
@@ -342,7 +353,7 @@ def _parse_args() -> argparse.Namespace:
         description="Generate the CCIG constraint dataset from ASP template files.",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
-    parser.add_argument("--domain", choices=["clevr"], default="clevr",
+    parser.add_argument("--domain", choices=["clevr", "coco"], default="clevr",
                         help="Which domain's property/value vocabulary to generate against.")
     parser.add_argument("--combo", type=int, default=1,
                         help="the number of constraints per prompt to be satisfied.")

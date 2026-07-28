@@ -16,16 +16,6 @@ from PIL import Image, ImageDraw, ImageFont
 import matplotlib.pyplot as plt
 
 #prepare data for image generative model pretraining
-'''
-[
-   {
-       "id": "000001",
-        "image": "images/000001.png",
-        "text": "A small red rubber sphere is left of a large blue metal cube."
-   }
-]
-'''
-
 
 
 def annotate_with_regions(src_images_train, destination_train_images):
@@ -94,44 +84,7 @@ def find_region(x, y):
         if region["x"][0] <= x < region["x"][1] and region["y"][0] <= y < region["y"][1]:
             return region_id
     
-'''
-def getDesc(objects, relationships):
-    text = ''
-    num= len(objects)
-    text = f'Generate a CLEVR style image with geometric shapes. The scene has 4 equally sized regions - r0 (top left), r1 (top right), r2 (bottom left) and r3 (bottom right). There are {num} objects in the scene.'
-    id_obj = {}
-    
-    for idx, o in enumerate(objects):
-        pos = o['pixel_coords']
-        x=  pos[0]
-        y = pos[1]
-        region = find_region(x, y)
-        text_obj = f'There is a {o["color"]} {o["size"]} {o["material"]} {o["shape"]} in region {region}.'
-        id_obj[idx] = f'{o["color"]} {o["size"]} {o["material"]} {o["shape"]}'
-        text = text + ' ' + text_obj
-        
-    for idx, rr in enumerate(relationships['right']): ## rr is the list of objects to the right of idx 
-        if len(rr) == 0:
-            continue
-        text = text + ' ' + f'The objects to the right of {id_obj[idx]} are:'
-        for i, o in enumerate(rr):
-            if (i!=len(rr)-1):
-                text = text + id_obj[o]+','
-            else:
-                text = text + id_obj[o]+'.'
-        
-    for idx, rr in enumerate(relationships['front']): ## rr is the list of objects to the right of idx 
-        if len(rr) == 0:
-            continue
-        text = text + ' ' + f'The objects to the front of {id_obj[idx]} are:'
-        for i, o in enumerate(rr):
-            if (i!=len(rr)-1):
-                text = text + ' '+ id_obj[o]+','
-            else:
-                text = text + ' '+ id_obj[o]+'.'
-            
-    return text    
-'''
+
 def reconstruct_scene(scene):
     #return a dict:{
     #  "objects": {"o_0": {"color": "blue", "size": "large", "material": "rubber",

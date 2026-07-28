@@ -206,7 +206,7 @@ def _c1(variant: str, a: dict) -> dict[str, str]:
         p1, v1, p2, v2 = _g(a, "P1'", "V1'", "P2'", "V2'")
         o = _multi_obj([(p1, v1), (p2, v2)])
         return dict(
-            short=f"{o.capitalize()} is in the scene.",
+            short=f"There exists at least one object that is {_adj(p1, v1)} and {_adj(p2, v2)} in the scene.",
             medium=f"The scene contains at least one object that is {_adj(p1, v1)} and {_adj(p2, v2)}.",
             long=(f"Among all the objects, there is at least one object somewhere in the scene which must be {_adj(p1, v1)} and {_adj(p2, v2)}."),
         )
@@ -233,7 +233,7 @@ def _c1(variant: str, a: dict) -> dict[str, str]:
         p1, v1, p2, v2, p3, v3 = _g(a, "P1'", "V1'",  "P2'", "V2'", "P3'", "V3'")
         o = _multi_obj([(p1, v1), (p2, v2), (p3, v3)])
         return dict(
-            short=f"{o.capitalize()} is in the scene.",
+            short=f"There exists at least one object that is {_adj(p1, v1)}, {_adj(p2, v2)}, and {_adj(p3, v3)}.",
             medium=f"The scene contains at least one object that is {_adj(p1, v1)}, {_adj(p2, v2)}, and {_adj(p3, v3)}.",
             long=(f"Among all objects in the scene, there is at least one object which must satisfy all three property "
                   f"conditions: {_adj(p1, v1)}, {_adj(p2, v2)}, and {_adj(p3, v3)}."),
