@@ -20,16 +20,10 @@ Registered in `src/open/registry.py`, implemented on top of `diffusers`:
 
 | model            | status  | gated? | notes                                   |
 |-------------------|---------|--------|-------------------------------------------|
-| `pixart-sigma`    | working | no     | `PixArtSigmaPipeline`                     |
 | `sd3.5-large`     | working | yes    | `StableDiffusion3Pipeline` -- accept the license on the model page, then `huggingface-cli login` |
 | `flux.1-dev`      | working | yes    | `FluxPipeline`, guidance-distilled -- accept the license on the model page, then `huggingface-cli login` |
 | `flux.1-schnell`  | working | yes    | `FluxPipeline`, few-step, not guidance-distilled -- same login requirement as `flux.1-dev` |
-| `sana`            | working | no     | `SanaPipeline`                            |
-| `hidream-i1`      | working | no     | `HiDreamImagePipeline`; bundles its own Llama-3.1 text encoder (not the separately-gated meta-llama repo) |
 | `qwen-image`      | working | no     | `QwenImagePipeline`, guidance-distilled; needs a recent `diffusers` version |
-| `janus-pro`       | stub    | no     | not diffusers-based; see `src/open/janus_pro.py` |
-| `show-o`          | stub    | no     | not diffusers-based; see `src/open/showo.py`     |
-| `bagel`           | stub    | no     | not diffusers-based; see `src/open/bagel.py`     |
 
 "gated" is per the Hugging Face Hub API (checked directly, not assumed) -- gated repos need you
 to accept the model's license on its Hub page while logged in, then `huggingface-cli login`
@@ -92,5 +86,4 @@ Images and a manifest are written to `data/generated_images/<model>/`:
   `DiffusersImageModel` (set `pipeline_cls`, `hf_repo`, `_call_kwargs`), register it in
   `src/open/registry.py`.
 - **Open (non-diffusers)**: subclass `OpenImageModel` directly and implement `generate()` with
-  the model's own inference code (see `src/open/janus_pro.py` / `showo.py` for the placeholder
-  shape to follow).
+  the model's own inference code.
