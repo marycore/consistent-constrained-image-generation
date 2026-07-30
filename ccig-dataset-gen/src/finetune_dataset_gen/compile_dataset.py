@@ -15,9 +15,19 @@ from typing import Any, List, Dict, Optional, Union, Tuple
 from PIL import Image, ImageDraw, ImageFont
 import matplotlib.pyplot as plt
 
-#prepare data for image generative model pretraining
+from common.domain_clevr import system_prompt_text
 
+_REPO_DATA_DIR = Path(__file__).resolve().parents[3] / "data"
 
+import argparse
+import json
+import random
+from pathlib import Path
+from typing import List, Optional
+
+from .grounders import ground_constraints
+
+#to annotate clevr scenes with regions
 def annotate_with_regions(src_images_train, destination_train_images):
     # Create the destination directory if it doesn't exist
     if not os.path.exists(destination_train_images):
@@ -64,8 +74,6 @@ def annotate_with_regions(src_images_train, destination_train_images):
             image.save(annotated_image_path)
 
             print(f"Annotated image saved to: {annotated_image_path}")
-            
-
 
 
 def find_region(x, y):
@@ -74,10 +82,10 @@ def find_region(x, y):
     image_height = 320
     
     REGIONS = {
-    "reg_0": {"x": [0, 240], "y": [0, 160]}, 
-    "reg_1": {"x": [240, 480], "y": [0, 160]},
-    "reg_2": {"x": [0, 240], "y": [160, 320]},
-    "reg_3": {"x": [240, 480], "y": [160, 320]}
+    "r0": {"x": [0, 240], "y": [0, 160]}, 
+    "r1": {"x": [240, 480], "y": [0, 160]},
+    "r2": {"x": [0, 240], "y": [160, 320]},
+    "r3": {"x": [240, 480], "y": [160, 320]}
     }
     
     for region_id, region in REGIONS.items():
@@ -97,38 +105,38 @@ def reconstruct_scene(scene):
     relationships_scene = scene['relationships']
     objects = {}
     relationships = []
-    for idx, o in enumerate(objects):
+    for idx, o in enumerate(objects_scene):
         pos = o['pixel_coords']
         x=  pos[0]
         y = pos[1]
         region = find_region(x, y)
-        objects['o_'+idx] = {"color":o["color"], "size":o["size"], "material": o["material"] , "shape": o["shape"], "region": region }
+        objects['o_'+str(idx)] = {"color":o["color"], "size":o["size"], "material": o["material"] , "shape": o["shape"], "region": region }
         
-    for idx, rr in enumerate(relationships['right']): ## rr is the list of objects to the right of idx
+    for idx, rr in enumerate(relationships_scene['right']): ## rr is the list of objects to the right of idx
         for r, o in enumerate(rr):
             relation ={}
-            relation['from'] = 'o_'+o
-            relation['to'] = 'o_'+idx
+            relation['from'] = 'o_'+str(o)
+            relation['to'] = 'o_'+str(idx)
             relation['direction'] = 'right'
             relationships.append(relation)
 
             relation_inv ={}
-            relation_inv['from'] = 'o_'+idx
-            relation_inv['to'] = 'o_'+o
+            relation_inv['from'] = 'o_'+str(idx)
+            relation_inv['to'] = 'o_'+str(o)
             relation_inv['direction'] = 'left'
             relationships.append(relation_inv)
     
-    for idx, rr in enumerate(relationships['front']): ## rr is the list of objects to the front of idx
+    for idx, rr in enumerate(relationships_scene['front']): ## rr is the list of objects to the front of idx
         for r, o in enumerate(rr):
             relation ={}
-            relation['from'] = 'o_'+o
-            relation['to'] = 'o_'+idx
+            relation['from'] = 'o_'+str(o)
+            relation['to'] = 'o_'+str(idx)
             relation['direction'] = 'front'
             relationships.append(relation)
 
             relation_inv ={}
-            relation_inv['from'] = 'o_'+idx
-            relation_inv['to'] = 'o_'+o
+            relation_inv['from'] = 'o_'+str(idx)
+            relation_inv['to'] = 'o_'+str(o)
             relation_inv['direction'] = 'behind'
             relationships.append(relation_inv)
     return {"objects": objects, "relations": relationships}
@@ -136,51 +144,54 @@ def reconstruct_scene(scene):
 def compile_dataset(
     scenes_path: Path,
     out_path: Path,
-    *,
-    constraints_per_image,
-    granularity: str = "medium",
-    classes: Optional[List[str]] = None,
     seed: int = 0,
-    limit: Optional[int] = None,
-    max_constraints: int = 3,
-) -> List[dict]:
+    ) -> List[dict]:
     
     rng = random.Random(seed)
     out_records = []
-    n_no_constraints = 0
 
+    gen_prompt = system_prompt_text()
     # Load the CLEVR scenes JSON file
     with scenes_path.open("r", encoding="utf-8") as f:
-        data = json.load(file)
+        data = json.load(f)
     scene_records = data['scenes']
     i=0
+    img=0
     for rec in scene_records:
+        image_id = rec["image_index"]
+        image_filename = rec["image_filename"]
         scene = reconstruct_scene(rec)
         n_objects = len(scene["objects"])
-        grounded = ground_constraints(scene, classes=classes, rng=rng)
-        selected = _select_constraints(grounded, constraints_per_image, rng, max_constraints)
-        if not selected:
-            n_no_constraints += 1
-            continue
-        caption = build_caption(n_objects, selected, granularity)
-        out_records.append({
-            "id": rec["id"],
-            "image": rec["image"],
-            "text": caption,
-            "n_objects": n_objects,
-            "constraints": selected,
-        })
-
-    out_path.parent.mkdir(parents=True, exist_ok=True)
-    with out_path.open("w", encoding="utf-8") as f:
+        grounded = ground_constraints(scene, classes=['C1','C2','C3','C4','C5','C6','C7','C8','C9'], rng=rng)
+        
+        for inst in grounded:
+            for style in ['short', 'medium', 'long']:
+                out_records.append({
+                "id": i,
+                "image_id": image_id,
+                "image_filename": image_filename,
+                "prompt": gen_prompt + f' There are {n_objects} objects in the scene. '+ inst[style],
+                "n_objects": n_objects,
+                "style": style,
+                "class":inst['class'],
+                "variant":inst['variant'],
+                })
+                i = i+1
+        
+        print('generated prompts for image:', image_id)
+        img = img+1
+        if img>23000:
+            break
+    
+    json_path = out_path / "finetune_prompts_clevr_train.json"
+    with json_path.open("w", encoding="utf-8") as f:
         json.dump(out_records, f, indent=2)
-
+    
     print(
         f"Compiled {len(out_records)} records to {out_path} "
-        f"({n_no_constraints} images skipped: no groundable constraint found)."
     )
     return out_records
-
+    
 
 def _parse_args() -> argparse.Namespace:
     p = argparse.ArgumentParser(description="Compile finetune-dataset.json from CLEVR scene records.")
@@ -188,22 +199,9 @@ def _parse_args() -> argparse.Namespace:
    #We have no images
     #p.add_argument("--images", default=str(_REPO_DATA_DIR / "finetune-dataset" / "images"))
     p.add_argument("--out", default=str(_REPO_DATA_DIR / "finetune-dataset" / "finetune-dataset.json"))
-    p.add_argument(
-        "--constraints_per_image", default="random",
-        help="1 | <int> | 'random' | 'all' -- how many grounded constraints go into each caption.",
-    )
-    p.add_argument("--granularity", choices=["short", "medium", "long"], default="medium")
-    p.add_argument(
-        "--classes", nargs="*", default=None,
-        help="Restrict to specific constraint classes, e.g. --classes C1 C8. Default: all C1-C9.",
-    )
+    
     p.add_argument("--seed", type=int, default=0)
-    p.add_argument("--limit", type=int, default=None, help="Only compile the first N matching images (for smoke tests).")
-    p.add_argument(
-        "--max_constraints", type=int, default=3,
-        help="Upper bound on how many constraint sentences 'random' mode may pick (default: 3). "
-             "Ignored by 'all' (exhaustive) and explicit-int modes.",
-    )
+    
     return p.parse_args()
 
 
@@ -212,19 +210,10 @@ def main() -> None:
     compile_dataset(
         Path(args.scenes),
         Path(args.out),
-        constraints_per_image=_parse_constraints_per_image(args.constraints_per_image),
-        granularity=args.granularity,
-        classes=args.classes,
         seed=args.seed,
-        limit=args.limit,
-        max_constraints=args.max_constraints,
     )
 
 
 
 if __name__ == "__main__":
     main()
-
-
-#--scenes /users/sbsh670/data/clevr/CLEVR_v1.0/scenes/CLEVR_train_scenes.json
-#--out /users/sbsh670/data/ccig_finetune
