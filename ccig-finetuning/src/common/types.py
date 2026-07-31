@@ -17,7 +17,6 @@ class TrainConfig:
     images_dir: str
     output_dir: str
     run_name: str = "run1"
-    prompt_field: str = "medium"
     resolution: int = 1024
     learning_rate: float = 1e-4
     lora_rank: int = 16
@@ -25,7 +24,10 @@ class TrainConfig:
     batch_size: int = 1
     max_steps: int = 1000
     seed: int = 42
+    # Save a checkpoint every N steps (and always at max_steps), deleting the previous
+    # one -- see DiffusersLoraTrainer._save_checkpoint. Keeps disk usage to one
+    # checkpoint at a time instead of one per save.
+    checkpoint_every: int = 500
 
-    @property
-    def checkpoint_dir(self) -> Path:
-        return Path(self.output_dir) / self.run_name
+    def checkpoint_dir_for_step(self, step: int) -> Path:
+        return Path(self.output_dir) / f"{self.run_name}-step{step:06d}"

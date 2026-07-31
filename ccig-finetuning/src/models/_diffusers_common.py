@@ -1,7 +1,8 @@
 from __future__ import annotations
 
+import shutil
 from pathlib import Path
-from typing import Any, ClassVar
+from typing import Any, Callable, ClassVar
 
 import numpy as np
 import torch
@@ -18,7 +19,7 @@ from .base import LoraTrainer
 class _ImagePromptDataset(Dataset):
     def __init__(self, config: TrainConfig, resolution: int) -> None:
         self.examples = list(
-            load_examples(config.dataset_path, config.images_dir, config.prompt_field)
+            load_examples(config.dataset_path, config.images_dir)
         )
         self.resolution = resolution
 
@@ -54,12 +55,38 @@ class DiffusersLoraTrainer(LoraTrainer):
     pipeline_cls: ClassVar[Any]
     torch_dtype: ClassVar[Any] = torch.bfloat16
     lora_target_modules: ClassVar[list[str]] = ["to_k", "to_q", "to_v", "to_out.0"]
+    # Pipe attribute names for the frozen (non-trained) components. These stay on CPU by
+    # default and are moved to GPU only transiently -- for the specific encode call that
+    # needs them, via _run_frozen_on_cuda -- because these models' full bf16 weights (the
+    # transformer alone is 8-20B+ params) can fill an entire 24GB GPU by themselves,
+    # leaving no room for the LoRA-trainable transformer's activations/gradients/optimizer
+    # state if kept resident on GPU too. Subclasses override this with their actual
+    # text-encoder attribute name(s) (see FluxPipeline/StableDiffusion3Pipeline/
+    # QwenImagePipeline's __init__ signatures).
+    frozen_module_names: ClassVar[list[str]] = ["vae", "text_encoder"]
 
     def _load_pipeline(self) -> Any:
-        # Load the diffusers pipeline from the HuggingFace repo, on GPU if available.
-        pipe = self.pipeline_cls.from_pretrained(self.hf_repo, torch_dtype=self.torch_dtype)
-        pipe.to("cuda" if torch.cuda.is_available() else "cpu")
-        return pipe
+        # Load on CPU. The transformer moves to GPU explicitly in train(), after LoRA
+        # injection; frozen_module_names stay on CPU (see _run_frozen_on_cuda) until
+        # transiently needed.
+        return self.pipeline_cls.from_pretrained(self.hf_repo, torch_dtype=self.torch_dtype)
+
+    def _run_frozen_on_cuda(self, pipe: Any, fn: Callable[[], Any]) -> Any:
+        """Temporarily move this trainer's frozen_module_names to CUDA, run fn(), then move
+        them back to CPU to free VRAM for the resident, trainable transformer. No-op
+        passthrough when CUDA isn't available (e.g. local CPU testing).
+        """
+        if not torch.cuda.is_available():
+            return fn()
+        modules = [getattr(pipe, name) for name in self.frozen_module_names]
+        for module in modules:
+            module.to("cuda")
+        try:
+            return fn()
+        finally:
+            for module in modules:
+                module.to("cpu")
+            torch.cuda.empty_cache()
 
     def train(self, config: TrainConfig) -> Path:
         torch.manual_seed(config.seed)
@@ -75,15 +102,19 @@ class DiffusersLoraTrainer(LoraTrainer):
             target_modules=self.lora_target_modules,
         )
 
-        # Inject LoRA into the transformer and freeze the VAE (we don't finetune it).
+        # Inject LoRA into the transformer, then move only the transformer to GPU --
+        # frozen_module_names (VAE, text encoder(s)) stay on CPU; see _run_frozen_on_cuda.
         transformer = get_peft_model(pipe.transformer, lora_config)
-        # Set the transformer to training mode, and the VAE to eval mode (no gradients).
         pipe.transformer = transformer
+        device = "cuda" if torch.cuda.is_available() else "cpu"
+        transformer.to(device)
         transformer.train()
-        
-        # Freeze the VAE's parameters to avoid computing gradients for them.
-        pipe.vae.eval()
-        pipe.vae.requires_grad_(False)
+
+        # Freeze the non-trained components (no gradients, eval mode / dropout off).
+        for name in self.frozen_module_names:
+            module = getattr(pipe, name)
+            module.eval()
+            module.requires_grad_(False)
 
         # Dataset, dataloader, and optimizer setup.
         dataset = _ImagePromptDataset(config, config.resolution)
@@ -96,7 +127,8 @@ class DiffusersLoraTrainer(LoraTrainer):
             while True:
                 yield from dl
 
-        # Training loop: forward pass, loss, backward, optimizer step, logging.
+        # Training loop: forward pass, loss, backward, optimizer step, logging, checkpointing.
+        last_ckpt_dir: Path | None = None
         step = 0
         for batch in _cycle(loader):
             if step >= config.max_steps:
@@ -108,12 +140,24 @@ class DiffusersLoraTrainer(LoraTrainer):
             step += 1
             if step % 50 == 0 or step == config.max_steps:
                 print(f"[{self.name}] step {step}/{config.max_steps} loss={loss.item():.4f}")
+            if step % config.checkpoint_every == 0 or step == config.max_steps:
+                last_ckpt_dir = self._save_checkpoint(transformer, config, step, last_ckpt_dir)
 
-        # Save the LoRA weights in a directory that ccig-image-generation can load with its `--checkpoint` flag.
-        out_dir = config.checkpoint_dir
-        out_dir.mkdir(parents=True, exist_ok=True)
-        transformer.save_pretrained(str(out_dir))
-        return out_dir
+        return last_ckpt_dir
+
+    def _save_checkpoint(
+        self, transformer: Any, config: TrainConfig, step: int, previous_ckpt_dir: Path | None
+    ) -> Path:
+        # Save the LoRA weights in a directory that ccig-image-generation can load with its
+        # `--checkpoint` flag, then delete the previous checkpoint -- only the latest is kept
+        # on disk at any time, rather than accumulating one per save.
+        ckpt_dir = config.checkpoint_dir_for_step(step)
+        ckpt_dir.mkdir(parents=True, exist_ok=True)
+        transformer.save_pretrained(str(ckpt_dir))
+        if previous_ckpt_dir is not None and previous_ckpt_dir != ckpt_dir:
+            shutil.rmtree(previous_ckpt_dir, ignore_errors=True)
+        print(f"[{self.name}] saved checkpoint at step {step} -> {ckpt_dir}")
+        return ckpt_dir
 
     def _training_step(self, pipe: Any, transformer: Any, batch: dict) -> torch.Tensor:
         raise NotImplementedError

@@ -14,7 +14,7 @@ src/
 ├── registry.py       # model name -> trainer class
 └── run.py            # CLI entry point
 configs/               # one YAML per model: dataset paths, LoRA/training hyperparameters
-outputs/               # checkpoints land here: outputs/<model>/<run_name>/
+outputs/               # checkpoints land here: outputs/<model>/<run_name>-step<NNNNNN>/
 ```
 
 ## Models
@@ -62,12 +62,15 @@ python -m src.run --model sd3.5-large --config configs/sd3.5-large.yaml
 python -m src.run --model flux.1-schnell --config configs/flux.1-schnell.yaml --run-name run2 --max-steps 500
 ```
 
-Writes a LoRA checkpoint to `outputs/<model>/<run_name>/`. Feed that path straight into
-image generation:
+Writes a checkpoint every `checkpoint_every` steps (default 500, see `TrainConfig` in
+`src/common/types.py`) and always at `max_steps`, to `outputs/<model>/<run_name>-step<NNNNNN>/`
+(step number zero-padded to 6 digits) -- each new save deletes the previous one, so only the
+latest checkpoint exists on disk at a time rather than accumulating one per save. Feed that
+path straight into image generation:
 
 ```bash
 cd ../ccig-image-generation
-python -m src.run --model sd3.5-large --checkpoint ../ccig-finetuning/outputs/sd3.5-large/run1
+python -m src.run --model sd3.5-large --checkpoint ../ccig-finetuning/outputs/sd3.5-large/run1-step001000
 ```
 
 ## Adding a model
