@@ -18,10 +18,8 @@ from .base import LoraTrainer
 
 
 class _ImagePromptDataset(Dataset):
-    def __init__(self, config: TrainConfig, resolution: int) -> None:
-        self.examples = list(
-            load_examples(config.dataset_path, config.images_dir)
-        )
+    def __init__(self, dataset_path: str, images_dir: str, resolution: int) -> None:
+        self.examples = list(load_examples(dataset_path, images_dir))
         self.resolution = resolution
 
     def __len__(self) -> int:
@@ -124,18 +122,37 @@ class DiffusersLoraTrainer(LoraTrainer):
             module.requires_grad_(False)
 
         # Dataset, dataloader, and optimizer setup.
-        dataset = _ImagePromptDataset(config, config.resolution)
+        dataset = _ImagePromptDataset(config.dataset_path, config.images_dir, config.resolution)
         loader = DataLoader(dataset, batch_size=config.batch_size, shuffle=True)
         optimizer = torch.optim.AdamW(
             (p for p in transformer.parameters() if p.requires_grad), lr=config.learning_rate
         )
 
-        # max_steps=None means "one full epoch over dataset_path" -- resolved here, not in
-        # TrainConfig, since it depends on the actual size of whatever dataset_path points at
-        # (e.g. a 1921-record batch file vs. the full dataset).
-        max_steps = config.max_steps if config.max_steps is not None else len(loader)
-        if config.max_steps is None:
-            print(f"[{self.name}] max_steps not set -- defaulting to one epoch: {max_steps} steps over {len(dataset)} examples")
+        # Held-out eval set (never trained on): same loss computation as training, just
+        # under no_grad with no optimizer step, so it measures generalization instead of
+        # how well the model fits the current training batch.
+        eval_loader = None
+        if config.eval_dataset_path:
+            eval_dataset = _ImagePromptDataset(config.eval_dataset_path, config.images_dir, config.resolution)
+            eval_loader = DataLoader(eval_dataset, batch_size=config.batch_size, shuffle=False)
+
+        # max_steps=None means either epochs*steps_per_epoch (if epochs is set) or one full
+        # epoch over dataset_path (if neither is set) -- resolved here, not in TrainConfig,
+        # since it depends on the actual size of whatever dataset_path points at (e.g. a
+        # 1921-record batch file vs. the full dataset). TrainConfig.__post_init__ already
+        # guarantees at most one of max_steps/epochs is set.
+        steps_per_epoch = len(loader)
+        if config.max_steps is not None:
+            max_steps = config.max_steps
+        elif config.epochs is not None:
+            max_steps = config.epochs * steps_per_epoch
+            print(
+                f"[{self.name}] epochs={config.epochs} -> max_steps={max_steps} "
+                f"({steps_per_epoch} steps/epoch, {len(dataset)} examples)"
+            )
+        else:
+            max_steps = steps_per_epoch
+            print(f"[{self.name}] max_steps/epochs not set -- defaulting to one epoch: {max_steps} steps over {len(dataset)} examples")
 
         def _cycle(dl):
             while True:
@@ -146,6 +163,7 @@ class DiffusersLoraTrainer(LoraTrainer):
         # reads cleanly through `tee` into a log file (as start_tmux.sh redirects to), same as
         # the download progress bars already seen from huggingface_hub/diffusers.
         last_ckpt_dir: Path | None = None
+        last_eval_loss: float | None = None
         step = 0
         with tqdm(total=max_steps, initial=0, desc=f"[{self.name}]", unit="step") as pbar:
             for batch in _cycle(loader):
@@ -156,12 +174,38 @@ class DiffusersLoraTrainer(LoraTrainer):
                 loss.backward()
                 optimizer.step()
                 step += 1
-                pbar.set_postfix(loss=f"{loss.item():.4f}")
+
+                if eval_loader is not None and (step % config.eval_every == 0 or step == max_steps):
+                    last_eval_loss = self._compute_eval_loss(pipe, transformer, eval_loader)
+                    print(
+                        f"[{self.name}] step {step}/{max_steps} "
+                        f"eval_loss={last_eval_loss:.4f} (n={len(eval_loader.dataset)})"
+                    )
+
+                postfix = {"loss": f"{loss.item():.4f}"}
+                if last_eval_loss is not None:
+                    postfix["eval_loss"] = f"{last_eval_loss:.4f}"
+                pbar.set_postfix(**postfix)
                 pbar.update(1)
                 if step % config.checkpoint_every == 0 or step == max_steps:
                     last_ckpt_dir = self._save_checkpoint(transformer, config, step, last_ckpt_dir)
 
         return last_ckpt_dir
+
+    def _compute_eval_loss(self, pipe: Any, transformer: Any, eval_loader: DataLoader) -> float:
+        # Same _training_step loss computation as training, just under no_grad (no autograd
+        # graph, no backward) and with no optimizer step -- this measures how well the
+        # current weights generalize to images the model has never been trained on.
+        transformer.eval()
+        total_loss = 0.0
+        n = 0
+        with torch.no_grad():
+            for batch in eval_loader:
+                loss = self._training_step(pipe, transformer, batch)
+                total_loss += loss.item()
+                n += 1
+        transformer.train()
+        return total_loss / max(n, 1)
 
     def _save_checkpoint(
         self, transformer: Any, config: TrainConfig, step: int, previous_ckpt_dir: Path | None

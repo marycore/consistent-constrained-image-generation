@@ -64,8 +64,19 @@ python -m src.run --model flux.1-schnell --config configs/flux.1-schnell.yaml --
 
 `max_steps` defaults to **one full epoch** over whatever `dataset_path` points at (resolved
 automatically from the dataset's actual size once loaded -- see `TrainConfig.max_steps` and
-`DiffusersLoraTrainer.train()`) unless set explicitly in the config or via `--max-steps`, e.g. to
-train more than one epoch over a small batch (see the incremental-batches section below).
+`DiffusersLoraTrainer.train()`) unless set explicitly in the config or via `--max-steps`.
+
+To train for more than one epoch, use `--epochs N` instead of computing a step count by hand
+(`max_steps = N * steps_per_epoch`, resolved the same way once the dataset is loaded) -- more
+portable than a raw step count, since each batch file has a different size:
+
+```bash
+python -m src.run --model flux.1-dev --config configs/flux.1-dev.yaml \
+  --dataset ../data/finetune-dataset/batches/batch_001.json --epochs 2
+```
+
+Set at most one of `max_steps`/`epochs` (in the config or via CLI) -- setting both raises an
+error rather than silently picking one.
 
 Writes a checkpoint every `checkpoint_every` steps (default 500, see `TrainConfig` in
 `src/common/types.py`) and always at `max_steps`, to `outputs/<model>/<run_name>-step<NNNNNN>/`
@@ -77,6 +88,34 @@ path straight into image generation:
 cd ../ccig-image-generation
 python -m src.run --model sd3.5-large --checkpoint ../ccig-finetuning/outputs/sd3.5-large/run1-step001000
 ```
+
+## Eval loss (are you actually learning, or just memorizing the batch?)
+
+All four configs set `eval_dataset_path` to `data/finetune-dataset/eval_holdout.json` -- a fixed,
+class-balanced set of 198 images never used in any training batch (see
+`scripts/build_eval_holdout.py`). Every `eval_every` steps (default 50; also always at the final
+step), training pauses briefly and computes the average loss over the *entire* eval set, using
+the exact same loss formula as training (see `DiffusersLoraTrainer._training_step` in each
+model's file) but under `torch.no_grad()` with no optimizer step -- it doesn't affect training,
+it's a read-only measurement.
+
+```
+[flux.1-dev] step 50/1921 eval_loss=0.8123 (n=198)
+```
+
+Training loss tells you how well the model fits the batch it's currently seeing; eval loss tells
+you whether that's translating into learning the general mapping from constraint text to CLEVR
+scenes, versus just memorizing this batch's specific images. If eval loss trends down alongside
+training loss, that's real learning; if training loss keeps falling while eval loss plateaus or
+rises, that's overfitting.
+
+Set `eval_dataset_path: null` in a config (or omit `--eval-dataset` and don't set it) to disable
+eval entirely. `--eval-dataset`/`--eval-every` on the CLI override the config's values.
+
+**Important for the incremental-batches workflow below**: `eval_holdout.json` was built by
+excluding every image already used across `batch_001`-`batch_010`, so it stays valid across the
+*entire* remaining sequence (batch2, batch3, ...) as one fixed, comparable yardstick -- do not
+build additional batches from data that overlaps with it, or the comparison stops being fair.
 
 ## Incremental training on small, (class, variant)-balanced batches
 

@@ -101,6 +101,12 @@ After evaluating batch1's checkpoint (path printed at the end of the run, e.g.
 Repeat with `batch_003.json`, `--init-ckpt` pointing at whatever checkpoint `batch2` printed, and
 so on.
 
+**Note:** all four configs set `eval_dataset_path` by default, so you'll see extra
+`eval_loss=... (n=198)` lines in the log every 50 steps -- see `README.md`'s "Eval loss" section
+for what that measures and why it matters. To train more than one epoch over a batch, use
+`--epochs N` instead of computing a step count by hand (e.g. add `--epochs 2` to either command
+above); set at most one of `--max-steps`/`--epochs`.
+
 ## 5) Monitor progress
 
 ```bash

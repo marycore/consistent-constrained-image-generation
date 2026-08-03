@@ -8,3 +8,4 @@ lora_rank: 16
 lora_alpha: 16
 batch_size: 1
 seed: 42
+eval_dataset_path: ../data/finetune-dataset/eval_holdout.json
