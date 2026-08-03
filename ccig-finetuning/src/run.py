@@ -2,10 +2,18 @@ from __future__ import annotations
 
 import argparse
 
+import transformers
 import yaml
 
 from src.common.types import TrainConfig
 from src.registry import TRAINER_REGISTRY, build_trainer
+
+# Silences transformers' per-call "input was truncated because CLIP can only handle
+# sequences up to 77 tokens" warning (and other INFO/WARNING-level transformers log
+# spam). Harmless to suppress here: only CLIP's secondary pooled embedding truncates,
+# not the T5 embedding that actually carries the full prompt to the transformer.
+# Errors still surface -- this only raises the verbosity floor to ERROR.
+transformers.logging.set_verbosity_error()
 
 
 def main() -> None:
