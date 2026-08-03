@@ -170,7 +170,8 @@ def compile_dataset(
                 "id": i,
                 "image_id": image_id,
                 "image_filename": image_filename,
-                "prompt": gen_prompt + f' There are {n_objects} objects in the scene. '+ inst[style],
+                #"prompt": gen_prompt + f' There are {n_objects} objects in the scene. '+ inst[style],
+                "prompt": f' There are {n_objects} objects in the scene. '+ inst[style],
                 "n_objects": n_objects,
                 "style": style,
                 "class":inst['class'],
@@ -180,10 +181,12 @@ def compile_dataset(
         
         print('generated prompts for image:', image_id)
         img = img+1
-        if img>23000:
+        if img>40000:
             break
     
-    json_path = out_path / "finetune_prompts_clevr_train.json"
+    json_path = out_path / "clip_pretraining_clevr_train.json"
+    
+    #json_path = out_path / "finetune_prompts_clevr_train.json"
     with json_path.open("w", encoding="utf-8") as f:
         json.dump(out_records, f, indent=2)
     
