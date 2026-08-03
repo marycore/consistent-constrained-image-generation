@@ -196,11 +196,14 @@ class DiffusersLoraTrainer(LoraTrainer):
         # Same _training_step loss computation as training, just under no_grad (no autograd
         # graph, no backward) and with no optimizer step -- this measures how well the
         # current weights generalize to images the model has never been trained on.
+        # A nested progress bar here matters: the outer training bar doesn't move for the
+        # whole duration of this loop (it only advances once per *training* step), so without
+        # this, evaluating ~200 held-out examples looks like training silently froze.
         transformer.eval()
         total_loss = 0.0
         n = 0
         with torch.no_grad():
-            for batch in eval_loader:
+            for batch in tqdm(eval_loader, desc=f"[{self.name}] eval", unit="ex", leave=False):
                 loss = self._training_step(pipe, transformer, batch)
                 total_loss += loss.item()
                 n += 1
