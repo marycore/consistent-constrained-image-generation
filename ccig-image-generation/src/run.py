@@ -46,7 +46,14 @@ def main() -> None:
         if args.checkpoint is not None:
             parser.error(f"--checkpoint is not supported for closed model '{args.model}'")
         model = build_closed_model(args.model)
-    out_dir = Path(args.out) / args.model
+    # For open-source models run against a LoRA checkpoint, fold the checkpoint's directory
+    # name into the output folder name -- otherwise different checkpoints (e.g. batch1 vs.
+    # batch2) would all write into the same "<model>/" folder and overwrite each other's
+    # images/manifest.
+    out_dir_name = args.model
+    if args.checkpoint is not None:
+        out_dir_name = f"{args.model}-{Path(args.checkpoint).name}"
+    out_dir = Path(args.out) / out_dir_name
     out_dir.mkdir(parents=True, exist_ok=True)
     manifest_path = out_dir / "manifest.jsonl"
 
