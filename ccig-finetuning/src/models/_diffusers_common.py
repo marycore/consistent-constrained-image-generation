@@ -6,9 +6,10 @@ from typing import Any, Callable, ClassVar
 
 import numpy as np
 import torch
-from peft import LoraConfig, get_peft_model
+from peft import LoraConfig, PeftModel, get_peft_model
 from PIL import Image
 from torch.utils.data import DataLoader, Dataset
+from tqdm import tqdm
 
 from src.common.dataset import load_examples
 from src.common.types import TrainConfig
@@ -94,17 +95,23 @@ class DiffusersLoraTrainer(LoraTrainer):
         # Load the diffusers pipeline and inject LoRA into the transformer.
         pipe = self._load_pipeline()
 
-        # LoRA config: rank, alpha, init method, and which transformer modules to inject into.
-        lora_config = LoraConfig(
-            r=config.lora_rank,
-            lora_alpha=config.lora_alpha,
-            init_lora_weights="gaussian",
-            target_modules=self.lora_target_modules,
-        )
+        if config.init_ckpt:
+            # Continue training from a previous run's saved adapter -- loads that
+            # checkpoint's own LoRA config (rank/alpha/target_modules) and weights, rather
+            # than initializing fresh ones. config.lora_rank/lora_alpha are ignored here.
+            transformer = PeftModel.from_pretrained(pipe.transformer, config.init_ckpt, is_trainable=True)
+        else:
+            # LoRA config: rank, alpha, init method, and which transformer modules to inject into.
+            lora_config = LoraConfig(
+                r=config.lora_rank,
+                lora_alpha=config.lora_alpha,
+                init_lora_weights="gaussian",
+                target_modules=self.lora_target_modules,
+            )
+            transformer = get_peft_model(pipe.transformer, lora_config)
 
-        # Inject LoRA into the transformer, then move only the transformer to GPU --
-        # frozen_module_names (VAE, text encoder(s)) stay on CPU; see _run_frozen_on_cuda.
-        transformer = get_peft_model(pipe.transformer, lora_config)
+        # Move only the transformer to GPU -- frozen_module_names (VAE, text encoder(s))
+        # stay on CPU; see _run_frozen_on_cuda.
         pipe.transformer = transformer
         device = "cuda" if torch.cuda.is_available() else "cpu"
         transformer.to(device)
@@ -123,25 +130,36 @@ class DiffusersLoraTrainer(LoraTrainer):
             (p for p in transformer.parameters() if p.requires_grad), lr=config.learning_rate
         )
 
+        # max_steps=None means "one full epoch over dataset_path" -- resolved here, not in
+        # TrainConfig, since it depends on the actual size of whatever dataset_path points at
+        # (e.g. a 1921-record batch file vs. the full dataset).
+        max_steps = config.max_steps if config.max_steps is not None else len(loader)
+        if config.max_steps is None:
+            print(f"[{self.name}] max_steps not set -- defaulting to one epoch: {max_steps} steps over {len(dataset)} examples")
+
         def _cycle(dl):
             while True:
                 yield from dl
 
         # Training loop: forward pass, loss, backward, optimizer step, logging, checkpointing.
+        # tqdm gives a live progress bar with steps/sec and estimated time remaining, which
+        # reads cleanly through `tee` into a log file (as start_tmux.sh redirects to), same as
+        # the download progress bars already seen from huggingface_hub/diffusers.
         last_ckpt_dir: Path | None = None
         step = 0
-        for batch in _cycle(loader):
-            if step >= config.max_steps:
-                break
-            loss = self._training_step(pipe, transformer, batch)
-            optimizer.zero_grad()
-            loss.backward()
-            optimizer.step()
-            step += 1
-            if step % 50 == 0 or step == config.max_steps:
-                print(f"[{self.name}] step {step}/{config.max_steps} loss={loss.item():.4f}")
-            if step % config.checkpoint_every == 0 or step == config.max_steps:
-                last_ckpt_dir = self._save_checkpoint(transformer, config, step, last_ckpt_dir)
+        with tqdm(total=max_steps, initial=0, desc=f"[{self.name}]", unit="step") as pbar:
+            for batch in _cycle(loader):
+                if step >= max_steps:
+                    break
+                loss = self._training_step(pipe, transformer, batch)
+                optimizer.zero_grad()
+                loss.backward()
+                optimizer.step()
+                step += 1
+                pbar.set_postfix(loss=f"{loss.item():.4f}")
+                pbar.update(1)
+                if step % config.checkpoint_every == 0 or step == max_steps:
+                    last_ckpt_dir = self._save_checkpoint(transformer, config, step, last_ckpt_dir)
 
         return last_ckpt_dir
 

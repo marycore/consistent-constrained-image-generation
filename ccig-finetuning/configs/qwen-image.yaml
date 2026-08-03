@@ -7,5 +7,4 @@ learning_rate: 1.0e-4
 lora_rank: 16
 lora_alpha: 16
 batch_size: 1
-max_steps: 21083
 seed: 42

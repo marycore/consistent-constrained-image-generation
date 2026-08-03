@@ -16,7 +16,7 @@ package imports to resolve):
     python -m src.eval_dataset_gen.run
 
 # 20 samples per template, 6 scene objects, custom output:
-    python -m src.eval_dataset_gen.run --samples 20 --n_objects 6 --output ccig_eval_dataset.jsonl
+    python -m src.eval_dataset_gen.run --samples 20 --n_objects 6 --output ccig_eval_dataset
 
 # Only C1 and C3 templates:
     python -m src.eval_dataset_gen.run --classes C1 C3
@@ -45,7 +45,7 @@ from .solve import solve
 
 _REPO_ROOT = Path(__file__).resolve().parents[3]
 TEMPLATE_DIR = Path(__file__).resolve().parent / "constraint_templates"
-DEFAULT_OUTPUT = _REPO_ROOT / "data" / "ccig_eval_dataset.jsonl"
+DEFAULT_OUTPUT = _REPO_ROOT / "data" / "ccig_eval_dataset"
 
 #template files not valid for coco domain
 not_coco = ['C1_4prop_mix_neg', 'C1_4prop', 'C2_4prop_neg', 'C2_4prop',
@@ -174,8 +174,8 @@ def run(
     output_dir = Path(output_path)  # directory path provided by user
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    sat_path = output_dir / f"{domain}_{combo}_scenes_SAT.json"
-    unsat_path = output_dir / f"{domain}_{combo}_scenes_UNSAT.json"
+    sat_path = output_dir / f"{domain}_{combo}_scenes_SAT.jsonl"
+    unsat_path = output_dir / f"{domain}_{combo}_scenes_UNSAT.jsonl"
     
     sat_count = unsat_count = total_count = 0
     

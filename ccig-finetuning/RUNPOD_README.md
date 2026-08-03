@@ -77,6 +77,30 @@ If a previous attempt already filled the root disk, clear the stale cache first:
 Detach any time with `Ctrl+b` then `d` -- this only detaches your terminal, it does not stop the
 job.
 
+### Incremental training on small, balanced batches
+
+See `README.md`'s "Incremental training on small, (class, variant)-balanced batches" section for
+what this does and why. The commands there are written generically (assumes an already-activated
+environment); on RunPod, wrap them in `start_tmux.sh` with the same `HF_HOME` export as above so
+they persist and don't hit the disk-space issue:
+
+```bash
+# batch 1 -- fresh LoRA weights, --max-steps omitted (defaults to one epoch over batch_001.json)
+./runpod/scripts/start_tmux.sh --project finetuning batch1 \
+  "source .venv/bin/activate && export HF_HOME=/workspace/CCIG_Eval/ccig-finetuning/.hf_cache && export HUGGINGFACE_HUB_CACHE=/workspace/CCIG_Eval/ccig-finetuning/.hf_cache/hub && python -m src.run --model flux.1-dev --config configs/flux.1-dev.yaml --dataset ../data/finetune-dataset/batches/batch_001.json --run-name batch1"
+```
+
+After evaluating batch1's checkpoint (path printed at the end of the run, e.g.
+`outputs/flux.1-dev/batch1-step001921`), continue on batch 2 from it with `--init-ckpt`:
+
+```bash
+./runpod/scripts/start_tmux.sh --project finetuning batch2 \
+  "source .venv/bin/activate && export HF_HOME=/workspace/CCIG_Eval/ccig-finetuning/.hf_cache && export HUGGINGFACE_HUB_CACHE=/workspace/CCIG_Eval/ccig-finetuning/.hf_cache/hub && python -m src.run --model flux.1-dev --config configs/flux.1-dev.yaml --dataset ../data/finetune-dataset/batches/batch_002.json --run-name batch2 --init-ckpt outputs/flux.1-dev/batch1-step001921"
+```
+
+Repeat with `batch_003.json`, `--init-ckpt` pointing at whatever checkpoint `batch2` printed, and
+so on.
+
 ## 5) Monitor progress
 
 ```bash
@@ -91,12 +115,26 @@ job.
 ./runpod/scripts/stop_tmux.sh --project finetuning flux_dev_stage1
 ```
 
-Kills the tmux session immediately. **This does not save a checkpoint** unless the run had
-already reached `max_steps` on its own -- `train()` only calls `save_pretrained` once, at the
-very end of the training loop (see `src/models/_diffusers_common.py`), so anything trained since
-the last save is lost when you stop it mid-run.
+Kills the tmux session immediately. Checkpoints save every `checkpoint_every` steps (default
+500) and always at the final step (see `src/common/types.py` / `_diffusers_common.py`), so at
+most you lose whatever was trained since the last periodic save, not the whole run.
 
-## 6) Pull the checkpoint back once training finishes
+## 6) Pull checkpoints back -- do this live, not just at the end
+
+**Don't wait until training finishes to pull results back.** If the pod or its Network Volume
+is lost in between (wrong volume attached to a later pod, pod deleted, etc.) -- which has
+actually happened in this project -- anything not already copied out locally is gone for good,
+even though it was "saved" on the pod. Run this in a separate terminal any time after starting
+training; it automatically pulls `outputs/` locally every time the log reports a new checkpoint,
+so a local copy exists within moments of it being written, not only if you remember to fetch it
+after the run completes:
+
+```bash
+./runpod/scripts/watch_and_pull_checkpoints.sh --project finetuning flux_dev_stage1
+```
+
+Ctrl+C stops watching without stopping training; it exits on its own once the run finishes or
+crashes. You can also pull manually at any point:
 
 ```bash
 ./runpod/scripts/sync_folder_from_runpod.sh --project finetuning --folder outputs

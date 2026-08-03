@@ -16,6 +16,12 @@ def main() -> None:
     parser.add_argument("--config", required=True, help="Path to a configs/<model>.yaml file")
     parser.add_argument("--run-name", default=None, help="Overrides run_name from the config")
     parser.add_argument("--max-steps", type=int, default=None, help="Overrides max_steps from the config")
+    parser.add_argument("--dataset", default=None, help="Overrides dataset_path from the config")
+    parser.add_argument(
+        "--init-ckpt",
+        default=None,
+        help="Path to a previous run's checkpoint directory to continue LoRA training from",
+    )
     args = parser.parse_args()
 
     with open(args.config, "r", encoding="utf-8") as f:
@@ -25,6 +31,10 @@ def main() -> None:
         raw_config["run_name"] = args.run_name
     if args.max_steps is not None:
         raw_config["max_steps"] = args.max_steps
+    if args.dataset is not None:
+        raw_config["dataset_path"] = args.dataset
+    if args.init_ckpt is not None:
+        raw_config["init_ckpt"] = args.init_ckpt
 
     config = TrainConfig(**raw_config)
     trainer = build_trainer(args.model)

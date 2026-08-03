@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import random
 from pathlib import Path
 
 from src.closed.registry import MODEL_REGISTRY as CLOSED_MODEL_REGISTRY
@@ -27,6 +28,11 @@ def main() -> None:
     parser.add_argument("--out", default="../data/generated_images")
     parser.add_argument("--limit", type=int, default=None)
     parser.add_argument(
+        "--shuffle", action="store_true",
+        help="Shuffle prompts before applying --limit, for a random subset instead of the first N",
+    )
+    parser.add_argument("--seed", type=int, default=42, help="Shuffle seed (only used with --shuffle)")
+    parser.add_argument(
         "--checkpoint", default=None,
         help="Path to a LoRA finetuned checkpoint directory (open-source models only), "
         "as produced by ccig-finetuning.",
@@ -44,7 +50,11 @@ def main() -> None:
     out_dir.mkdir(parents=True, exist_ok=True)
     manifest_path = out_dir / "manifest.jsonl"
 
-    for i, item in enumerate(load_prompts(args.dataset, args.prompt_field)):
+    prompts = list(load_prompts(args.dataset, args.prompt_field))
+    if args.shuffle:
+        random.Random(args.seed).shuffle(prompts)
+
+    for i, item in enumerate(prompts):
         if args.limit is not None and i >= args.limit:
             break
 
