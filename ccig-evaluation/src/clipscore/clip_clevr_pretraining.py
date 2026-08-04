@@ -15,19 +15,23 @@ from collections import defaultdict
 import random
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
-
+print('Device:', device)
 model_name = "zer0int/LongCLIP-GmP-ViT-L-14" #openai/clip-vit-base-patch32
 
 tokenizer = AutoTokenizer.from_pretrained(model_name)
 
 print('Max len:', tokenizer.model_max_length)#77 for normal clip, 248 for long clip
 
-json_file = '/users/sbsh670/data/ccig_finetune/clip_pretraining_clevr_train.json'
+#json_file = '/users/sbsh670/data/ccig_finetune/clip_pretraining_clevr_train.json'
 image_dir = '/users/sbsh670/data/clevr/CLEVR_v1.0/image_generative_model_training/images/train'
 
 clip_train = '/users/sbsh670/data/ccig_finetune/clip_train_clevr.json'
 clip_val = '/users/sbsh670/data/ccig_finetune/clip_val_clevr.json'
 
+save_path= '/users/sbsh670/data/ccig-models/clip-clevr'
+save_model = save_path+'/longclip_clevr_best'
+
+'''
 with open(json_file) as f:
     data = json.load(f)
 
@@ -72,7 +76,7 @@ with open(clip_train,"w") as f:
 with open(clip_val,"w") as f:
     json.dump(val_samples,f)
 
-'''
+
 with open(json_file) as f:
     data = json.load(f)
 
@@ -216,7 +220,7 @@ def collate_fn(batch):
     texts = [b[1] for b in batch]
     image_ids = [b[2] for b in batch]
     n_objects = [b[3] for b in batch]
-    print('Batch:', n_objects)
+    
     return processor(
         images=images,
         text=texts,
@@ -225,116 +229,126 @@ def collate_fn(batch):
         truncation=True,
         max_length=248
     )
-train_dataset = CLEVRClipDataset(
+
+def main():
+    train_dataset = CLEVRClipDataset(
     json_file=clip_train,
     image_dir=image_dir
-)
+    )
 
-val_dataset = CLEVRClipDataset(
+    val_dataset = CLEVRClipDataset(
     json_file=clip_val,
     image_dir=image_dir
-)
-val_indices = random.sample(
+    )
+    val_indices = random.sample(
     range(len(val_dataset)),
     10000
-)
-val_subset = Subset(
+    )
+    val_subset = Subset(
     val_dataset,
     val_indices
-)
+    )
 
-sampler = NObjectsBatchSampler(train_dataset, 8)
+    sampler = NObjectsBatchSampler(train_dataset, 8)
 
-train_loader = DataLoader(
+    train_loader = DataLoader(
     train_dataset,
     batch_sampler=sampler,
     collate_fn=collate_fn
-)
+    #num_workers=4,
+    #pin_memory=True,
+    #persistent_workers=True
+    )
 
-val_loader = DataLoader(
+    val_loader = DataLoader(
     val_subset,
     batch_size=8,
     shuffle=False,
     collate_fn=collate_fn
-)
+    #num_workers=4,
+    #pin_memory=True,
+    #persistent_workers=True
 
-processor = AutoProcessor.from_pretrained(model_name)
-model = AutoModel.from_pretrained(model_name).to(device)
-optimizer = torch.optim.AdamW(
+    )
+
+    processor = AutoProcessor.from_pretrained(model_name)
+    model = AutoModel.from_pretrained(model_name).to(device)
+    optimizer = torch.optim.AdamW(
     model.parameters(),
     lr=5e-6,
     weight_decay=0.01
-)
+    )
 
-epochs = 1
-step = 0
-validate_every = 50000
+    epochs = 1
+    step = 0
+    validate_every = 50000
 
-best_val_loss = float("inf")
+    best_val_loss = float("inf")
 
-for epoch in range(epochs):
+    for epoch in range(epochs):
 
-    model.train()
-    running_loss = 0
-    for batch in tqdm(train_loader):
+        model.train()
+        running_loss = 0
+        for batch in tqdm(train_loader):
 
-        batch = {
+            batch = {
             k:v.to(device)
             for k,v in batch.items()
-        }
+            }
 
 
-        outputs = model(
+            outputs = model(
             **batch,
             return_loss=True
-        )
+            )
 
-        loss = outputs.loss
-        optimizer.zero_grad()
-        loss.backward()
-        optimizer.step()
-        running_loss += loss.item()
-        step += 1
-        if step % validate_every == 0:
+            loss = outputs.loss
+            optimizer.zero_grad()
+            loss.backward()
+            optimizer.step()
+            running_loss += loss.item()
+            step += 1
+            if step % validate_every == 0:
 
-            train_loss = running_loss / validate_every
+                train_loss = running_loss / validate_every
 
-            val_loss = evaluate(
+                val_loss = evaluate(
                 model,
                 val_loader,
                 device
-            )
+                )
 
 
-            print(
+                print(
                 f"""
                 Step: {step}
                 Train loss: {train_loss:.4f}
                 Validation loss: {val_loss:.4f}
                 """
-            )
-
-
-            if val_loss < best_val_loss:
-
-                best_val_loss = val_loss
-
-                model.save_pretrained(
-                    "longclip_clevr_best"
                 )
 
-                processor.save_pretrained(
-                    "longclip_clevr_best"
-                )
 
-                print("Saved best model")
+                if val_loss < best_val_loss:
+
+                    best_val_loss = val_loss
+
+                    model.save_pretrained(
+                    "/users/sbsh670/data/ccig-models/clip-clevr/longclip_clevr_best"
+                    )
+
+                    processor.save_pretrained(
+                    "/users/sbsh670/data/ccig-models/clip-clevr/longclip_clevr_best"
+                    )
+
+                    print("Saved best model")
 
 
-            running_loss = 0
-            model.train()
+                running_loss = 0
+                model.train()
 
 
-
+if __name__ == "__main__":
+    main()
 
 
 
