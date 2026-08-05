@@ -55,3 +55,9 @@ def system_prompt_text(with_background=False) -> str:
 
 def scene_setup_text(n_objects: int = 4, with_background: bool = False) -> str:
     return (f"{system_prompt_text(with_background=with_background)} The scene is with {n_objects} objects. ")
+
+def scene_unsat_text(with_unsat: bool = False) -> str:
+    if with_unsat:
+        return (f" If the scene desciption is invalid or contains a contradiction, generate an empty scene with white background.")
+    else:
+        return ""

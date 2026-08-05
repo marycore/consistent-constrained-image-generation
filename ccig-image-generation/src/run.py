@@ -7,7 +7,7 @@ from pathlib import Path
 from src.closed.registry import MODEL_REGISTRY as CLOSED_MODEL_REGISTRY
 from src.closed.registry import build_model as build_closed_model
 from src.common.io import append_manifest, load_prompts
-from src.common.scene_setup import scene_setup_text
+from src.common.scene_setup import scene_setup_text, scene_unsat_text
 from src.common.types import GenerationRecord
 from src.open.registry import MODEL_REGISTRY as OPEN_MODEL_REGISTRY
 from src.open.registry import build_model as build_open_model
@@ -74,7 +74,10 @@ def main() -> None:
         setup_text = scene_setup_text(
             item.number_of_objects, item.domain, with_background=is_closed_model
         )
-        full_prompt = f"{setup_text} {item.text}"
+        # Closed models get the unsat-handling sentence appended; open models keep the
+        # domain module's default (currently off) for now.
+        unsat_text = scene_unsat_text(item.domain, with_unsat=is_closed_model)
+        full_prompt = f"{setup_text} {item.text}{unsat_text}"
         try:
             image = model.generate(full_prompt)
             image.save(image_path)

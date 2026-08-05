@@ -25,3 +25,7 @@ def _load_domain_module(domain: str):
 
 def scene_setup_text(n_objects: int, domain: str, with_background: bool = False) -> str:
     return _load_domain_module(domain).scene_setup_text(n_objects, with_background)
+
+
+def scene_unsat_text(domain: str, with_unsat: bool = False) -> str:
+    return _load_domain_module(domain).scene_unsat_text(with_unsat)

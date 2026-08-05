@@ -43,11 +43,16 @@ Creates `.venv` under `/workspace/CCIG_Eval/ccig-finetuning` and installs `requi
 
 `flux.1-dev` and `sd3.5-large` are gated repos -- accept each model's license on its Hub page
 (logged in) once, then log in on the pod non-interactively with a token
-(https://huggingface.co/settings/tokens):
+(https://huggingface.co/settings/tokens).
+
+**Must set the same `HF_HOME` here as in every training/inference command below.** Logging in
+without it saves the token under the default `~/.cache/huggingface/token` (the tiny root disk),
+not under `.hf_cache` on `/workspace` -- training then can't find it and fails with
+`GatedRepoError`, even though you're "logged in":
 
 ```bash
 ./runpod/scripts/ssh_remote.sh --project finetuning \
-  "source .venv/bin/activate && hf auth login --token <your_hf_token>"
+  "source .venv/bin/activate && export HF_HOME=/workspace/CCIG_Eval/ccig-finetuning/.hf_cache && hf auth login --token <your_hf_token>"
 ```
 
 ## 4) Start training in tmux
