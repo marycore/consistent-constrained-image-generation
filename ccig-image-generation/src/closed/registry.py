@@ -1,12 +1,14 @@
 from __future__ import annotations
 
 from .base import ClosedImageModel
-from .gemini import GeminiFlashImage
-from .gpt_image import GPTImage1
+from .gemini import Gemini3ProImage, GeminiFlashImage
+from .gpt_image import GPTImage1, GPTImage2
 
 MODEL_REGISTRY: dict[str, type[ClosedImageModel]] = {
     "gemini-2.0-flash": GeminiFlashImage,
+    "gemini-3-pro-image": Gemini3ProImage,
     "gpt-image-1": GPTImage1,
+    "gpt-image-2": GPTImage2,
 }
 
 
