@@ -7,6 +7,35 @@ Entry point: `run_perception()` in `run.py`, called once per `--method perceptio
 from `src/run.py`. It loops over matched `(image, PromptRecord)` pairs and calls
 `_perceive_scene()` once per image, then does the ASP solve + comparison itself.
 
+## Running it
+
+Two separate inputs are required, run from `ccig-evaluation/` (paths below are
+relative to the repo root, `CCIG_Eval/`):
+
+```
+python -m src.run \
+  --images-dir     data/generated_images/<batch>/          \  # generated PNGs
+  --prompts-file   data/ccig_eval_dataset/<domain>_<combo>_scenes_{SAT,UNSAT}.json \  # ground truth
+  --method perception \
+  --domain clevr \
+  --detector owlv2 \          # or grounding-dino (GPU)
+  --device cpu                # or cuda; omit to auto-detect
+```
+
+- **`--images-dir`** — a folder of `{id}-{short|medium|long}.png` files, e.g.
+  `data/generated_images/flux.1-dev-batch1-step001921/`. Also has a `manifest.jsonl`
+  next to the images (written by `ccig-image-generation`), but perception does not
+  read it — images are matched to records by parsing the filename, not the manifest.
+- **`--prompts-file`** — the ground-truth records for that same domain/batch, e.g.
+  `data/ccig_eval_dataset/clevr_1_scenes_SAT.json` (despite the `.json` extension,
+  it's one JSON record per line). This is what supplies `instantiated_rule` and
+  `status` — it comes from `ccig-dataset-gen`, not from image generation, and there
+  is no default path for it; it must always be passed explicitly and match the
+  batch `--images-dir` was generated from.
+
+No third "single manifest" input exists today — an images folder alone is not
+enough to run perception on.
+
 ## Pipeline, in order
 
 ```
