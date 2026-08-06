@@ -49,11 +49,19 @@ def main() -> None:
     # For open-source models run against a LoRA checkpoint, fold the checkpoint's directory
     # name into the output folder name -- otherwise different checkpoints (e.g. batch1 vs.
     # batch2) would all write into the same "<model>/" folder and overwrite each other's
-    # images/manifest.
+    # images/manifest. Same idea for closed models that expose a `quality` or `image_size`
+    # setting (e.g. gpt-image-2 low vs. medium) -- fold that into the folder name too, so
+    # different settings don't clobber each other.
+    variant = getattr(model, "quality", None) or getattr(model, "image_size", None)
     out_dir_name = args.model
     if args.checkpoint is not None:
-        out_dir_name = f"{args.model}-{Path(args.checkpoint).name}"
-    out_dir = Path(args.out) / out_dir_name
+        out_dir_name = f"{out_dir_name}-{Path(args.checkpoint).name}"
+    if variant is not None:
+        out_dir_name = f"{out_dir_name}-{variant}"
+    # Group by dataset within the model's folder (e.g. "gpt-image-2-low/clevr_3_scenes_SAT/")
+    # so images from different eval files don't mix together in one flat folder.
+    dataset_name = Path(args.dataset).stem
+    out_dir = Path(args.out) / out_dir_name / dataset_name
     out_dir.mkdir(parents=True, exist_ok=True)
     manifest_path = out_dir / "manifest.jsonl"
 
@@ -90,6 +98,7 @@ def main() -> None:
                 image_path=str(image_path),
                 success=True,
                 error=None,
+                variant=variant,
             )
             print(f"[ok]   {item.id}")
         except Exception as e:
@@ -102,6 +111,7 @@ def main() -> None:
                 image_path=None,
                 success=False,
                 error=repr(e),
+                variant=variant,
             )
             print(f"[fail] {item.id}: {e}")
 

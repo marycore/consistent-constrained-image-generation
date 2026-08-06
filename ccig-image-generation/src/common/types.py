@@ -24,6 +24,9 @@ class GenerationRecord:
     image_path: str | None
     success: bool
     error: str | None
+    variant: str | None = None  # e.g. quality tier ("low"/"medium"/"high") or resolution ("2K"),
+    # whichever the model class exposes -- distinguishes runs of the same model at different
+    # settings, since they share a model name but shouldn't share an output dir/manifest.
 
     def to_json(self) -> dict[str, Any]:
         return asdict(self)
