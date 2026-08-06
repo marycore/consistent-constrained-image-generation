@@ -1,5 +1,12 @@
+'''Command: 
+python clip_clevr_pretraining.py --image_dir /users/sbsh670/data/clevr/CLEVR_v1.0/image_generative_model_training/images/train --clip_train /users/sbsh670/data/ccig_finetune/clip_train_clevr_20k.json --clip_val /users/sbsh670/data/ccig_finetune/clip_val_clevr_20k.json --checkpoint /users/sbsh670/data/ccig-models/clip-clevr
+--image_dir : path to folder that has the Clevr train images
+--clip_train: path to json file - clip_train_clevr_20k
+--clip_val: path to json file - clip_val_clevr_20k
+--checkpoint: path to folder where the checkpoint model and procesor saved
+'''  
 import os
-import json
+import json, argparse
 from PIL import Image
 from torch.utils.data import Dataset
 from transformers import CLIPProcessor
@@ -20,16 +27,19 @@ model_name = "zer0int/LongCLIP-GmP-ViT-L-14" #openai/clip-vit-base-patch32
 
 tokenizer = AutoTokenizer.from_pretrained(model_name)
 
-print('Max len:', tokenizer.model_max_length)#77 for normal clip, 248 for long clip
+#print('Max len tokenizer:', tokenizer.model_max_length)#77 for normal clip, 248 for long clip
 
-#json_file = '/users/sbsh670/data/ccig_finetune/clip_pretraining_clevr_train.json'
-image_dir = '/users/sbsh670/data/clevr/CLEVR_v1.0/image_generative_model_training/images/train'
+#json_file = '/users/sbsh670/data/ccig_finetune/clip_pretraining_clevr_train_20k.json'
+#image_dir = '/users/sbsh670/data/clevr/CLEVR_v1.0/image_generative_model_training/images/train'
 
-clip_train = '/users/sbsh670/data/ccig_finetune/clip_train_clevr.json'
-clip_val = '/users/sbsh670/data/ccig_finetune/clip_val_clevr.json'
+#clip_train = '/users/sbsh670/data/ccig_finetune/clip_train_clevr_20k.json'
+#clip_val = '/users/sbsh670/data/ccig_finetune/clip_val_clevr_20k.json'
 
-save_path= '/users/sbsh670/data/ccig-models/clip-clevr'
-save_model = save_path+'/longclip_clevr_best'
+#save_path= '/users/sbsh670/data/ccig-models/clip-clevr'
+#save_model = save_path+'/longclip_clevr_best'
+
+processor = AutoProcessor.from_pretrained(model_name)
+model = AutoModel.from_pretrained(model_name).to(device)
 
 '''
 with open(json_file) as f:
@@ -93,6 +103,7 @@ for sample in tqdm(data):
 
 print("Maximum tokens:", max(lengths)) #94
 print("Average tokens:", sum(lengths)/len(lengths)) #36.55
+
 '''
 
 def evaluate(model, loader, device):
@@ -119,6 +130,7 @@ def evaluate(model, loader, device):
 
 
     return total_loss / len(loader)
+
 
 class CLEVRClipDataset(Dataset):
     def __init__(self, json_file, image_dir):
@@ -230,54 +242,24 @@ def collate_fn(batch):
         max_length=248
     )
 
-def main():
-    train_dataset = CLEVRClipDataset(
-    json_file=clip_train,
-    image_dir=image_dir
-    )
+def main(args):
+    image_dir = args.image_dir
+    clip_train = args.clip_train
+    clip_val = args.clip_val
+    save_path = args.checkpoint
+    train_dataset = CLEVRClipDataset(json_file=clip_train, image_dir=image_dir)
 
-    val_dataset = CLEVRClipDataset(
-    json_file=clip_val,
-    image_dir=image_dir
-    )
-    val_indices = random.sample(
-    range(len(val_dataset)),
-    10000
-    )
-    val_subset = Subset(
-    val_dataset,
-    val_indices
-    )
+    val_dataset = CLEVRClipDataset(json_file=clip_val,image_dir=image_dir)
+    val_indices = random.sample(range(len(val_dataset)),10000)
+    val_subset = Subset(val_dataset, val_indices)
 
     sampler = NObjectsBatchSampler(train_dataset, 8)
 
-    train_loader = DataLoader(
-    train_dataset,
-    batch_sampler=sampler,
-    collate_fn=collate_fn
-    #num_workers=4,
-    #pin_memory=True,
-    #persistent_workers=True
-    )
+    train_loader = DataLoader(train_dataset, batch_sampler=sampler, collate_fn=collate_fn)
 
-    val_loader = DataLoader(
-    val_subset,
-    batch_size=8,
-    shuffle=False,
-    collate_fn=collate_fn
-    #num_workers=4,
-    #pin_memory=True,
-    #persistent_workers=True
+    val_loader = DataLoader(val_subset, batch_size=8, shuffle=False,collate_fn=collate_fn)
 
-    )
-
-    processor = AutoProcessor.from_pretrained(model_name)
-    model = AutoModel.from_pretrained(model_name).to(device)
-    optimizer = torch.optim.AdamW(
-    model.parameters(),
-    lr=5e-6,
-    weight_decay=0.01
-    )
+    optimizer = torch.optim.AdamW(model.parameters(),lr=5e-6, weight_decay=0.01)
 
     epochs = 1
     step = 0
@@ -291,16 +273,8 @@ def main():
         running_loss = 0
         for batch in tqdm(train_loader):
 
-            batch = {
-            k:v.to(device)
-            for k,v in batch.items()
-            }
-
-
-            outputs = model(
-            **batch,
-            return_loss=True
-            )
+            batch = {k:v.to(device) for k,v in batch.items()}
+            outputs = model(**batch, return_loss=True)
 
             loss = outputs.loss
             optimizer.zero_grad()
@@ -311,20 +285,14 @@ def main():
             if step % validate_every == 0:
 
                 train_loss = running_loss / validate_every
-
-                val_loss = evaluate(
-                model,
-                val_loader,
-                device
-                )
-
+                val_loss = evaluate(model, val_loader, device)
 
                 print(
-                f"""
-                Step: {step}
-                Train loss: {train_loss:.4f}
-                Validation loss: {val_loss:.4f}
-                """
+                    f"""
+                    Step: {step}
+                    Train loss: {train_loss:.4f}
+                    Validation loss: {val_loss:.4f}
+                    """
                 )
 
 
@@ -332,13 +300,9 @@ def main():
 
                     best_val_loss = val_loss
 
-                    model.save_pretrained(
-                    "/users/sbsh670/data/ccig-models/clip-clevr/longclip_clevr_best"
-                    )
+                    model.save_pretrained(save_path+"/longclip_clevr_best")
 
-                    processor.save_pretrained(
-                    "/users/sbsh670/data/ccig-models/clip-clevr/longclip_clevr_best"
-                    )
+                    processor.save_pretrained(save_path+"/longclip_clevr_best")
 
                     print("Saved best model")
 
@@ -347,8 +311,19 @@ def main():
                 model.train()
 
 
-if __name__ == "__main__":
-    main()
+def parse_args():
+    parser = argparse.ArgumentParser(description="Process image and CLIP feature paths.")
 
+    parser.add_argument("--image_dir", type=str, required=True)
+    parser.add_argument("--clip_train", type=str, required=True)
+    parser.add_argument("--clip_val", type=str, required=True)
+    parser.add_argument("--checkpoint", type=str, required=True)
+
+    return parser.parse_args()
+
+
+if __name__ == "__main__":
+    args = parse_args()
+    main(args)
 
 

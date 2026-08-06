@@ -181,10 +181,10 @@ def compile_dataset(
         
         print('generated prompts for image:', image_id)
         img = img+1
-        if img>40000:
+        if img>20000:
             break
     
-    json_path = out_path / "clip_pretraining_clevr_train.json"
+    json_path = out_path / "clip_pretraining_clevr_train_20k.json"
     
     #json_path = out_path / "finetune_prompts_clevr_train.json"
     with json_path.open("w", encoding="utf-8") as f:
