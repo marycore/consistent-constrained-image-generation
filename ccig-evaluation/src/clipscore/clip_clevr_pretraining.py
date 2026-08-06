@@ -6,6 +6,14 @@ python clip_clevr_pretraining.py --image_dir /users/sbsh670/data/clevr/CLEVR_v1.
 --checkpoint: path to folder where the checkpoint model and procesor saved
 '''  
 import os
+
+# Must be set before any tokenizer runs, and before DataLoader workers fork (now
+# that num_workers>0 below) -- HF's Rust-based fast tokenizers otherwise warn
+# ("process just got forked, after parallelism has already been used") and can
+# deadlock when a forked worker touches a tokenizer that already tokenized
+# something in the parent process.
+os.environ.setdefault("TOKENIZERS_PARALLELISM", "false")
+
 import shutil
 import json, argparse
 from PIL import Image
@@ -118,14 +126,15 @@ def evaluate(model, loader, device):
         for batch in loader:
 
             batch = {
-                k:v.to(device)
-                for k,v in batch.items()
+                k: v.to(device, non_blocking=True)
+                for k, v in batch.items()
             }
 
-            outputs = model(
-                **batch,
-                return_loss=True
-            )
+            with torch.autocast(device_type="cuda", dtype=torch.bfloat16, enabled=(device == "cuda")):
+                outputs = model(
+                    **batch,
+                    return_loss=True
+                )
 
             total_loss += outputs.loss.item()
 
@@ -268,9 +277,32 @@ def main(args):
 
     sampler = NObjectsBatchSampler(train_dataset, 8)
 
-    train_loader = DataLoader(train_dataset, batch_sampler=sampler, collate_fn=collate_fn)
+    # num_workers/pin_memory/persistent_workers: the original single-process loader
+    # (num_workers=0) left the GPU waiting on CPU-side image decode + tokenization
+    # between every batch (~36% GPU util at batch_size=8) -- this pipeline is CPU-
+    # bound, not compute-bound, so parallelizing data loading (not raising batch
+    # size) is what actually speeds it up. persistent_workers avoids respawning the
+    # worker pool every epoch; prefetch_factor keeps a few batches queued ahead so
+    # workers stay busy while the GPU is training on the current one.
+    NUM_WORKERS = min(16, os.cpu_count() or 1)
+    train_loader = DataLoader(
+        train_dataset,
+        batch_sampler=sampler,
+        collate_fn=collate_fn,
+        num_workers=NUM_WORKERS,
+        pin_memory=(device == "cuda"),
+        persistent_workers=NUM_WORKERS > 0,
+        prefetch_factor=4 if NUM_WORKERS > 0 else None,
+    )
 
-    val_loader = DataLoader(val_subset, batch_size=8, shuffle=False,collate_fn=collate_fn)
+    val_loader = DataLoader(
+        val_subset,
+        batch_size=8,
+        shuffle=False,
+        collate_fn=collate_fn,
+        num_workers=NUM_WORKERS,
+        pin_memory=(device == "cuda"),
+    )
 
     optimizer = torch.optim.AdamW(model.parameters(),lr=5e-6, weight_decay=0.01)
 
@@ -287,10 +319,16 @@ def main(args):
         running_loss = 0
         for batch in tqdm(train_loader):
 
-            batch = {k:v.to(device) for k,v in batch.items()}
-            outputs = model(**batch, return_loss=True)
+            batch = {k: v.to(device, non_blocking=True) for k, v in batch.items()}
 
-            loss = outputs.loss
+            # bf16 autocast: Ada (RTX 4090) tensor cores run bf16 matmuls much faster
+            # than fp32, and unlike fp16 it doesn't need a GradScaler (same dynamic
+            # range as fp32, just less mantissa precision) -- free speedup, batch
+            # size / training dynamics otherwise unchanged.
+            with torch.autocast(device_type="cuda", dtype=torch.bfloat16, enabled=(device == "cuda")):
+                outputs = model(**batch, return_loss=True)
+                loss = outputs.loss
+
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
