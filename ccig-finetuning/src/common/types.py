@@ -39,12 +39,13 @@ class TrainConfig:
     # checkpoint at a time instead of one per save.
     checkpoint_every: int = 500
     # Path to a previous run's checkpoint directory (as returned by train(), e.g.
-    # outputs/flux.1-dev/batch1-step002000) to continue LoRA training from, instead of
-    # initializing fresh LoRA weights. lora_rank/lora_alpha are ignored when set -- the
-    # saved adapter's own config is used. See DiffusersLoraTrainer.train().
+    # ../outputs/checkpoints-finetuning/flux.1-dev/batch1-step002000) to continue LoRA
+    # training from, instead of initializing fresh LoRA weights. lora_rank/lora_alpha are
+    # ignored when set -- the saved adapter's own config is used. See
+    # DiffusersLoraTrainer.train().
     init_ckpt: str | None = None
     # Path to a held-out dataset (same schema as dataset_path) never used for training --
-    # e.g. data/finetune-dataset/eval_holdout.json. When set, eval loss is computed on the
+    # e.g. data/clevr-dataset/finetuning-data/eval_holdout.json. When set, eval loss is computed on the
     # whole eval set every eval_every steps (same loss formula as training, just under
     # no_grad with no optimizer step) and logged alongside training loss, so you can tell
     # whether the model is generalizing or just memorizing the current training batch. None

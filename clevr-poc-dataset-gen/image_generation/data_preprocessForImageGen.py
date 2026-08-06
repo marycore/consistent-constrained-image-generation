@@ -184,10 +184,10 @@ def compile_dataset(
 
 def _parse_args() -> argparse.Namespace:
     p = argparse.ArgumentParser(description="Compile finetune-dataset.json from CLEVR scene records.")
-    p.add_argument("--scenes", default=str(_REPO_DATA_DIR / "finetune-dataset" / "original-clevr-train-scenes.json"))
+    p.add_argument("--scenes", default=str(_REPO_DATA_DIR / "clevr-dataset" / "original-clevr-train-scenes.json"))
    #We have no images
-    #p.add_argument("--images", default=str(_REPO_DATA_DIR / "finetune-dataset" / "images"))
-    p.add_argument("--out", default=str(_REPO_DATA_DIR / "finetune-dataset" / "finetune-dataset.json"))
+    #p.add_argument("--images", default=str(_REPO_DATA_DIR / "clevr-dataset" / "images"))
+    p.add_argument("--out", default=str(_REPO_DATA_DIR / "clevr-dataset" / "finetune-dataset.json"))
     p.add_argument(
         "--constraints_per_image", default="random",
         help="1 | <int> | 'random' | 'all' -- how many grounded constraints go into each caption.",

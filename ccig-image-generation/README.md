@@ -81,7 +81,7 @@ python -m src.run --model gemini-3-pro-image --dataset ../data/ccig_eval_dataset
 python -m src.run --model flux.1-schnell --limit 5
 
 # open-source model, LoRA finetuned checkpoint (from ccig-finetuning)
-python -m src.run --model sd3.5-large --checkpoint ../ccig-finetuning/outputs/sd3.5-large/run1
+python -m src.run --model sd3.5-large --checkpoint ../outputs/checkpoints-finetuning/sd3.5-large/run1
 ```
 
 Options:

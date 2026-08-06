@@ -18,8 +18,8 @@ from pathlib import Path
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--input", default="../data/finetune-dataset/finetune_prompts_clevr_train_filtered.json")
-    parser.add_argument("--output", default="../data/finetune-dataset/finetune-dataset-one-per-image.json")
+    parser.add_argument("--input", default="../data/clevr-dataset/finetune_prompts_clevr_train_filtered.json")
+    parser.add_argument("--output", default="../data/clevr-dataset/finetune-dataset-one-per-image.json")
     parser.add_argument("--seed", type=int, default=42)
     args = parser.parse_args()
 

@@ -1,6 +1,6 @@
 # CCIG Finetuning
 
-LoRA finetunes open-source text-to-image models on `data/finetune-dataset/` (CLEVR images
+LoRA finetunes open-source text-to-image models on `data/clevr-dataset/` (CLEVR images
 paired with constraint descriptions). Produces checkpoints consumed by
 `ccig-image-generation`'s `--checkpoint` flag -- finetuning and generation are separate,
 decoupled modules connected only by that checkpoint-directory convention.
@@ -14,8 +14,10 @@ src/
 ├── registry.py       # model name -> trainer class
 └── run.py            # CLI entry point
 configs/               # one YAML per model: dataset paths, LoRA/training hyperparameters
-outputs/               # checkpoints land here: outputs/<model>/<run_name>-step<NNNNNN>/
 ```
+
+Checkpoints land in the repo-level `outputs/` folder (shared across pipelines), under
+`outputs/checkpoints-finetuning/<model>/<run_name>-step<NNNNNN>/`.
 
 ## Models
 
@@ -72,26 +74,27 @@ portable than a raw step count, since each batch file has a different size:
 
 ```bash
 python -m src.run --model flux.1-dev --config configs/flux.1-dev.yaml \
-  --dataset ../data/finetune-dataset/batches/batch_001.json --epochs 2
+  --dataset ../data/clevr-dataset/finetuning-data/batches/batch_001.json --epochs 2
 ```
 
 Set at most one of `max_steps`/`epochs` (in the config or via CLI) -- setting both raises an
 error rather than silently picking one.
 
 Writes a checkpoint every `checkpoint_every` steps (default 500, see `TrainConfig` in
-`src/common/types.py`) and always at `max_steps`, to `outputs/<model>/<run_name>-step<NNNNNN>/`
-(step number zero-padded to 6 digits) -- each new save deletes the previous one, so only the
-latest checkpoint exists on disk at a time rather than accumulating one per save. Feed that
-path straight into image generation:
+`src/common/types.py`) and always at `max_steps`, to
+`../outputs/checkpoints-finetuning/<model>/<run_name>-step<NNNNNN>/` (step number zero-padded
+to 6 digits) -- each new save deletes the previous one, so only the latest checkpoint exists on
+disk at a time rather than accumulating one per save. Feed that path straight into image
+generation:
 
 ```bash
 cd ../ccig-image-generation
-python -m src.run --model sd3.5-large --checkpoint ../ccig-finetuning/outputs/sd3.5-large/run1-step001000
+python -m src.run --model sd3.5-large --checkpoint ../outputs/checkpoints-finetuning/sd3.5-large/run1-step001000
 ```
 
 ## Eval loss (are you actually learning, or just memorizing the batch?)
 
-All four configs set `eval_dataset_path` to `data/finetune-dataset/eval_holdout.json` -- a fixed,
+All four configs set `eval_dataset_path` to `data/clevr-dataset/finetuning-data/eval_holdout.json` -- a fixed,
 class-balanced set of 198 images never used in any training batch (see
 `scripts/build_eval_holdout.py`). Every `eval_every` steps (default 50; also always at the final
 step), training pauses briefly and computes the average loss over the *entire* eval set, using
@@ -123,7 +126,7 @@ Instead of one long run over the whole dataset, you can train in small increment
 on ~2000 instances, evaluate, and only pull in another batch if you need to, continuing from
 the previous batch's checkpoint each time.
 
-**1. Cut the dataset into balanced batches** (one-time; skip if `data/finetune-dataset/batches/`
+**1. Cut the dataset into balanced batches** (one-time; skip if `data/clevr-dataset/finetuning-data/batches/`
 already exists):
 
 ```bash
@@ -132,7 +135,7 @@ python scripts/build_sequential_batches.py --batch-size 2000
 ```
 
 Reads `finetune_prompts_clevr_train_filtered.json` and writes `batch_001.json`, `batch_002.json`,
-... to `data/finetune-dataset/batches/`. Each batch targets the *same* number of instances from
+... to `data/clevr-dataset/finetuning-data/batches/`. Each batch targets the *same* number of instances from
 every **(class, variant) pair** (61 pairs total -- e.g. `C1/1prop`, `C8/2prop_exact_neg` -- not
 just the same count per class), so every variant is guaranteed representation, not just every
 class. A pair that doesn't have enough images left simply contributes whatever it has (never
@@ -154,20 +157,21 @@ actual size):
 
 ```bash
 python -m src.run --model flux.1-dev --config configs/flux.1-dev.yaml \
-  --dataset ../data/finetune-dataset/batches/batch_001.json \
+  --dataset ../data/clevr-dataset/finetuning-data/batches/batch_001.json \
   --run-name batch1
 ```
 
 **3. Evaluate the result** (checkpoint path printed at the end of the run, e.g.
-`outputs/flux.1-dev/batch1-step001921`, via `ccig-image-generation --checkpoint <that path>`).
-If it's good enough, stop. If you need more data, continue training on batch 2 *from that
-checkpoint* with `--init-ckpt`, rather than starting over:
+`../outputs/checkpoints-finetuning/flux.1-dev/batch1-step001921`, via
+`ccig-image-generation --checkpoint <that path>`). If it's good enough, stop. If you need more
+data, continue training on batch 2 *from that checkpoint* with `--init-ckpt`, rather than
+starting over:
 
 ```bash
 python -m src.run --model flux.1-dev --config configs/flux.1-dev.yaml \
-  --dataset ../data/finetune-dataset/batches/batch_002.json \
+  --dataset ../data/clevr-dataset/finetuning-data/batches/batch_002.json \
   --run-name batch2 \
-  --init-ckpt outputs/flux.1-dev/batch1-step001921
+  --init-ckpt ../outputs/checkpoints-finetuning/flux.1-dev/batch1-step001921
 ```
 
 `--init-ckpt` loads the previous run's saved LoRA adapter (weights *and* its rank/alpha/target

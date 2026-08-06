@@ -8,7 +8,7 @@ from .types import TrainExample
 
 
 def load_examples(dataset_path: str | Path, images_dir: str | Path) -> Iterator[TrainExample]:
-    """Read data/finetune-dataset/finetune_prompts_clevr_train_filtered.json and yield one
+    """Read data/clevr-dataset/finetune_prompts_clevr_train_filtered.json and yield one
     training example per record, pairing each CLEVR image with its already-verbalized prompt
     (the prompt style -- short/medium/long -- was chosen at generation time, one per record).
     """

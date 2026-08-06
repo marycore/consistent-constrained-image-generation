@@ -1,6 +1,6 @@
-dataset_path: ../data/finetune-dataset/finetune-dataset-one-per-image.json
-images_dir: ../data/finetune-dataset/images
-output_dir: outputs/flux.1-schnell
+dataset_path: ../data/clevr-dataset/finetune-dataset-one-per-image.json
+images_dir: ../data/clevr-dataset/images
+output_dir: ../outputs/checkpoints-finetuning/flux.1-schnell
 run_name: run1
 resolution: 1024
 learning_rate: 1.0e-4
@@ -8,4 +8,4 @@ lora_rank: 16
 lora_alpha: 16
 batch_size: 1
 seed: 42
-eval_dataset_path: ../data/finetune-dataset/eval_holdout.json
+eval_dataset_path: ../data/clevr-dataset/finetuning-data/eval_holdout.json

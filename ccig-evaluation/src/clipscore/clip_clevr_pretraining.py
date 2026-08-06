@@ -6,6 +6,7 @@ python clip_clevr_pretraining.py --image_dir /users/sbsh670/data/clevr/CLEVR_v1.
 --checkpoint: path to folder where the checkpoint model and procesor saved
 '''  
 import os
+import shutil
 import json, argparse
 from PIL import Image
 from torch.utils.data import Dataset
@@ -247,6 +248,18 @@ def main(args):
     clip_train = args.clip_train
     clip_val = args.clip_val
     save_path = args.checkpoint
+
+    # image_dir/clip_train/clip_val are training data that must already exist --
+    # fail fast with a clear message instead of an opaque error deep inside the
+    # dataset/dataloader if a path is wrong.
+    for path, label in [(image_dir, "--image_dir"), (clip_train, "--clip_train"), (clip_val, "--clip_val")]:
+        if not os.path.exists(path):
+            raise FileNotFoundError(f"{label} not found: {path}")
+
+    # --checkpoint is an output dir -- create it (and any missing parents) if this
+    # is the first run, same as ccig-finetuning's checkpoint saving.
+    os.makedirs(save_path, exist_ok=True)
+
     train_dataset = CLEVRClipDataset(json_file=clip_train, image_dir=image_dir)
 
     val_dataset = CLEVRClipDataset(json_file=clip_val,image_dir=image_dir)
@@ -266,6 +279,7 @@ def main(args):
     validate_every = 50000
 
     best_val_loss = float("inf")
+    last_ckpt_dir = None
 
     for epoch in range(epochs):
 
@@ -300,11 +314,23 @@ def main(args):
 
                     best_val_loss = val_loss
 
-                    model.save_pretrained(save_path+"/longclip_clevr_best")
+                    # Name the checkpoint after the model + how far training got
+                    # (epoch/step), e.g. longclip-clevr-epoch01-step050000/ -- and
+                    # keep only the latest best on disk (delete the previous one)
+                    # rather than accumulating one per improvement.
+                    ckpt_name = f"longclip-clevr-epoch{epoch + 1:02d}-step{step:06d}"
+                    ckpt_dir = os.path.join(save_path, ckpt_name)
+                    os.makedirs(ckpt_dir, exist_ok=True)
 
-                    processor.save_pretrained(save_path+"/longclip_clevr_best")
+                    model.save_pretrained(ckpt_dir)
 
-                    print("Saved best model")
+                    processor.save_pretrained(ckpt_dir)
+
+                    if last_ckpt_dir is not None and last_ckpt_dir != ckpt_dir:
+                        shutil.rmtree(last_ckpt_dir, ignore_errors=True)
+                    last_ckpt_dir = ckpt_dir
+
+                    print(f"Saved best model -> {ckpt_dir}")
 
 
                 running_loss = 0
@@ -314,10 +340,14 @@ def main(args):
 def parse_args():
     parser = argparse.ArgumentParser(description="Process image and CLIP feature paths.")
 
-    parser.add_argument("--image_dir", type=str, required=True)
-    parser.add_argument("--clip_train", type=str, required=True)
-    parser.add_argument("--clip_val", type=str, required=True)
-    parser.add_argument("--checkpoint", type=str, required=True)
+    parser.add_argument("--image_dir", type=str, default="../../../data/clevr-dataset/images")
+    parser.add_argument(
+        "--clip_train", type=str, default="../../../data/clevr-dataset/retraining-data/clip_train_clevr_20k.json"
+    )
+    parser.add_argument(
+        "--clip_val", type=str, default="../../../data/clevr-dataset/retraining-data/clip_val_clevr_20k.json"
+    )
+    parser.add_argument("--checkpoint", type=str, default="../../../outputs/checkpoints-retraining")
 
     return parser.parse_args()
 

@@ -23,8 +23,8 @@ from pathlib import Path
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--input", default="../data/finetune-dataset/finetune_prompts_clevr_train_filtered.json")
-    parser.add_argument("--output-dir", default="../data/finetune-dataset/batches")
+    parser.add_argument("--input", default="../data/clevr-dataset/finetune_prompts_clevr_train_filtered.json")
+    parser.add_argument("--output-dir", default="../data/clevr-dataset/finetuning-data/batches")
     parser.add_argument(
         "--batch-size",
         type=int,

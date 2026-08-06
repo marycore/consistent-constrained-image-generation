@@ -17,7 +17,7 @@ cp runpod/runpod.env.example runpod/runpod.env   # once
 
 ## 1) Sync code + data to the pod
 
-The training data (`data/finetune-dataset/...`) is a separate project mapping from the code, so
+The training data (`data/clevr-dataset/...`) is a separate project mapping from the code, so
 sync both the first time:
 
 ```bash
@@ -92,15 +92,16 @@ they persist and don't hit the disk-space issue:
 ```bash
 # batch 1 -- fresh LoRA weights, --max-steps omitted (defaults to one epoch over batch_001.json)
 ./runpod/scripts/start_tmux.sh --project finetuning batch1 \
-  "source .venv/bin/activate && export HF_HOME=/workspace/CCIG_Eval/ccig-finetuning/.hf_cache && export HUGGINGFACE_HUB_CACHE=/workspace/CCIG_Eval/ccig-finetuning/.hf_cache/hub && python -m src.run --model flux.1-dev --config configs/flux.1-dev.yaml --dataset ../data/finetune-dataset/batches/batch_001.json --run-name batch1"
+  "source .venv/bin/activate && export HF_HOME=/workspace/CCIG_Eval/ccig-finetuning/.hf_cache && export HUGGINGFACE_HUB_CACHE=/workspace/CCIG_Eval/ccig-finetuning/.hf_cache/hub && python -m src.run --model flux.1-dev --config configs/flux.1-dev.yaml --dataset ../data/clevr-dataset/finetuning-data/batches/batch_001.json --run-name batch1"
 ```
 
 After evaluating batch1's checkpoint (path printed at the end of the run, e.g.
-`outputs/flux.1-dev/batch1-step001921`), continue on batch 2 from it with `--init-ckpt`:
+`../outputs/checkpoints-finetuning/flux.1-dev/batch1-step001921`), continue on batch 2 from it
+with `--init-ckpt`:
 
 ```bash
 ./runpod/scripts/start_tmux.sh --project finetuning batch2 \
-  "source .venv/bin/activate && export HF_HOME=/workspace/CCIG_Eval/ccig-finetuning/.hf_cache && export HUGGINGFACE_HUB_CACHE=/workspace/CCIG_Eval/ccig-finetuning/.hf_cache/hub && python -m src.run --model flux.1-dev --config configs/flux.1-dev.yaml --dataset ../data/finetune-dataset/batches/batch_002.json --run-name batch2 --init-ckpt outputs/flux.1-dev/batch1-step001921"
+  "source .venv/bin/activate && export HF_HOME=/workspace/CCIG_Eval/ccig-finetuning/.hf_cache && export HUGGINGFACE_HUB_CACHE=/workspace/CCIG_Eval/ccig-finetuning/.hf_cache/hub && python -m src.run --model flux.1-dev --config configs/flux.1-dev.yaml --dataset ../data/clevr-dataset/finetuning-data/batches/batch_002.json --run-name batch2 --init-ckpt ../outputs/checkpoints-finetuning/flux.1-dev/batch1-step001921"
 ```
 
 Repeat with `batch_003.json`, `--init-ckpt` pointing at whatever checkpoint `batch2` printed, and
@@ -136,23 +137,27 @@ most you lose whatever was trained since the last periodic save, not the whole r
 is lost in between (wrong volume attached to a later pod, pod deleted, etc.) -- which has
 actually happened in this project -- anything not already copied out locally is gone for good,
 even though it was "saved" on the pod. Run this in a separate terminal any time after starting
-training; it automatically pulls `outputs/` locally every time the log reports a new checkpoint,
-so a local copy exists within moments of it being written, not only if you remember to fetch it
-after the run completes:
+training; it automatically pulls a local copy every time the log reports a new checkpoint, so a
+local copy exists within moments of it being written, not only if you remember to fetch it after
+the run completes:
 
 ```bash
-./runpod/scripts/watch_and_pull_checkpoints.sh --project finetuning flux_dev_stage1
+./runpod/scripts/watch_and_pull_checkpoints.sh --project finetuning \
+  --folder ../outputs/checkpoints-finetuning flux_dev_stage1
 ```
 
 Ctrl+C stops watching without stopping training; it exits on its own once the run finishes or
 crashes. You can also pull manually at any point:
 
 ```bash
-./runpod/scripts/sync_folder_from_runpod.sh --project finetuning --folder outputs
+./runpod/scripts/sync_folder_from_runpod.sh --project finetuning --folder ../outputs/checkpoints-finetuning
 ```
 
-Merges `outputs/flux.1-dev/run1/` (adapters + `train_config.json` + `train_log.jsonl`) into your
-local `ccig-finetuning/outputs/`. Add `--delete` if you want an exact mirror instead of a merge.
+Checkpoints write to the repo-root `outputs/checkpoints-finetuning/` (sibling to
+`ccig-finetuning/`, shared across pipelines), not `ccig-finetuning/outputs/` -- the explicit
+`--folder ../outputs/checkpoints-finetuning` above is what points the pull at that location; it
+assumes the remote layout mirrors the local repo (`RUNPOD_REMOTE_ROOT` plays the role of
+`REPO_ROOT`), which matches how `bootstrap_remote.sh`/`sync_to_runpod.sh` lay the pod out.
 
 ## Other models
 
