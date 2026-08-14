@@ -1,6 +1,6 @@
 "use strict";
 
-const PROPERTY_ORDER = ["shape", "color", "material", "size"];
+const PROPERTY_ORDER = ["shape", "color", "material"]; // "size" deliberately excluded -- never shown, edited, or saved
 const HANDLE_PX = 8; // resize-handle hit radius, in *display* pixels
 
 const el = (id) => document.getElementById(id);
@@ -16,6 +16,9 @@ const state = {
   img: new Image(),
   viewPreference: "human", // "human" | "automated" -- only decides anything when both exist for the current image
   readOnly: false, // true whenever the *displayed* source (state's "source", not viewPreference) is "automated"
+  defaultReasonableScene: true, // set once on the setup form, before any image is loaded
+  reasonableScene: true, // this image's current value -- data.reasonable_scene if saved before, else the default above
+  validScene: true, // this image's current value -- data.valid_scene if saved before, else a fixed default of true
 };
 
 let drag = null; // {mode: "new"|"move"|"resize", ...}
@@ -29,6 +32,10 @@ el("setup-form").addEventListener("submit", async (e) => {
   const form = new FormData(e.target);
   const body = Object.fromEntries(form.entries());
   el("setup-error").textContent = "";
+  // Client-only setting (the server has no use for it) -- read it here and drop it
+  // before sending, rather than have the backend silently ignore an unknown field.
+  state.defaultReasonableScene = body.default_reasonable_scene === "true";
+  delete body.default_reasonable_scene;
   const res = await fetch("/api/setup", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -183,8 +190,50 @@ async function fetchImageMeta(id, field) {
     ? "Viewing automated perception (read-only) -- switch to Human to edit."
     : "Drag on empty space to add an object box. Click a box to select it; drag its corners to resize, drag its body to move. Delete/Backspace removes the selected box.";
 
+  // null/undefined means this image's human entry has never recorded this (either no
+  // human entry yet, or it was auto-seeded from automated, which has no such field) --
+  // fall back to a default (session-configurable for reasonable_scene, fixed true for
+  // valid_scene) until an actual save writes a real value.
+  state.reasonableScene = data.reasonable_scene ?? state.defaultReasonableScene;
+  state.validScene = data.valid_scene ?? true;
+  renderReasonableToggle();
+  renderValidToggle();
+
   return data;
 }
+
+// Both reasonable_scene and valid_scene are independent human-only true/false judgment
+// calls with the same Yes/No-toggle UI shape, so they share this one factory instead of
+// two near-identical copies of render+click-wiring.
+function makeBoolToggle(yesId, noId, getValue, setValue) {
+  function render() {
+    const yesBtn = el(yesId);
+    const noBtn = el(noId);
+    const value = getValue();
+    yesBtn.classList.toggle("active", value === true);
+    noBtn.classList.toggle("active", value === false);
+    yesBtn.disabled = state.readOnly;
+    noBtn.disabled = state.readOnly;
+  }
+  for (const btn of [el(yesId), el(noId)]) {
+    btn.addEventListener("click", () => {
+      if (state.readOnly) return;
+      setValue(btn.dataset.value === "true");
+      render();
+      scheduleSave();
+    });
+  }
+  return render;
+}
+
+const renderReasonableToggle = makeBoolToggle(
+  "reasonable-yes", "reasonable-no",
+  () => state.reasonableScene, (v) => { state.reasonableScene = v; }
+);
+const renderValidToggle = makeBoolToggle(
+  "valid-yes", "valid-no",
+  () => state.validScene, (v) => { state.validScene = v; }
+);
 
 // "source" (what actually got displayed) can differ from state.viewPreference when
 // only one of human/automated exists for this particular image -- that single one wins
@@ -572,7 +621,11 @@ function scheduleSave() {
 async function saveNow() {
   if (!state.currentKey || state.readOnly) return;
   const { id, field } = state.currentKey;
-  const body = { objects: state.objects.map((o) => ({ bbox: o.bbox, properties: o.properties })) };
+  const body = {
+    objects: state.objects.map((o) => ({ bbox: o.bbox, properties: o.properties })),
+    reasonable_scene: state.reasonableScene,
+    valid_scene: state.validScene,
+  };
   const res = await fetch(`/api/image/${id}/${field}`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },

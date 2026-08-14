@@ -23,13 +23,17 @@ Registered in `src/closed/registry.py`:
 | `gpt-image-1`         | OpenAI   | legacy -- kept for comparison, superseded by `gpt-image-2`          |
 | `gpt-image-2`         | OpenAI   | current flagship (released Apr 2026); `quality` set on the class (`low`/`medium`/`high`) -- see pricing note below |
 | `gemini-2.0-flash`    | Google   | legacy -- kept for comparison; despite the registry name, actually calls `gemini-2.5-flash-image` ("Nano Banana") |
-| `gemini-3-pro-image`  | Google   | current flagship, aka "Nano Banana Pro"; `image_size` set on the class (`1K`/`2K`/`4K`) |
+| `gemini-3.1-flash-image` | Google | cheaper/faster sibling of `gemini-3-pro-image` -- closest Google equivalent to `gpt-image-2`'s "low" tier (Nano Banana Pro has no cheap tier: 1K and 2K cost the same) |
+| `gemini-3-pro-image`  | Google   | current flagship, aka "Nano Banana Pro"; `image_size` set on the class (`1K`/`2K`/`4K`, 1K/2K priced the same) |
 
-Both `gpt-image-2` and `gemini-3-pro-image` price per image by quality/resolution tier rather than
-a flat rate -- check `quality`/`image_size` on the model class in `src/closed/gpt_image.py` /
-`src/closed/gemini.py` before a large run, since it directly drives cost (e.g. `gpt-image-2` at
-1024x1024: ~$0.006/image low, ~$0.05-0.08/image medium, ~$0.21/image high -- verify against your
-own OpenAI usage dashboard, list prices/estimates drift).
+`gpt-image-2`, `gemini-3.1-flash-image`, and `gemini-3-pro-image` all price per image by
+quality/resolution tier rather than a flat rate -- check `quality`/`image_size` on the model class
+in `src/closed/gpt_image.py` / `src/closed/gemini.py` before a large run, since it directly drives
+cost. Rough per-image figures at the smallest useful size (verify against your own usage
+dashboard -- these drift and vary by source):
+- `gpt-image-2` @ 1024x1024: ~$0.006 low, ~$0.05-0.08 medium, ~$0.21 high
+- `gemini-3.1-flash-image` @ 1K: ~$0.067 (~$0.034 batch)
+- `gemini-3-pro-image` @ 1K/2K: ~$0.134 (~$0.067 batch); 4K: ~$0.24
 
 ## Open-source models
 

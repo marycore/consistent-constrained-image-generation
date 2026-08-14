@@ -17,11 +17,10 @@ def _build_property_classifiers(domain_module, domain: str, attribute_classifier
     """One classifier instance per property, built once per run (not per object --
     reloading a CLIP checkpoint per crop would be prohibitively slow). Properties
     come from domain_module.PROPERTIES, never hardcoded, so this generalizes to
-    whatever properties a domain defines (e.g. CLEVR's "size", which some
-    constraints reference despite the sibling pipeline's ASP generator excluding it
-    from its own choice rules)."""
+    whatever properties a domain defines -- except "size", deliberately excluded:
+    neither shown, classified, nor saved (see _classify_object_properties)."""
     if domain == "clevr":
-        properties = ["shape", "color", "material", "size"]
+        properties = ["shape", "color", "material"]
     else:  # coco: category comes from the detector label itself, only color is classified
         properties = ["color"]
     return {
@@ -33,16 +32,16 @@ def _build_property_classifiers(domain_module, domain: str, attribute_classifier
 def _classify_object_properties(domain: str, crop, classifiers: dict) -> dict[str, str]:
     """Classification order: shape first (CLEVR only, color's prompt is
     shape-conditioned, see attributes/README.md), then color, then the rest
-    independently."""
+    independently. "size" is deliberately never classified or included here --
+    it's excluded from both automated- and human-perception, per user request."""
     properties: dict[str, str] = {}
     if domain == "clevr":
         predicted_shape, _ = classifiers["shape"].classify(crop)
         properties["shape"] = predicted_shape
         predicted_color, _ = classifiers["color"].classify(crop, context=predicted_shape)
         properties["color"] = predicted_color
-        for prop in ("material", "size"):
-            predicted, _ = classifiers[prop].classify(crop)
-            properties[prop] = predicted
+        predicted_material, _ = classifiers["material"].classify(crop)
+        properties["material"] = predicted_material
     else:
         predicted_color, _ = classifiers["color"].classify(crop)
         properties["color"] = predicted_color

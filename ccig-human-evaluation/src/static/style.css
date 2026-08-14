@@ -223,6 +223,8 @@ button {
 }
 .mark-empty-btn:hover:not(:disabled) { background: var(--bg-soft); color: inherit; }
 .mark-empty-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.reasonable-row { display: flex; align-items: center; gap: 0.5rem; margin-top: 0.6rem; }
 .object-chip {
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);

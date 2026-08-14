@@ -35,6 +35,11 @@
           <select name="device"><option value="">auto</option><option value="cpu">cpu</option><option value="cuda">cuda</option></select>
         </label>
       </div>
+      <label>Default "reasonable scene" value
+        <select name="default_reasonable_scene"><option value="true" selected>Yes</option><option value="false">No</option></select>
+      </label>
+      <p class="hint">Starting value for each image's "reasonable scene" flag (human-perception
+        only) until you save that image yourself -- change it per image in the annotation view.</p>
       <button type="submit">Load batch</button>
     </form>
     <div id="setup-error" class="error"></div>
@@ -92,6 +97,20 @@
           <h3>Objects</h3>
           <div id="object-list" class="object-list"></div>
           <button type="button" id="mark-empty" class="mark-empty-btn">Mark scene as empty (0 objects)</button>
+          <div class="reasonable-row">
+            <span class="hint-inline">Reasonable scene:</span>
+            <div class="view-toggle">
+              <button type="button" id="reasonable-yes" class="toggle-btn" data-value="true">Yes</button>
+              <button type="button" id="reasonable-no" class="toggle-btn" data-value="false">No</button>
+            </div>
+          </div>
+          <div class="reasonable-row">
+            <span class="hint-inline">Valid scene:</span>
+            <div class="view-toggle">
+              <button type="button" id="valid-yes" class="toggle-btn" data-value="true">Yes</button>
+              <button type="button" id="valid-no" class="toggle-btn" data-value="false">No</button>
+            </div>
+          </div>
         </div>
         <div class="side-col object-editor-col">
           <h3>Selected object</h3>

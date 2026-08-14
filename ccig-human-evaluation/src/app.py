@@ -148,11 +148,12 @@ def _seed_human_from_automated() -> None:
 
 def _scene_graphs_match(human_sg: dict, automated_sg: dict) -> bool:
     """True if the two scene graphs describe the same objects (shape/color/material/
-    size/region/bbox), ignoring detector confidence (det_score, which a hand-drawn box
-    never meaningfully has) and object-id/ordering -- i.e. answers "has the human
+    region/bbox -- "size" is deliberately excluded everywhere, see _domain_vocab),
+    ignoring detector confidence (det_score, which a hand-drawn box never
+    meaningfully has) and object-id/ordering -- i.e. answers "has the human
     annotation actually diverged from what perception detected", not "are the two
     JSON blobs byte-identical"."""
-    keys = ("shape", "color", "material", "size", "region", "bbox")
+    keys = ("shape", "color", "material", "region", "bbox")
 
     def normalize(sg: dict) -> list:
         items = []
@@ -214,8 +215,13 @@ def _image_size(path: Path) -> tuple[int, int]:
 
 
 def _domain_vocab() -> dict:
+    # "size" is deliberately excluded from the vocab the UI ever sees -- neither shown
+    # nor classified nor saved, for either automated- or human-perception, per user
+    # request. domain_module.PROPERTIES (from the shared ccig-dataset-gen sibling) is
+    # not itself modified -- other pipelines may still need "size" -- this just never
+    # forwards it past this one point.
     domain_module = load_domain(STATE["domain"])
-    return dict(domain_module.PROPERTIES)
+    return {k: v for k, v in domain_module.PROPERTIES.items() if k != "size"}
 
 
 # ---------------------------------------------------------------------------
@@ -305,6 +311,8 @@ def _state_summary() -> dict:
                 "automated_number_of_objects": _number_of_objects(automated_entry),
                 "human_number_of_objects": _number_of_objects(human_entry),
                 "matched": matched,
+                "reasonable_scene": human_entry.get("reasonable_scene") if human_entry is not None else None,
+                "valid_scene": human_entry.get("valid_scene") if human_entry is not None else None,
             }
         )
     images.sort(key=lambda r: (int(r["id"]) if r["id"].isdigit() else r["id"], r["field"]))
@@ -439,6 +447,13 @@ def api_get_image(image_id: str, field: str):
             "human_perception_path": human_perception_path,
             "automated_number_of_objects": _number_of_objects(perception),
             "human_number_of_objects": _number_of_objects(human_entry),
+            # Human-only fields -- automated-perception has no equivalent, and no
+            # server-side default: None means "no human entry has ever recorded this
+            # yet". reasonable_scene falls back to the UI's session-configurable
+            # default; valid_scene falls back to a fixed default of true, both on the
+            # client (see app.js).
+            "reasonable_scene": human_entry.get("reasonable_scene") if human_entry is not None else None,
+            "valid_scene": human_entry.get("valid_scene") if human_entry is not None else None,
             "scene_graph": scene_graph,
         }
     )
@@ -471,7 +486,8 @@ def api_save_image(image_id: str, field: str):
     detected: list[DetectedObject] = []
     for obj_id, obj in enumerate(raw_objects):
         x0, y0, x1, y1 = obj["bbox"]
-        properties = {k2: v for k2, v in obj.get("properties", {}).items() if v}
+        # "size" is dropped even if a client sends it -- see _domain_vocab.
+        properties = {k2: v for k2, v in obj.get("properties", {}).items() if v and k2 != "size"}
         bbox = BBox(x0=x0, y0=y0, x1=x1, y1=y1, label=properties.get("shape", ""), score=1.0)
         cx, cy = bbox_center(bbox)
         region = region_of(cx, cy, w, h)
@@ -494,6 +510,17 @@ def api_save_image(image_id: str, field: str):
         "status": item.record.status,
         "number_of_objects": len(detected),
         "scene_graph": scene_graph,
+        # Human-only judgment call ("is this a reasonable/sensible generated scene at
+        # all"), no automated-perception equivalent. The client always sends its
+        # current toggle value (either this image's own saved value, or its session
+        # default if this is the first save for this image) -- body.get(...) here is
+        # just a defensive fallback if an older client omits it.
+        "reasonable_scene": body.get("reasonable_scene"),
+        # Human-only too, distinct from reasonable_scene -- e.g. "is this image
+        # actually usable as an annotation record at all" vs. "is the scene sensible".
+        # Same pass-through-from-client pattern, just with a fixed true default on the
+        # client rather than a session-configurable one.
+        "valid_scene": body.get("valid_scene"),
         "annotated_at": time.strftime("%Y-%m-%dT%H:%M:%S"),
     }
     _save_human_annotation(image_id, field, payload)

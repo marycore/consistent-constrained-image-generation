@@ -61,7 +61,14 @@ the concept is shared: `id`, `prompt_field`, `image_path`, `prompt`,
 `instantiated_rule`, `status`, `number_of_objects`, `scene_graph`. Neither
 file references the other's path. `auto-perception` additionally carries
 `predicted_status`, `agrees_with_dataset`, `clingo_program`, `success`,
-`error` (solver output, no human equivalent).
+`error` (solver output, no human equivalent). `human-perception` additionally
+carries two independent human-only judgment calls, each `true`/`false`/`null`,
+set per image in the annotation view (Yes/No toggle):
+- `reasonable_scene` — is the generated image a sensible scene at all. Its
+  starting value (before that image has ever been saved) is whatever you
+  picked on the setup form.
+- `valid_scene` — distinct from the above; starts `true` by default (fixed,
+  not configurable on the setup form).
 
 If a human entry is missing but an automated one exists for that image, it's
 auto-copied over as a starting point the next time perception runs or the
