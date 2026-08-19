@@ -29,40 +29,134 @@ def _build_property_classifiers(domain_module, domain: str, attribute_classifier
         for prop in properties
     }
 
+from PIL import Image
 
-def _classify_object_properties(domain: str, crop, classifiers: dict) -> dict[str, str]:
-    """Classification order: shape first (CLEVR only, color's prompt is
-    shape-conditioned, see attributes/README.md), then color, then the rest
-    independently."""
+
+def _classify_object_properties(
+    domain: str,
+    views: dict[str, Image.Image],
+    classifiers: dict,
+) -> dict[str, str]:
+    """
+    Classification order for CLEVR:
+      1. shape
+      2. color conditioned on predicted shape
+      3. material
+      4. size
+
+    Different attributes use different image views.
+    """
+
     properties: dict[str, str] = {}
+
     if domain == "clevr":
-        predicted_shape, _ = classifiers["shape"].classify(crop)
+
+        # Shape: emphasize geometry with tighter views.
+        predicted_shape, _ = classifiers["shape"].classify_ensemble(
+            [
+                views["tight"],
+                views["medium"],
+            ]
+        )
         properties["shape"] = predicted_shape
-        predicted_color, _ = classifiers["color"].classify(crop, context=predicted_shape)
+
+        # Color: use multiple views, conditioned on predicted shape.
+        # Example competing prompts:
+        #   "a red cube"
+        #   "a blue cube"
+        #   "a green cube"
+        #   ...
+        predicted_color, _ = classifiers["color"].classify_ensemble(
+            [
+                views["tight"],
+                views["medium"],
+                views["wide"],
+            ]
+            context=predicted_shape,
+        )
         properties["color"] = predicted_color
-        for prop in ("material", "size"):
-            predicted, _ = classifiers[prop].classify(crop)
-            properties[prop] = predicted
+
+        # Material: preserve RGB information because lighting,
+        # highlights and reflections can be useful.
+        predicted_material, _ = classifiers["material"].classify_ensemble(
+            [
+                views["rgb"],
+                #views["medium"],
+            ]
+        )
+        properties["material"] = predicted_material
+
+        # Size: use medium/wide views.
+        predicted_size, _ = classifiers["size"].classify_ensemble(
+            [
+                views["medium"],
+                views["wide"],
+            ]
+        )
+        properties["size"] = predicted_size
+
     else:
-        predicted_color, _ = classifiers["color"].classify(crop)
+        # Non-CLEVR: only color is classified here.
+        predicted_color, _ = classifiers["color"].classify_ensemble(
+            [
+                views["tight"],
+                views["medium"],
+                views["wide"],
+            ]
+        )
         properties["color"] = predicted_color
+
     return properties
 
+def _perceive_scene(
+    image,
+    domain: str,
+    domain_module,
+    detector,
+    classifiers: dict,
+) -> list[DetectedObject]:
 
-def _perceive_scene(image, domain: str, domain_module, detector, classifiers: dict) -> list[DetectedObject]:
-    class_prompts = domain_module.PROPERTIES["shape"]  # CLEVR: cube/sphere/cylinder; COCO: bicycle/suitcase/chair
+    
+    class_prompts = domain_module.PROPERTIES["shape"]
+
     boxes = detector.detect(image, class_prompts)
 
     objects: list[DetectedObject] = []
+
     for obj_id, bbox in enumerate(boxes):
-        crop = crop_and_neutralize(image, bbox)
-        properties = _classify_object_properties(domain, crop, classifiers)
+
+        # Generate multiple representations of the detected object.
+        views = make_object_views(image, bbox)
+
+        properties = _classify_object_properties(
+            domain,
+            views,
+            classifiers,
+        )
+
         if domain == "coco":
-            properties["shape"] = bbox.label  # detector's matched class prompt *is* the category
+            # Detector's matched class prompt is the category.
+            properties["shape"] = bbox.label
+
         cx, cy = bbox_center(bbox)
-        region = region_of(cx, cy, image.width, image.height)
-        objects.append(DetectedObject(obj_id=obj_id, bbox=bbox, properties=properties, region=region))
+        region = region_of(
+            cx,
+            cy,
+            image.width,
+            image.height,
+        )
+
+        objects.append(
+            DetectedObject(
+                obj_id=obj_id,
+                bbox=bbox,
+                properties=properties,
+                region=region,
+            )
+        )
+
     return objects
+
 
 
 def run_perception(

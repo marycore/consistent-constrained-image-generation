@@ -2,20 +2,6 @@ from __future__ import annotations
 
 from .detectors.base import BBox
 
-# Transcribed from ccig-dataset-gen/src/eval_dataset_gen/asp_background/background.lp
-# (not imported -- it's a .lp file, not a Python symbol). This is the same fixed 2x2
-# grid adjacency clingo uses to derive left/right/front/behind between regions; kept
-# as a static Python lookup here since it's small and never needs a clingo call itself
-# -- clingo is reserved for the actual constraint-satisfaction check in perception/run.py.
-_RIGHT_OF: dict[str, set[str]] = {
-    "r0": {"r1", "r3"},  # r1, r3 are right of r0
-    "r2": {"r1", "r3"},  # r1, r3 are right of r2
-}
-_FRONT_OF: dict[str, set[str]] = {
-    "r0": {"r2", "r3"},  # r2, r3 are in front of r0
-    "r1": {"r2", "r3"},  # r2, r3 are in front of r1
-}
-
 
 def bbox_center(bbox: BBox) -> tuple[float, float]:
     return (bbox.x0 + bbox.x1) / 2, (bbox.y0 + bbox.y1) / 2
@@ -34,20 +20,25 @@ def region_of(cx: float, cy: float, image_w: int, image_h: int) -> str:
         return "r2"
     return "r3"
 
-
-def pairwise_relations(regions: dict[int, str]) -> list[tuple[int, int, str]]:
-    """regions: {obj_id: region}. Returns (from_id, to_id, direction) for every
+def pairwise_relations(objects: list[DetectedObject]) -> list[tuple[int, int, str]]:
+    """objects: from bb. Returns (from_id, to_id, direction) for every
     ordered pair whose regions are related by the background.lp adjacency table."""
     relations: list[tuple[int, int, str]] = []
-    for id_a, region_a in regions.items():
-        for id_b, region_b in regions.items():
+    for obj1 in objects:
+        id_a = obj1.obj_id
+        c1_x, c1_y = bbox_centre(obj1.bbox)
+        for obj2 in objects:
+            id_b = obj2.obj_id
             if id_a == id_b:
                 continue
-            if region_b in _RIGHT_OF.get(region_a, ()):
-                # region_b is right of region_a => object b is right of object a
-                relations.append((id_b, id_a, "right"))
-                relations.append((id_a, id_b, "left"))
-            if region_b in _FRONT_OF.get(region_a, ()):
-                relations.append((id_b, id_a, "front"))
-                relations.append((id_a, id_b, "behind"))
+            c2_x, c2_y = bbox_centre(obj2.bbox)
+            if c1_x<c2_x:
+                relations.append(id_a, id_b, "left")
+                relations.append(id_b, id_a, "right")
+            if c1_y<c2_y:
+                relations.append(id_a, id_b, "behind")
+                relations.append(id_b, id_a, "front")
     return relations
+    
+
+
