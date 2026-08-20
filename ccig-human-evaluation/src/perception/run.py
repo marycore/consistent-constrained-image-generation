@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from pathlib import Path
 
 from ..common.dataset_gen import load_domain, solve
@@ -64,6 +65,36 @@ def _perceive_scene(image, domain: str, domain_module, detector, classifiers: di
     return objects
 
 
+def _load_prior_results(out_path: Path, detector_name: str, attribute_classifier: str) -> dict[tuple[str, str], dict]:
+    """Resume support: reuse every *successful* result already sitting in out_path from
+    an earlier (possibly interrupted) run, keyed by (id, prompt_field), instead of
+    redoing the detector + classifier work for it. A "success": false entry isn't a
+    completed result, so it's retried, not reused. If the prior run used a different
+    detector/attribute_classifier, none of it is reused -- those results aren't
+    comparable to what this run would produce, so silently mixing them in would be
+    wrong, not just suboptimal. A missing or corrupt out_path (e.g. from a hard kill
+    mid-write) just means starting fresh, not an error."""
+    if not out_path.is_file():
+        return {}
+    try:
+        with out_path.open("r", encoding="utf-8") as f:
+            prior = json.load(f)
+    except (json.JSONDecodeError, OSError):
+        return {}
+    if prior.get("detector") != detector_name or prior.get("attribute_classifier") != attribute_classifier:
+        print(
+            f"[resume] out_path was written with detector={prior.get('detector')!r}/"
+            f"attribute_classifier={prior.get('attribute_classifier')!r}, this run uses "
+            f"{detector_name!r}/{attribute_classifier!r} -- not reusing any of it"
+        )
+        return {}
+    return {
+        (r["id"], r["prompt_field"]): r
+        for r in prior.get("results", [])
+        if r.get("success") and r.get("scene_graph") is not None
+    }
+
+
 def run_perception(
     items: list[MatchedItem],
     domain: str,
@@ -78,60 +109,79 @@ def run_perception(
 ) -> None:
     from PIL import Image
 
+    out_path = Path(out_path)
     domain_module = load_domain(domain)
-    detector = build_detector(detector_name, device=device)
-    classifiers = _build_property_classifiers(domain_module, domain, attribute_classifier, device)
+    already_done = _load_prior_results(out_path, detector_name, attribute_classifier)
 
-    results: list[PerceptionResult] = []
+    # Detector + classifiers are real model weights, expensive to load -- built lazily,
+    # only once at least one item actually needs (re)processing. A full resume where
+    # every item is already done should cost nothing, not reload every model just to
+    # immediately skip everything.
+    detector = None
+    classifiers = None
+
+    def _ensure_models() -> None:
+        nonlocal detector, classifiers
+        if detector is None:
+            detector = build_detector(detector_name, device=device)
+            classifiers = _build_property_classifiers(domain_module, domain, attribute_classifier, device)
+
+    results: list[dict] = []
     for item in items:
-        try:
-            image = Image.open(item.image_path).convert("RGB")
-            objects = _perceive_scene(image, domain, domain_module, detector, classifiers)
-            facts = build_scene_facts(objects)
+        key = (item.id, item.prompt_field)
+        if key in already_done:
+            results.append(already_done[key])
+            print(f"[skip] {item.id}: already processed, reusing saved result")
+        else:
+            try:
+                _ensure_models()
+                image = Image.open(item.image_path).convert("RGB")
+                objects = _perceive_scene(image, domain, domain_module, detector, classifiers)
+                facts = build_scene_facts(objects)
 
-            # instantiated_rule uses free ASP variables (X, Y, ...) bound over object(X),
-            # not literal object ids -- it applies unchanged no matter how perception
-            # numbered the detected objects here.
-            program = f"{facts}\n{item.record.instantiated_rule}"
-            predicted_status, _ = solve(program, n_models=1, time_limit=10)
+                # instantiated_rule uses free ASP variables (X, Y, ...) bound over object(X),
+                # not literal object ids -- it applies unchanged no matter how perception
+                # numbered the detected objects here.
+                program = f"{facts}\n{item.record.instantiated_rule}"
+                predicted_status, _ = solve(program, n_models=1, time_limit=10)
 
-            results.append(
-                PerceptionResult(
-                    id=item.id,
-                    prompt_field=item.prompt_field,
-                    image_path=str(item.image_path),
-                    prompt=item.prompt_text,
-                    instantiated_rule=item.record.instantiated_rule,
-                    status=item.record.status,
-                    number_of_objects=len(objects),
-                    predicted_status=predicted_status,
-                    agrees_with_dataset=predicted_status == item.record.status,
-                    scene_graph=to_graph_dict(objects),
-                    clingo_program=program,
-                    success=True,
-                    error=None,
+                results.append(
+                    PerceptionResult(
+                        id=item.id,
+                        prompt_field=item.prompt_field,
+                        image_path=str(item.image_path),
+                        prompt=item.prompt_text,
+                        instantiated_rule=item.record.instantiated_rule,
+                        status=item.record.status,
+                        number_of_objects=len(objects),
+                        predicted_status=predicted_status,
+                        agrees_with_dataset=predicted_status == item.record.status,
+                        scene_graph=to_graph_dict(objects),
+                        clingo_program=program,
+                        success=True,
+                        error=None,
+                    ).to_json()
                 )
-            )
-            print(f"[ok]   {item.id}: predicted={predicted_status} dataset={item.record.status}")
-        except Exception as e:  # noqa: BLE001 -- one bad image must not abort the whole batch
-            results.append(
-                PerceptionResult(
-                    id=item.id,
-                    prompt_field=item.prompt_field,
-                    image_path=str(item.image_path),
-                    prompt=item.prompt_text,
-                    instantiated_rule=item.record.instantiated_rule,
-                    status=item.record.status,
-                    number_of_objects=None,
-                    predicted_status=None,
-                    agrees_with_dataset=None,
-                    scene_graph=None,
-                    clingo_program=None,
-                    success=False,
-                    error=repr(e),
+                print(f"[ok]   {item.id}: predicted={predicted_status} dataset={item.record.status}")
+            except Exception as e:  # noqa: BLE001 -- one bad image must not abort the whole batch
+                results.append(
+                    PerceptionResult(
+                        id=item.id,
+                        prompt_field=item.prompt_field,
+                        image_path=str(item.image_path),
+                        prompt=item.prompt_text,
+                        instantiated_rule=item.record.instantiated_rule,
+                        status=item.record.status,
+                        number_of_objects=None,
+                        predicted_status=None,
+                        agrees_with_dataset=None,
+                        scene_graph=None,
+                        clingo_program=None,
+                        success=False,
+                        error=repr(e),
+                    ).to_json()
                 )
-            )
-            print(f"[fail] {item.id}: {e}")
+                print(f"[fail] {item.id}: {e}")
 
         # Write after every item, not just at the end -- so a long CPU run that's killed or
         # crashes partway through still leaves a partial, valid out_path behind, and so a
@@ -144,7 +194,7 @@ def run_perception(
                 "domain": domain,
                 "detector": detector_name,
                 "attribute_classifier": attribute_classifier,
-                "results": [r.to_json() for r in results],
+                "results": results,
             },
         )
         if on_item_done is not None:

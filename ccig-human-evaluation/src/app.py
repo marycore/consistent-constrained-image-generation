@@ -312,7 +312,6 @@ def _state_summary() -> dict:
                 "human_number_of_objects": _number_of_objects(human_entry),
                 "matched": matched,
                 "reasonable_scene": human_entry.get("reasonable_scene") if human_entry is not None else None,
-                "valid_scene": human_entry.get("valid_scene") if human_entry is not None else None,
             }
         )
     images.sort(key=lambda r: (int(r["id"]) if r["id"].isdigit() else r["id"], r["field"]))
@@ -447,13 +446,11 @@ def api_get_image(image_id: str, field: str):
             "human_perception_path": human_perception_path,
             "automated_number_of_objects": _number_of_objects(perception),
             "human_number_of_objects": _number_of_objects(human_entry),
-            # Human-only fields -- automated-perception has no equivalent, and no
+            # Human-only field -- automated-perception has no equivalent, and no
             # server-side default: None means "no human entry has ever recorded this
-            # yet". reasonable_scene falls back to the UI's session-configurable
-            # default; valid_scene falls back to a fixed default of true, both on the
-            # client (see app.js).
+            # yet", and the UI's own session-configurable default fills the gap until
+            # a save actually happens.
             "reasonable_scene": human_entry.get("reasonable_scene") if human_entry is not None else None,
-            "valid_scene": human_entry.get("valid_scene") if human_entry is not None else None,
             "scene_graph": scene_graph,
         }
     )
@@ -516,11 +513,6 @@ def api_save_image(image_id: str, field: str):
         # default if this is the first save for this image) -- body.get(...) here is
         # just a defensive fallback if an older client omits it.
         "reasonable_scene": body.get("reasonable_scene"),
-        # Human-only too, distinct from reasonable_scene -- e.g. "is this image
-        # actually usable as an annotation record at all" vs. "is the scene sensible".
-        # Same pass-through-from-client pattern, just with a fixed true default on the
-        # client rather than a session-configurable one.
-        "valid_scene": body.get("valid_scene"),
         "annotated_at": time.strftime("%Y-%m-%dT%H:%M:%S"),
     }
     _save_human_annotation(image_id, field, payload)
