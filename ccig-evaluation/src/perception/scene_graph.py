@@ -15,7 +15,7 @@ def build_scene_facts(objects: list[DetectedObject]) -> str:
         lines.append(f"hasProperty({obj.obj_id},region,{obj.region}).")
 
     regions = {obj.obj_id: obj.region for obj in objects}
-    for id_a, id_b, direction in pairwise_relations(regions):
+    for id_a, id_b, direction in pairwise_relations(objects):
         lines.append(f"hasRelationship({id_a},{id_b},{direction}).")
 
     return "\n".join(lines)
@@ -37,6 +37,6 @@ def to_graph_dict(objects: list[DetectedObject]) -> dict:
         },
         "relations": [
             {"from": id_a, "to": id_b, "direction": direction}
-            for id_a, id_b, direction in pairwise_relations(regions)
+            for id_a, id_b, direction in pairwise_relations(objects)
         ],
     }

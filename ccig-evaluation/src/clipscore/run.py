@@ -23,30 +23,32 @@ def run_clipscore(items: list[MatchedItem], domain: str, checkpoint: str, out_pa
     device = "cuda" if torch.cuda.is_available() else "cpu"
     model = CLIPModel.from_pretrained(checkpoint).to(device).eval()
     processor = CLIPProcessor.from_pretrained(checkpoint)
-
+     
     results: list[ClipScoreResult] = []
     for item in items:
         try:
             image = Image.open(item.image_path).convert("RGB")
-            inputs = processor(text=[item.prompt_text], images=image, return_tensors="pt", padding=True)
+            inputs = processor(text=["A photo depicts " + item.prompt_text], images=image, return_tensors="pt", padding=True)
             inputs = {k: v.to(device) for k, v in inputs.items()}
             with torch.no_grad():
                 out = model(**inputs)
             image_embed = out.image_embeds / out.image_embeds.norm(dim=-1, keepdim=True)
             text_embed = out.text_embeds / out.text_embeds.norm(dim=-1, keepdim=True)
-            score = (image_embed @ text_embed.T).item()
+            
+            cosine = (image_embed @ text_embed.T).item()
+            clipscore = 2.5 * max(cosine, 0.0)
             results.append(
                 ClipScoreResult(
                     id=item.id,
                     prompt_field=item.prompt_field,
                     prompt=item.prompt_text,
                     image_path=str(item.image_path),
-                    clipscore=score,
+                    clipscore=clipscore,
                     success=True,
                     error=None,
                 )
             )
-            print(f"[ok]   {item.id}: {score:.4f}")
+            print(f"[ok]   {item.id}: {clipscore:.4f}")
         except Exception as e:
             results.append(
                 ClipScoreResult(

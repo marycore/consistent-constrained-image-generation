@@ -171,6 +171,8 @@ def _c1(variant: str, a: dict) -> dict[str, str]:
             short=f"{_Obj(p1, v1)} is in the scene.",
             medium=f"The scene contains at least one {_bare(p1, v1)}.",
             long=(f"Among all objects placed in the scene, at least one must be {_adj(p1, v1)}. "),
+            subqa={(f"Does the image contain at least one {_bare(p1, v1)}?"): "yes",
+                     f"How many objects are {_adj(p1, v1)} in the image?": "> 0",},           
         )
 
     if variant == "1prop_neg":
@@ -181,6 +183,10 @@ def _c1(variant: str, a: dict) -> dict[str, str]:
             medium=f"The scene contains at least one object that is {_not_adj(p1, v1)}.",
             long=(f"Not all objects need to be {_adj(p1, v1)}; the constraint ensures that at least one "
                   f"object in the scene avoids this property value."),
+            subqa= {(f"Does the image contain at least one object that is "
+                   f"{_not_adj(p1, v1)}?"):"yes",
+                    f"How many objects are {_not_adj(p1, v1)} in the image?": "> 0",},    
+        
         )
 
     if variant == "1prop_2val_neg":
@@ -191,6 +197,10 @@ def _c1(variant: str, a: dict) -> dict[str, str]:
             medium=f"The scene contains at least one object that is neither {_adj(p1, v1)} nor {_adj(p1, v2)}.",
             long=(f"Among all objects in the scene, at least one must avoid being both {_adj(p1, v1)} "
                   f"and {_adj(p1, v2)} for property {p1}."),
+             subqa={(f"Does the image contain at least one object whose {p1} is "
+                f"neither {v1} nor {v2}?"): "yes",
+                f"How many objects have a {p1} that is neither {v1} nor {v2}?":
+                "> 0"},
         )
 
     if variant == "1prop_3val_neg":
@@ -200,6 +210,11 @@ def _c1(variant: str, a: dict) -> dict[str, str]:
             medium=f"The scene contains at least one object that is none of {_adj(p1, v1)}, {_adj(p1, v2)}, or {_adj(p1, v3)}.",
             long = (f"Among all objects in the scene, at least one object must have a value for {p1} "
                     f"that is neither {_adj(p1, v1)}, {_adj(p1, v2)}, nor {_adj(p1, v3)}."),
+            subqa={(f"Does the image contain at least one object whose {p1} is "
+            f"neither {v1}, {v2}, nor {v3}?"):"yes",
+            f"How many objects have a {p1} that is neither "
+            f"{v1}, {v2}, nor {v3}?": "> 0",
+            }, 
         )
 
     if variant == "2prop":
@@ -209,6 +224,10 @@ def _c1(variant: str, a: dict) -> dict[str, str]:
             short=f"There exists at least one object that is {_adj(p1, v1)} and {_adj(p2, v2)} in the scene.",
             medium=f"The scene contains at least one object that is {_adj(p1, v1)} and {_adj(p2, v2)}.",
             long=(f"Among all the objects, there is at least one object somewhere in the scene which must be {_adj(p1, v1)} and {_adj(p2, v2)}."),
+            subqa={(f"Does the image contain at least one object that is "
+            f"{_adj(p1, v1)} and {_adj(p2, v2)}?"):"yes",
+             f"How many objects are both {_adj(p1, v1)} and {_adj(p2, v2)}?":
+                "> 0",},
         )
 
     if variant == "2prop_neg":
@@ -218,6 +237,10 @@ def _c1(variant: str, a: dict) -> dict[str, str]:
             medium=f"The scene contains at least one object that is neither {_adj(p1, v1)} nor {_adj(p2, v2)}.",
             long=(f"Among all the objects, there is at least one object somewhere in the scene which must simultaneously avoid being {_adj(p1, v1)} "
                   f"and avoid being {_adj(p2, v2)}."),
+            subqa={(f"Does the image contain at least one object that is "
+            f"{_not_adj(p1, v1)} and {_not_adj(p2, v2)}?"):"yes",
+            f"How many objects are both {_not_adj(p1, v1)} and "
+            f"{_not_adj(p2, v2)}?": "> 0",}, 
         )
     
     if variant == "2prop_mix_neg":
@@ -227,6 +250,10 @@ def _c1(variant: str, a: dict) -> dict[str, str]:
             medium=f"The scene contains at least one object that is not {_adj(p2, v2)} but {_adj(p1, v1)}.",
             long=(f"Among all the objects, there is at least one object somewhere in the scene which must simultaneously be {_adj(p1, v1)} "
                   f"and avoid being {_adj(p2, v2)}."),
+            subqa={(f"Does the image contain at least one object that is "
+            f"{_adj(p1, v1)} and {_not_adj(p2, v2)}?"):"yes",
+             f"How many objects are {_adj(p1, v1)} and "
+            f"{_not_adj(p2, v2)}?": "> 0",}, 
         )
 
     if variant == "3prop":
@@ -237,6 +264,10 @@ def _c1(variant: str, a: dict) -> dict[str, str]:
             medium=f"The scene contains at least one object that is {_adj(p1, v1)}, {_adj(p2, v2)}, and {_adj(p3, v3)}.",
             long=(f"Among all objects in the scene, there is at least one object which must satisfy all three property "
                   f"conditions: {_adj(p1, v1)}, {_adj(p2, v2)}, and {_adj(p3, v3)}."),
+             subqa={(f"Does the image contain at least one object that is "
+            f"{_adj(p1, v1)}, {_adj(p2, v2)}, and {_adj(p3, v3)}?") : "yes",
+            f"How many objects are {_adj(p1, v1)}, {_adj(p2, v2)}, "
+            f"and {_adj(p3, v3)}?": "> 0",}, 
         )
 
     if variant == "3prop_val_mix_neg":
@@ -248,6 +279,11 @@ def _c1(variant: str, a: dict) -> dict[str, str]:
                     f"while being neither {_adj(p3, v3)} nor {_adj(p3, v4)}."),
             long=(f"Among all objects in the scene, there is at least one object which must satisfy the following conditions: {_adj(p1, v1)} and {_adj(p2, v2)}, "
                   f"but must not be {_adj(p3, v3)} and must not be {_adj(p3, v4)}."),
+            subqa={(f"Does the image contain at least one object that is "
+            f"{_adj(p1, v1)} and {_adj(p2, v2)}, but whose {p3} is "
+            f"neither {v3} nor {v4}?"): "yes",
+             f"How many objects are {_adj(p1, v1)} and {_adj(p2, v2)}, "
+            f"but have a {p3} that is neither {v3} nor {v4}?": "> 0",}, 
         )
 
     if variant == "4prop":
@@ -258,6 +294,11 @@ def _c1(variant: str, a: dict) -> dict[str, str]:
                     f"{_adj(p1, v1)}, {_adj(p2, v2)}, {_adj(p3, v3)}, and {_adj(p4, v4)}."),
             long=(f"Among all objects in the scene, there is at least one object which must simultaneously be {_adj(p1, v1)}, {_adj(p2, v2)}, "
                   f"{_adj(p3, v3)}, and {_adj(p4, v4)}."),
+            subqa={(f"Does the image contain at least one object that is "
+            f"{_adj(p1, v1)}, {_adj(p2, v2)}, {_adj(p3, v3)}, "
+            f"and {_adj(p4, v4)}?"): "yes",
+            f"How many objects are {_adj(p1, v1)}, {_adj(p2, v2)}, "
+            f"{_adj(p3, v3)}, and {_adj(p4, v4)}?": "> 0",}, 
         )
 
     if variant == "4prop_mix_neg":
@@ -269,6 +310,12 @@ def _c1(variant: str, a: dict) -> dict[str, str]:
                     f"while being {_not_adj(p3, v3)} and {_not_adj(p4, v4)}."),
             long=(f"Among all objects in the scene, there is at least one object which must satisfy the following requirements: {_adj(p1, v1)} and {_adj(p2, v2)}, "
                   f"while not being {_adj(p3, v3)} and not being {_adj(p4, v4)}."),
+            subqa={(
+            f"Does the image contain at least one object that is "
+            f"{_adj(p1, v1)} and {_adj(p2, v2)}, but is "
+            f"{_not_adj(p3, v3)} and {_not_adj(p4, v4)}?"): "yes",
+            f"How many objects are {_adj(p1, v1)} and {_adj(p2, v2)}, "
+            f"but are {_not_adj(p3, v3)} and {_not_adj(p4, v4)}?": "> 0",}, 
         )
 
     return None
@@ -283,6 +330,9 @@ def _c2(variant: str, a: dict) -> dict[str, str]:
             medium=f"Every single object in the scene must be {_adj(p1, v1)}.",
             long=(f"The scene enforces a uniform {p1} constraint: each and every object must be "
                   f"{_adj(p1, v1)}, with no exceptions permitted."),
+            subqa = {"How many objects are in the image?": "n",
+                    f"Is every object in the image {_adj(p1, v1)}?": "yes",
+                    f"How many objects are {_adj(p1, v1)}?": "= n",}
         )
 
     if variant == "1prop_neg":
@@ -293,6 +343,8 @@ def _c2(variant: str, a: dict) -> dict[str, str]:
             medium=f"The scene contains no {_bare(p1, v1)} whatsoever.",
             long=(f"Every object in the scene must avoid being {_adj(p1, v1)}; "
                   f"this property value is globally forbidden."),
+            subqa={ f"Does the image contain any object that is {_adj(p1, v1)}?": "no",
+            f"How many objects are {_adj(p1, v1)}?": "= 0",}
         )
 
     if variant == "1prop_2val_neg":
@@ -302,6 +354,9 @@ def _c2(variant: str, a: dict) -> dict[str, str]:
             medium=f"No object in the scene can be {_adj(p1, v1)} and no object in the scene can be {_adj(p1, v2)}.",
             long=(f"The constraint forbids any object in the scene from having the following two values for the property {p1} "
                   f": no object can either be {_adj(p1, v1)} or {_adj(p1, v2)}."),
+            subqa = { f"Does the image contain any object that is {_adj(p1, v1)}?": "no",
+            f"Does the image contain any object that is {_adj(p1, v2)}?": "no",
+            f"How many objects have {p1} equal to {v1} or {v2}?": "= 0",}
         )
 
     if variant == "2prop":
@@ -311,6 +366,13 @@ def _c2(variant: str, a: dict) -> dict[str, str]:
             medium=f"Each object in the scene must simultaneously be {_adj(p1, v1)} and {_adj(p2, v2)}.",
             long=(f"The scene enforces two universal requirements: every object in the scene must be "
                   f"{_adj(p1, v1)} and also {_adj(p2, v2)}, with no object free to deviate."),
+            subqa = { f"Is every object in the image both {_adj(p1, v1)} "
+            f"and {_adj(p2, v2)}?": "yes",
+            f"Is every object in the image {_adj(p1, v1)}?": "yes",
+            f"How many objects are {_not_adj(p2, v2)}?": "= 0",}
+            "How many objects are in the image?": "n",
+            f"How many objects are both {_adj(p1, v1)} "
+            f"and {_adj(p2, v2)}?": "= n",}
         )
 
     if variant == "2prop_neg":
@@ -320,6 +382,10 @@ def _c2(variant: str, a: dict) -> dict[str, str]:
             medium=f"The scene forbids any object from being {_adj(p1, v1)} and {_adj(p2, v2)} simultaneously.",
             long=(f"An object that is simultaneously {_adj(p1, v1)} and {_adj(p2, v2)} must never "
                   f"appear in the scene; every object must avoid at least one of these two property values."),
+            subqa = { f"Does the image contain any object that is both "
+            f"{_adj(p1, v1)} and {_adj(p2, v2)}?": "no",
+            f"How many objects are both {_adj(p1, v1)} "
+            f"and {_adj(p2, v2)}?": "= 0",}
         )
 
     if variant == "2prop_mix_neg":
@@ -329,6 +395,10 @@ def _c2(variant: str, a: dict) -> dict[str, str]:
             medium=f"The scene forbids any object from being {_adj(p1, v1)} and {_not_adj(p2, v2)} simultaneously.",
             long=(f"An object that is simultaneously {_adj(p1, v1)} and {_not_adj(p2, v2)} must never "
                   f"appear in the scene."),
+            subqa = { f"Does the image contain any object that is {_adj(p1, v1)} "
+            f"and {_not_adj(p2, v2)}?": "no",
+            f"How many objects are {_adj(p1, v1)} and "
+            f"{_not_adj(p2, v2)}?": "= 0",}
         )
 
     if variant == "3prop":
@@ -338,6 +408,12 @@ def _c2(variant: str, a: dict) -> dict[str, str]:
             medium=f"Each object in the scene must be {_adj(p1, v1)}, {_adj(p2, v2)}, and {_adj(p3, v3)}.",
             long=(f"The scene enforces three universal requirements: every object in the scene must be "
                   f"{_adj(p1, v1)}, {_adj(p2, v2)}, and {_adj(p3, v3)} simultaneously."),
+            subqa = { f"Is every object in the image {_adj(p1, v1)}, "
+            f"{_adj(p2, v2)}, and {_adj(p3, v3)}?": "yes",
+            f"How many objects are {_not_adj(p1, v1)}?": "= 0",
+            f"How many objects are {_adj(p2, v2)}?": "n",
+            f"How many objects are {_adj(p1, v1)}, {_adj(p2, v2)}, "
+            f"and {_adj(p3, v3)}?": "= n",}
         )
 
     if variant == "4prop_neg":
@@ -349,6 +425,11 @@ def _c2(variant: str, a: dict) -> dict[str, str]:
                     f"{_not_adj(p3, v3)} and {_not_adj(p4, v4)}."),
             long=(f"The scene requires that any object with the following combination is not present in the scene: {_adj(p1, v1)} and {_adj(p2, v2)} "
                   f"and {_not_adj(p3, v3)} and {_not_adj(p4, v4)}."),
+            subqa = {f"Does the image contain any object that is {_adj(p1, v1)}, "
+            f"{_adj(p2, v2)}, {_not_adj(p3, v3)}, and "
+            f"{_not_adj(p4, v4)}?": "no",
+            f"How many objects are {_adj(p1, v1)}, {_adj(p2, v2)}, "
+            f"{_not_adj(p3, v3)}, and {_not_adj(p4, v4)}?": "= 0",}
         )
         
     if variant == "4prop":
@@ -360,6 +441,11 @@ def _c2(variant: str, a: dict) -> dict[str, str]:
                     f"{_adj(p1, v1)}, {_adj(p2, v2)}, {_adj(p3, v3)}, {_adj(p4, v4)}."),
             long=(f"The scene enforces four universal requirements at once: every object in the scene must be "
                   f"{_adj(p1, v1)}, {_adj(p2, v2)}, {_adj(p3, v3)}, and {_adj(p4, v4)}."),
+            subqa = { f"How many objects are there in the image?": "n",
+            f"How many objects are {_not_adj(p1, v1)}?": "= 0",
+            f"How many objects are {_adj(p4, v4)}?": "= n",
+            f"How many objects are {_adj(p1, v1)}, {_adj(p2, v2)}, "
+            f"{_adj(p3, v3)}, and {_adj(p4, v4)}?": "= n",}
         )
 
     return None
@@ -377,6 +463,9 @@ def _c3(variant: str, a: dict) -> dict[str, str]:
             long=(f"The scene must contain at least one object that is {_adj(p1, v1)}. "
                 f"Whenever an object is {_adj(p1, v1)}, it must avoid being {_adj(p2, v2)}; "
                 f"the combination {_adj(p1, v1)} with {_adj(p2, v2)} is forbidden."),
+            subqa = {,
+            f"How many objects are {_adj(p1, v1)}?": "c > 0",
+            f"How many objects are both {_adj(p1, v1)} and {_adj(p2, v2)}?": "= 0",}
         )
 
     if variant == "1propA_1propC":
@@ -388,6 +477,9 @@ def _c3(variant: str, a: dict) -> dict[str, str]:
                 f"Each object that is {_adj(p1, v1)} must also be {_adj(p2, v2)}."),
             long=(f"The scene must contain at least one object that is {_adj(p1, v1)}. "
                 f"Whenever an object is {_adj(p1, v1)}, it must simultaneously be {_adj(p2, v2)}."),
+            subqa = {
+            f"How many objects are {_adj(p1, v1)}?": "c > 0",
+            f"How many objects are both {_adj(p1, v1)} and {_adj(p2, v2)}?": " = c"}
         )
 
     if variant == "1propA_2propC":
@@ -401,6 +493,11 @@ def _c3(variant: str, a: dict) -> dict[str, str]:
             long=(f"The scene must contain at least one object that is {_adj(p1, v1)}. "
                 f"Whenever an object is {_adj(p1, v1)}, it must be both {_adj(p2, v2)} "
                 f"and {_adj(p3, v3)}; violating either consequent property is forbidden."),
+            subqa = { 
+            f"How many objects are {_adj(p1, v1)}?": "c > 0",
+            f"How many of the {_adj(p1, v1)} objects are also {_adj(p2, v2)}?": "= c",
+            f"How many of the {_adj(p1, v1)} objects are also {_adj(p3, v3)}?": "= c",
+            }
         )
 
     
@@ -415,6 +512,11 @@ def _c3(variant: str, a: dict) -> dict[str, str]:
             long=(f"The scene must contain at least one object that is {_adj(p1, v1)}. "
                 f"The condition {_adj(p1, v1)} triggers three simultaneous requirements: "
                 f"{_adj(p2, v2)}, {_adj(p3, v3)}, and {_adj(p4, v4)}."),
+            subqa = { f"How many objects are {_adj(p1, v1)}?": "c > 0",
+            f"How many of the {_adj(p1, v1)} objects are also {_adj(p2, v2)}?": "= c",
+            f"How many of the {_adj(p1, v1)} objects are also {_adj(p3, v3)}?": "= c",
+            f"How many of the {_adj(p1, v1)} objects are also {_adj(p4, v4)}?": "= c",
+            }    
         )
 
 
@@ -428,6 +530,9 @@ def _c3(variant: str, a: dict) -> dict[str, str]:
             long=(f"The scene must contain at least one object that is not {_adj(p1, v1)}. "
                 f"Among objects in the scene that are not {_adj(p1, v1)}, all of them must be {_adj(p2, v2)}; "
                 f"only {_adj(p1, v1)} objects escape this requirement."),
+            subqa = {f"How many objects are {_not_adj(p1, v1)}?": "c > 0",
+            f"How many objects are both {_not_adj(p1, v1)} and {_not_adj(p2, v2)}?": "= 0",
+            f"How many of the {_not_adj(p1, v1)} objects are also {_adj(p2, v2)}?": "= c",}
         )
 
     if variant == "2propA_1propC":
@@ -439,6 +544,11 @@ def _c3(variant: str, a: dict) -> dict[str, str]:
             long=(f"The scene must contain at least one object that is {_adj(p1, v1)} and {_adj(p2, v2)}. "
                 f"Whenever there is a combination of the following properties, that is, an object is {_adj(p1, v1)} and {_adj(p2, v2)}, "
                 f"it must additionally be {_adj(p3, v3)}."),
+            subqa = {f"How many objects are both {_adj(p1, v1)} and {_adj(p2, v2)}?": "c > 0",
+            f"How many objects are simultaneously {_adj(p1, v1)}, "
+            f"{_adj(p2, v2)}, and {_adj(p3, v3)}?":" = c",
+            f"How many objects are {_adj(p1, v1)} and {_adj(p2, v2)} "
+            f"but not {_adj(p3, v3)}?": "= 0",}
         )
 
     if variant == "2propA_2propC":
@@ -452,6 +562,14 @@ def _c3(variant: str, a: dict) -> dict[str, str]:
             long=(f"The scene must contain at least one object that is {_adj(p1, v1)} and {_adj(p2, v2)}. "
                 f"Whenever there is a combination of the following properties, that is, the object is {_adj(p1, v1)} and {_adj(p2, v2)}, then it "
                 f"requires that the object is also {_adj(p3, v3)} and {_adj(p4, v4)}."),
+            subqa = {
+            f"How many objects are both {_adj(p1, v1)} and {_adj(p2, v2)}?": "c > 0",
+            f"How many objects are both {_adj(p1, v1)} and {_adj(p2, v2)} "
+            f"but not {_adj(p3, v3)}?": "= 0",
+            f"How many objects are both {_adj(p1, v1)} and {_adj(p2, v2)} "
+            f"but not {_adj(p4, v4)}?": "= 0",
+            f"How many objects simultaneously satisfy {_adj(p1, v1)}, {_adj(p2, v2)}, "
+            f"{_adj(p3, v3)}, and {_adj(p4, v4)}?": "= c",}
         )
     
     if variant == "2propA_neg_2propC":
@@ -465,6 +583,12 @@ def _c3(variant: str, a: dict) -> dict[str, str]:
             long=(f"The scene must contain at least one object that is {_adj(p1, v1)} while not being {_adj(p2, v2)}. "
                 f"An object that is {_adj(p1, v1)} while not being {_adj(p2, v2)} must "
                 f"satisfy being {_adj(p3, v3)} and {_adj(p4, v4)} simultaneously."),
+            subqa = {
+            f"How many objects are {_adj(p1, v1)} but {_not_adj(p2, v2)}?": "c > 0",
+            f"How many objects are {_adj(p1, v1)} and {_not_adj(p2, v2)} "
+            f"but not {_adj(p3, v3)}?": "= 0",
+            f"How many objects are {_adj(p1, v1)} and {_not_adj(p2, v2)} "
+            f"but not {_adj(p4, v4)}?": "= 0",}
         )
     
     if variant == "3propA_1propC_neg":
@@ -479,6 +603,16 @@ def _c3(variant: str, a: dict) -> dict[str, str]:
                 f"{_adj(p2, v2)}, and {_adj(p3, v3)}. "
                 f"An object satisfying the following three antecedent conditions of being ({_adj(p1, v1)}, "
                 f"{_adj(p2, v2)}, and {_adj(p3, v3)}) is forbidden from being {_adj(p4, v4)}."),
+            subqa = {f"State True or False: The image contains no objects that are {_adj(p1, v1)}.":"False",
+            f"State True or False: The image contains objects that are {_adj(p2, v2)}.":"True",
+            f"State True or False: The image contains no objects that are {_adj(p3, v3)}.":"False",
+            f"State True or False: The image contains objects that are {not_adj(p4, v4)}.":"True",
+            f"How many objects are simultaneously {_adj(p1, v1)}, "
+            f"{_adj(p2, v2)}, and {_adj(p3, v3)}?": "c > 0",
+            f"How many objects are {_adj(p1, v1)}, {_adj(p2, v2)}, "
+            f"{_adj(p3, v3)}, and {_not_adj(p4, v4)}?": "= c",
+            f"How many objects are simultaneously {_adj(p1, v1)}, {_adj(p2, v2)}, "
+            f"{_adj(p3, v3)}, and {_adj(p4, v4)}?":"= 0",}
         )
 
 
@@ -495,6 +629,16 @@ def _c3(variant: str, a: dict) -> dict[str, str]:
                 f"{_adj(p2, v2)}, and {_adj(p3, v3)}. "
                 f"An object that is {_adj(p1, v1)}, {_adj(p2, v2)}, and {_adj(p3, v3)} "
                 f"is required to additionally be {_adj(p4, v4)}."),
+            subqa = { f"State True or False: The image contains no objects that are {_adj(p1, v1)}.":"False",
+            f"State True or False: The image contains objects that are {_adj(p2, v2)}.":"True",
+            f"State True or False: The image contains no objects that are {_adj(p3, v3)}.":"False",
+            f"State True or False: The image contains objects that are {_adj(p4, v4)}.":"True",
+            f"How many objects are simultaneously {_adj(p1, v1)}, "
+            f"{_adj(p2, v2)}, and {_adj(p3, v3)}?": "c > 0",
+            f"How many objects are {_adj(p1, v1)}, {_adj(p2, v2)}, "
+            f"{_adj(p3, v3)}, and {_not_adj(p4, v4)}?": "= 0",
+            f"How many objects are simultaneously {_adj(p1, v1)}, {_adj(p2, v2)}, "
+            f"{_adj(p3, v3)}, and {_adj(p4, v4)}?":"= c",}
         )
 
     return None
@@ -512,6 +656,16 @@ def _c4(variant: str, a: dict) -> dict[str, str]:
                     f"{_obj(p2, v2)}, and the latter is {_dir(d2)} {_obj(p3, v3)}."),
             long=(f"There is at least one triple of distinct objects such that the first is {_obj(p1, v1)} which is "
                   f"{_dir(d1)} the second object, {_obj(p2, v2)}, which per se is {_dir(d2)} the third object, {_obj(p3, v3)}."),
+            subqa = {f"State True or False: The image contains {_obj(p1, v1)}.":"True",
+                f"State True or False: The image contains no objects that are {_adj(p2, v2)}.":"False",
+                f"State True or False: The image contains no objects that are {_adj(p3, v3)}.":"False",
+                f"Does the image contain {_obj(p1, v1)} that is {_dir(d1)} "
+                f"{_obj(p2, v2)}?": "yes",
+                f"State True or False: The image does not contain {_obj(p2, v2)} that is {_dir(d2)} "
+                f"{_obj(p3, v3)}?": "False",
+                f"Does the image contain {_obj(p1, v1)} that is {_dir(d1)} "
+                f"{_obj(p2, v2)} that is {_dir(d2)} {_obj(p3, v3)}?":
+                    "yes",}
         )
 
     if variant == "1prop_2hop_mix":
@@ -524,6 +678,17 @@ def _c4(variant: str, a: dict) -> dict[str, str]:
                     f"{_obj(p2, v2)}, and the latter is {_dir(d2)} {_not_obj(p3, v3)}."),
             long=(f"There is at least one triple of distinct objects such that the first is {_obj(p1, v1)} which is "
                   f"{_dir(d1)} the second object, {_obj(p2, v2)}, which per se is {_dir(d2)} the third object, {_not_obj(p3, v3)}."),
+        
+            subqa = {f"State True or False: The image contains {_obj(p1, v1)}.":"True",
+                f"State True or False: The image contains no objects that are {_adj(p2, v2)}.":"False",
+                f"State True or False: The image contains objects that are {not_adj(p3, v3)}.":"True",
+                f"Does the image contain {_obj(p1, v1)} that is {_dir(d1)} "
+                f"{_obj(p2, v2)}?": "yes",
+                f"State True or False: The image does not contain {_obj(p2, v2)} that is {_dir(d2)} "
+                f"{not_obj(p3, v3)}?": "False",
+                f"Does the image contain {_obj(p1, v1)} that is {_dir(d1)} "
+                f"{_obj(p2, v2)} that is {_dir(d2)} {not_obj(p3, v3)}?":
+                    "yes",}
         )
         
     if variant == "1prop_shared":
@@ -536,6 +701,15 @@ def _c4(variant: str, a: dict) -> dict[str, str]:
                     f"{_obj(p1, v1)}, and also {_dir(d2)} {_obj(p2, v2)}."),
             long=(f"There exists at least one triple of distinct objects such that the following constraints are satisfied: "
                   f"{_obj(p3, v3)} {_dir(d1)} {_obj(p1, v1)}, and is also {_dir(d2)} {_obj(p2, v2)}."),
+            subqa = {
+                f"State True or False: The image contains {_obj(p1, v1)}.":"True",
+                f"State True or False: The image contains no objects that are {_adj(p2, v2)}.":"False",
+                f"State True or False: The image contains no objects that are {_adj(p3, v3)}.":"False",
+                f"Does the image contain {_obj(p3, v3)} that is {_dir(d1)} {_obj(p1, v1)}?":"yes",
+                f"State True or False: The image does not contain {_obj(p3, v3)} that is {_dir(d2)} {_obj(p2, v2)}?":
+                    "False",
+                f"Does the image contain {_obj(p3, v3)} that is both {_dir(d1)} {_obj(p1, v1)} and {_dir(d2)} {_obj(p2, v2)}?": "yes",
+            }
         )
         
     if variant == "1prop_shared_mix":
@@ -548,6 +722,16 @@ def _c4(variant: str, a: dict) -> dict[str, str]:
                     f"{_obj(p1, v1)}, and also {_dir(d2)} {_not_obj(p2, v2)}."),
             long=(f"There exists at least one triple of distinct objects such that the following constraints are satisfied: "
                   f" {_obj(p3, v3)} {_dir(d1)} {_obj(p1, v1)}, and is also {_dir(d2)} {_not_obj(p2, v2)}."),
+        
+            subqa = {
+                f"State True or False: The image contains {_obj(p1, v1)}.":"True",
+                f"State True or False: The image contains no objects that are {_adj(p2, v2)}.":"False",
+                f"State True or False: The image contains no objects that are {_adj(p3, v3)}.":"False",
+                f"Does the image contain {_obj(p3, v3)} that is {_dir(d1)} {_obj(p1, v1)}?":"yes",
+                f"State True or False: The image does not contain {_obj(p3, v3)} that is {_dir(d2)} {_not_obj(p2, v2)}?":
+                    "False",
+                f"Does the image contain {_obj(p3, v3)} that is both {_dir(d1)} {_obj(p1, v1)} and {_dir(d2)} {_not_obj(p2, v2)}?": "yes",
+            }
         )
     
     return None
@@ -567,6 +751,13 @@ def _c5(variant: str, a: dict) -> dict[str, str]:
                 f"least one distinct object that is {_adj(p2, v2)}. "
                 f"Whenever there is a pair of objects where the first is {_adj(p1, v1)} and the second is "
                 f"{_adj(p2, v2)}, it must be ensured that the first is always {_dir(d1)} the second."),
+            subqa = {f"If there is {_obj(p1, v1)} and {_obj(p2, v2)}, then is the former {_dir(d1)} the latter?":"yes",
+                    f"Is there {_obj(p1, v1)} in image?":"yes",
+                    f"Sate True or False: There is no {_obj(p2, v2)} in image?":"False",
+                    f"How many pairs of {_obj(p1, v1)} and {_obj(p2, v2)} exists in the image such that {_obj(p1, v1)} is not {_dir(d1)} {_obj(p2, v2)}?":"= 0",
+                    f"How many pairs of {_obj(p1, v1)} and {_obj(p2, v2)} exists in the image?": "c>0",
+                    f"How many pairs of {_obj(p1, v1)} and {_obj(p2, v2)} exists in the image such that {_obj(p1, v1)} is {_dir(d1)} {_obj(p2, v2)}?":"= c",
+                    }
         )
 
     if variant == "pair_propRelA_propC":
@@ -582,6 +773,13 @@ def _c5(variant: str, a: dict) -> dict[str, str]:
                 f"For every pair of distinct {_bare(p1, v1)} and "
                 f"{_bare(p2, v2)}, where the {_bare(p1, v1)} is {_dir(d1)} the {_bare(p2, v2)}, "
                 f"it must be ensured that the {_bare(p2, v2)} is also {_adj(p3, v3)}."),
+            subqa = {f"Is there {_obj(p1, v1)} in image?":"yes",
+                    f"Sate True or False: There is no {_obj(p2, v2)} in image?":"False",
+                    f"Sate True or False: There exists {_obj(p2, v2)} that is {_adj(3, v3)}?":"True",
+                f"How many pairs of {_obj(p1, v1)} and {_obj(p2, v2)} exists in the image such that {_obj(p1, v1)} {_dir(d1)} {_obj(p2, v2)}?": "c>0",
+                    f"If there is {_obj(p1, v1)} {_dir(d1)} {_obj(p2, v2)}, then what is the {p3} of the latter?": f"{v3}", 
+
+            }
         )
     
     if variant == "pair_propRelA_RelC":
@@ -596,6 +794,12 @@ def _c5(variant: str, a: dict) -> dict[str, str]:
                 f"distinct {_bare(p2, v2)}. "
                 f"For every pair of distinct {_bare(p1, v1)} and {_bare(p2, v2)}, where the {_bare(p1, v1)} is {_dir(d1)} "
                 f" the {_bare(p2, v2)}, it must be ensured that the {_bare(p1, v1)} is also {_dir(d2)} the {_bare(p2, v2)}."),
+            subqa = {f"Is there {_obj(p1, v1)} in image?":"yes",
+                    f"Sate True or False: There is no {_obj(p2, v2)} in image?":"False",
+                f"Does the image contain an {_obj(p1, v1)} that is {_dir(d1)} "
+                f"a distinct {_obj(p2, v2)}?":"yes",
+                f"State true or False: If there is {_obj(p1, v1)} {_dir(d1)} {_obj(p2, v2)}, then is it also true that {_obj(p1, v1)} {_dir(d2)} {_obj(p2, v2)}?":
+                    "True",}
         )
 
     if variant == "pair_relA_propC":
@@ -610,6 +814,22 @@ def _c5(variant: str, a: dict) -> dict[str, str]:
                 f"stands {_dir(d1)} the second. "
                 f"For every distinct pair of objects where the first stands {_dir(d1)} the second, "
                 f"the first is required to be {_adj(p1, v1)}."),
+            
+            subqa={f"How many pairs of distinct objects have the first object {_dir(d1)} "
+                f"the second?":
+                    "c > 0",
+
+                f"Does the image contain an object that is {_dir(d1)} another object?":
+                    "yes",
+
+                f"How many objects that are {_dir(d1)} another object are not "
+                f"{_adj(p1, v1)}?":
+                    "= 0",
+
+                f"Does every object that is {_dir(d1)} another object satisfy "
+                f"{_adj(p1, v1)}?":
+                    "yes",
+            }
         )
 
     
@@ -626,6 +846,14 @@ def _c5(variant: str, a: dict) -> dict[str, str]:
                 f"{_bare(p2, v2)}, and one distinct {_bare(p3, v3)}. "
                 f"If there are three distinct objects such that the first is {_obj(p1,v1)}, the second is {_obj(p2,v2)} and the third is {_obj(p3,v3)}, then, "
                 f"it must be that the {_obj(p1,v1)} is {_dir(d1)} the {_obj(p2,v2)} and the {_obj(p2,v2)} is {_dir(d2)} the {_obj(p3,v3)}."),
+            subqa = {f"State True or False: The scene contains at least one {_bare(p1, v1)}": "True",
+                    f"State True or False: The scene does not contain {_bare(p2, v2)}": "False",
+                    f"State True or False: The scene contain {_bare(p3, v3)}": "True",
+                    f"State True or False: For every triplet of objects, where the first is {_adj(p1,v1)}, the second is {_adj(p2,v2)}, and the third is {_adj(p3,v3)}, then "
+                  f"the first is standing {_dir(d1)} the second": "True",
+                   f"State True or False: For every triplet of objects, where the first is {_adj(p1,v1)}, the second is {_adj(p2,v2)}, and the third is {_adj(p3,v3)}, then "
+                  f"the second is not standing {_dir(d2)} the second": "False",
+            }
         )
 
     if variant == "triple_propRelA_relC":
@@ -641,6 +869,14 @@ def _c5(variant: str, a: dict) -> dict[str, str]:
                 f"distinct {_bare(p2, v2)}, and a further distinct {_bare(p3, v3)}. "
                 f"If there are three distinct objects such that the first is {_obj(p1,v1)}, the second is {_obj(p2,v2)} and the third is {_obj(p3,v3)}, and "
                 f"the {_obj(p1,v1)} is {_dir(d1)} the {_obj(p2,v2)}, then, the {_obj(p2,v2)} must be {_dir(d2)} the {_obj(p3,v3)}."),
+            subqa = {f"State True or False: The scene contains at least one {_bare(p1, v1)}": "True",
+                    f"State True or False: The scene does not contain {_bare(p2, v2)}": "False",
+                    f"State True or False: The scene contain {_bare(p3, v3)}": "True",
+                    f"There exists an object that is {_adj(p1,v1)} and an object that is {_adj(p2,v2)}, such that "
+                  f"the first is standing {_dir(d1)} the second": "True",
+                  f"Does every {_obj(p1, v1)} that is {_dir(d1)} an {_obj(p2, v2)} also have that {_obj(p2, v2)} {_dir(d2)} the {_obj(p3, v3)}?":
+                    "yes",
+                  }
         )
 
     return None
@@ -661,6 +897,13 @@ def _c6(variant: str, a: dict) -> dict[str, str]:
             long=non_vacuity_clause +
                 (f"There exists at least one {_bare(p1, v1)} that, "
                 f"for every {_bare(p2, v2)} in the scene, stands {_dir(d1)} it."),
+            subqa = { f"How many objects that are {_adj(p2, v2)} are in the image?":
+                    "c > 0",
+                    f"How many objects that are {_adj(p1, v1)} are in the image?":
+                    "d > 0",
+                    f"Is there a specific object that is {_adj(p1, v1)} such that it is standing {_dir(d1)} every object that 
+                    is {_adj(p2, v2)} ?": "yes",
+                    }
         )
 
     if variant == "1prop_neg":
@@ -675,6 +918,13 @@ def _c6(variant: str, a: dict) -> dict[str, str]:
                 f"{_not_quant('every', p2, v2)} in the scene."),
             long=non_vacuity_clause +
                 (f"Among all the objects in the scene, there exists at least one {_bare(p1, v1)} such that it is {_dir(d1)} every {_not_bare(p2, v2)}."),
+            subqa = { f"How many objects that are {_not_adj(p2, v2)} are in the image?":
+                    "c > 0",
+                    f"How many objects that are {_adj(p1, v1)} are in the image?":
+                    "d > 0",
+                    f"Is there a specific object that is {_adj(p1, v1)} such that it is standing {_dir(d1)} every object that 
+                    is {_not_adj(p2, v2)} ?": "yes",
+                    }
         )
 
     if variant == "2prop":
@@ -689,6 +939,14 @@ def _c6(variant: str, a: dict) -> dict[str, str]:
             long=non_vacuity_clause +
                 (f"There exists at least one {_bare(p1, v1)} which is {_adj(p2, v2)} such that it is {_dir(d1)}  "
                 f"every {_bare(p3, v3)} that is also {_adj(p4, v4)} in the scene."),
+            subqa = {f"How many objects that are {_adj(p3, v3)} and {_adj(p4, v4)} are in the image?":
+                    "c > 0",
+                    f"How many objects that are {_adj(p1, v1)} and {_adj(p2, v2)}  are in the image?":
+                    "d > 0",
+                    f"Is there a specific object that is {_adj(p1, v1)} and {_adj(p2, v2)} such that it is standing {_dir(d1)} every object that 
+                    is {_adj(p3, v3)} and {_adj(p4, v4)} ?": "yes",
+            }
+
         )
 
     if variant == "2prop_neg":
@@ -703,6 +961,13 @@ def _c6(variant: str, a: dict) -> dict[str, str]:
             long=non_vacuity_clause +
                 (f"There exists at least one {_bare(p1, v1)} which is {_adj(p2, v2)} such that it is {_dir(d1)}  "
                 f"every {_bare(p3, v3)} that is also {_not_adj(p4, v4)} in the scene."),
+            subqa = {f"How many objects that are {_adj(p3, v3)} and {_not_adj(p4, v4)} are in the image?":
+                    "c > 0",
+                    f"How many objects that are {_adj(p1, v1)} and {_adj(p2, v2)}  are in the image?":
+                    "d > 0",
+                    f"Is there a specific object that is {_adj(p1, v1)} and {_adj(p2, v2)} such that it is standing {_dir(d1)} every object that 
+                    is {_adj(p3, v3)} and {_not_adj(p4, v4)} ?": "yes",
+            }
         )
     return None
 
@@ -720,6 +985,13 @@ def _c7(variant: str, a: dict) -> dict[str, str]:
             long=(f"The scene must contain at least one object that is {_adj(p1, v1)}. "
                 f"Every object that is {_adj(p1, v1)} is required to have {_exactly(n)} {'witness' if n=='1' else 'witnesses'}: "
                   f"A witness is {_not_obj(p2, v2)} standing {_dir(d1)} it."),
+            subqa = {f"How many objects that are {_adj(p1, v1)} are in the image?":
+                    "c > 0",
+                    f"State True or False: If there is an object that is {_adj(p1, v1)}, you can also find some {_not_bare(p2, v2)} that is standing "
+                    f"{_dir(d1)} it?":"= True",
+                    f"If there is an object that is {_adj(p1, v1)}, how many objects that are {_not_adj(p2, v2)} can you find that are standing "
+                    f"{_dir(d1)} it?":"= {n}",
+                    }
         )
 
     if variant == "1prop_exact":
@@ -734,6 +1006,13 @@ def _c7(variant: str, a: dict) -> dict[str, str]:
             long=(f"The scene must contain at least one object that is {_adj(p1, v1)}. "
                 f"Every object that is {_adj(p1, v1)} is required to have {_exactly(n)} {'witness' if n=='1' else 'witnesses'}: "
                 f"A witness is {_obj(p2, v2)} standing {_dir(d1)} it."),
+            subqa = {f"How many objects that are {_adj(p1, v1)} are in the image?":
+                    "c > 0",
+                    f"State True or False: If there is an object that is {_adj(p1, v1)}, you can also find some {_bare(p2, v2)} that is standing "
+                    f"{_dir(d1)} it?":"= True",
+                    f"If there is an object that is {_adj(p1, v1)}, how many objects that are {_adj(p2, v2)} can you find that are standing "
+                    f"{_dir(d1)} it?":"= {n}",
+                    }
         )
 
     if variant == "1prop_propRel_neg":
@@ -748,6 +1027,13 @@ def _c7(variant: str, a: dict) -> dict[str, str]:
             long=(f"The scene must contain at least one object that is {_not_adj(p1, v1)}. "
                 f"Every object that is {_not_adj(p1, v1)} is required to have a witness: "
                 f"A witness is {_obj(p2, v2)} that stands {_dir(d1)} it."),
+            subqa = {f"How many objects that are {_not_adj(p1, v1)} are in the image?":
+                    "c > 0",
+                    f"State True or False: If there is an object that is {_not_adj(p1, v1)}, you can also find some {_bare(p2, v2)} that is standing "
+                    f"{_dir(d1)} it?":"= True",
+                    f"If there is an object that is {_not_adj(p1, v1)}, how many objects that are {_adj(p2, v2)} can you find that are standing "
+                    f"{_dir(d1)} it?":"d > 0",
+                    }
         )
 
     if variant == "1prop_propRel":
@@ -762,6 +1048,13 @@ def _c7(variant: str, a: dict) -> dict[str, str]:
             long=(f"The scene must contain at least one object that is {_adj(p1, v1)}. "
                 f"Every object that is {_adj(p1, v1)} is required to have a witness: "
                 f"A witness is {_obj(p2, v2)} that stands {_dir(d1)} it."),
+            subqa = {f"How many objects that are {_adj(p1, v1)} are in the image?":
+                    "c > 0",
+                    f"State True or False: If there is an object that is {_adj(p1, v1)}, you can also find some {_bare(p2, v2)} that is standing "
+                    f"{_dir(d1)} it?":"= True",
+                    f"If there is an object that is {_adj(p1, v1)}, how many objects that are {_adj(p2, v2)} can you find that are standing "
+                    f"{_dir(d1)} it?":"d > 0",
+                    }
         )
 
     if variant == "propRel_propRel_neg":
@@ -777,6 +1070,15 @@ def _c7(variant: str, a: dict) -> dict[str, str]:
             long=(f"The scene must contain at least one {_bare(p1, v1)} that is {_dir(d1)} a {_bare(p2, v2)}. "
                 f"Whenever there is an object that is {_adj(p1, v1)} and standing {_dir(d1)} {_obj(p2, v2)}, "
                 f"there must always exists some {_not_bare(p3, v3)} standing {_dir(d2)} it."),
+            subqa = {
+                    f"State True or False: There exists no object that is {_adj(p1, v1)} in the image.":"False",
+                    f"How many objects that are {_adj(p1, v1)} and that is also standing {_dir(d1)} a {_bare(p2, v2)} are in the image?":
+                    "c > 0",
+                    f"State True or False: If there is an object that is {_adj(p1, v1)} and is standing {_dir(d1)} a {_bare(p2, v2)}, you can also find some {_not_bare(p3, v3)} that is standing "
+                    f"{_dir(d2)} it?":"= True",
+                    f"If there is an object that is {_adj(p1, v1)} and that is also standing {_dir(d1)} a {_bare(p2, v2)} , how many objects that are {_not_adj(p3, v3)} can you find that are standing "
+                    f"{_dir(d2)} it?":"d > 0",
+                    }
         )
 
 
@@ -793,6 +1095,15 @@ def _c7(variant: str, a: dict) -> dict[str, str]:
             long=(f"The scene must contain at least one {_bare(p1, v1)} that is {_dir(d1)} a {_bare(p2, v2)}. "
                 f"Whenever there is an object that is {_adj(p1, v1)} and standing {_dir(d1)} {_obj(p2, v2)}, "
                 f"there must always exists some {_bare(p3, v3)} standing {_dir(d2)} it."),
+            subqa = {
+                    f"State True or False: There exists no object that is {_adj(p1, v1)} in the image.":"False",
+                    f"How many objects that are {_adj(p1, v1)} and that is also standing {_dir(d1)} a {_bare(p2, v2)} are in the image?":
+                    "c > 0",
+                    f"State True or False: If there is an object that is {_adj(p1, v1)} and is standing {_dir(d1)} a {_bare(p2, v2)}, you can also find some {_bare(p3, v3)} that is standing "
+                    f"{_dir(d2)} it?":"= True",
+                    f"If there is an object that is {_adj(p1, v1)} and that is also standing {_dir(d1)} a {_bare(p2, v2)} , how many objects that are {_adj(p3, v3)} can you find that are standing "
+                    f"{_dir(d2)} it?":"d > 0",
+                    }
         )
 
     return None
@@ -807,6 +1118,12 @@ def _c8(variant: str, a: dict) -> dict[str, str]:
             medium=f"The scene must contain {_at_least(n)} {_bare(p1, v1) if n=='1' else _objs(p1, v1)}.",
             long=(f"The following cardinality constraint is to be satisfied by the scene generated: The count of objects that are {_adj(p1, v1)} in the scene must be "
                   f"at least {n}."),
+            subqa={
+                f"How many objects that are {_adj(p1, v1)} are in the image?":
+                    f"c >= {n}",
+                f"State True or False: Are there at least {n} objects that are {_adj(p1, v1)} in the image?":
+                    "= True",
+            }
         )
     
     if variant == "1prop_atleast_neg":
@@ -816,16 +1133,29 @@ def _c8(variant: str, a: dict) -> dict[str, str]:
             short=f"There {'is' if n == '1' else 'are'} {_at_least(n)} {_not_bare(p1, v1) if n=='1' else _not_objs(p1, v1)}.",
             medium=f"The scene must contain {_at_least(n)} {_n_obj(n)} that {'is' if n == '1' else 'are'} {_not_adj(p1, v1)}.",
             long=(f"The following cardinality constraint is to be satisfied by the scene generated: At least {n} {_n_obj(n)} in the scene must not be {_adj(p1, v1)}."),
+            subqa={
+                f"How many objects that are {_not_adj(p1, v1)} are in the image?":
+                    f"c >= {n}",
+                f"State True or False: Are there at least {n} objects that are {_not_adj(p1, v1)} in the image?":
+                    "True",
+            }
         )
 
     
     if variant == "1prop_exact":
         p1, v1, n = _g(a, "P1'", "V1'", "N'")
-        return dict(
+        return dict( 
             short=f"There {'is' if n=='1' else 'are'} {_exactly(n)} {_bare(p1, v1) if n=='1' else _objs(p1, v1)}.",
             medium=f"The scene must contain {_exactly(n)} {_bare(p1, v1) if n=='1' else _objs(p1, v1)}.",
             long=(f"The following cardinality constraint is to be satisfied by the scene generated: The count of objects that are {_adj(p1, v1)} in the scene must reach "
                   f"exactly {n}."),
+            subqa={
+                f"How many objects that are {_adj(p1, v1)} are in the image?":
+                    f" = {n}",
+                f"State True or False: There are less than {n} objects that are {_adj(p1, v1)} in the image?":
+                    "False",
+            }
+        
         )
     
     if variant == "1prop_exact_neg":
@@ -835,6 +1165,12 @@ def _c8(variant: str, a: dict) -> dict[str, str]:
             short=f"There {'is' if n == '1' else 'are'} {_exactly(n)} {_not_bare(p1, v1) if n=='1' else _not_objs(p1, v1)}.",
             medium=f"The scene must contain {_exactly(n)} {_n_obj(n)} that {'is' if n == '1' else 'are'} {_not_adj(p1, v1)}.",
             long=(f"The following cardinality constraint is to be satisfied by the scene generated: Exactly {n} {_n_obj(n)} in the scene must not be {_adj(p1, v1)}."),
+            subqa={
+                f"How many objects that are {_not_adj(p1, v1)} are in the image?":
+                    f" = {n}",
+                f"State True or False: There are less than {n} objects that are {_not_adj(p1, v1)} in the image?":
+                    "False",
+            }
         )
     
     if variant == "1prop_atmost":
@@ -843,6 +1179,12 @@ def _c8(variant: str, a: dict) -> dict[str, str]:
             short=f"There {'is' if n=='1' else 'are'} {_at_most(n)} {_bare(p1, v1) if n=='1' else _objs(p1, v1)}.",
             medium=f"The scene must contain {_at_most(n)} {_bare(p1, v1) if n=='1' else _objs(p1, v1)}.",
             long=(f"The following cardinality constraint is to be satisfied by the scene generated: The count of objects that are {_adj(p1, v1)} in the scene must not exceed {n}."),
+            subqa={
+                f"How many objects that are {_adj(p1, v1)} are in the image?":
+                    f" <= {n}",
+                f"State True or False: There are more than {n} objects that are {_adj(p1, v1)} in the image?":
+                    "False",
+            }
         )
     
     if variant == "1prop_atmost_neg":
@@ -852,6 +1194,12 @@ def _c8(variant: str, a: dict) -> dict[str, str]:
             short=f"There {'is' if n == '1' else 'are'} {_at_most(n)} {_not_bare(p1, v1) if n=='1' else _not_objs(p1, v1)}.",
             medium=f"The scene must contain {_at_most(n)} {_n_obj(n)} that {'is' if n == '1' else 'are'} {_not_adj(p1, v1)}.",
             long=(f"The following cardinality constraint is to be satisfied by the scene generated: The count of objects that are not {_adj(p1, v1)} in the scene must not be more than {n}."),
+             subqa={
+                f"How many objects that are {_not_adj(p1, v1)} are in the image?":
+                    f" <= {n}",
+                f"State True or False: There are more than {n} objects that are {_not_adj(p1, v1)} in the image?":
+                    "False",
+            }
         )
     
     
@@ -860,6 +1208,8 @@ def _c8(variant: str, a: dict) -> dict[str, str]:
         p1, v1, p2, v2, d1, n = _g(a, "P1'", "V1'", "P2'", "V2'", "D1'", "N'")
         op = ("exactly" if "exact" in variant
               else "at least" if "atleast" in variant else "at most")
+        count_op = ("=" if "exact" in variant
+                    else ">=" if "atleast" in variant else "<=")
         return dict(
             short=(f"There {'is' if n=='1' else 'are'} {op} {n} {_bare(p1, v1) if n=='1' else _objs(p1, v1)} that {'does' if n=='1' else 'do'} not "
                    f"stand {_dir(d1)} some other {_bare(p2, v2)}."),
@@ -867,6 +1217,12 @@ def _c8(variant: str, a: dict) -> dict[str, str]:
                     f"{'does' if n=='1' else 'do'} not stand {_dir(d1)} some other {_bare(p2, v2)}."),
             long=(f"The scene must satisfy the following cardinality constraint. The number of {_objs(p1, v1)} that fail to stand {_dir(d1)} "
                   f"some other distinct {_bare(p2, v2)} must be {op} {n}."),
+
+            subqa={
+                f"How many objects that are {_adj(p1, v1)} are in the image that do not stand {_dir(d1)} some other {_bare(p2, v2)}?":
+                    f"c {count_op} {n}",
+                f"State True or False: There exists an object that is {_adj(p1, v1)} in the image?":"= True",
+            }
         )
 
     if variant in ("1prop_exact_relational", "1prop_atleast_relational",
@@ -874,6 +1230,8 @@ def _c8(variant: str, a: dict) -> dict[str, str]:
         p1, v1, p2, v2, d1, n = _g(a, "P1'", "V1'", "P2'", "V2'", "D1'", "N'")
         op = ("exactly" if "exact" in variant
               else "at least" if "atleast" in variant else "at most")
+        count_op = ("=" if "exact" in variant
+                    else ">=" if "atleast" in variant else "<=")
         return dict(
             short=(f"There {'is' if n=='1' else 'are'} {op} {n} {_bare(p1, v1) if n=='1' else _objs(p1, v1)} that {'is' if n=='1' else 'are'} "
                    f"standing {_dir(d1)} some other  {_bare(p2, v2)}."),
@@ -881,6 +1239,11 @@ def _c8(variant: str, a: dict) -> dict[str, str]:
                     f"{'is' if n=='1' else 'are'} standing {_dir(d1)} some other {_bare(p2, v2)}."),
             long=(f"The scene must satisfy the following cardinality constraint. The number of {_objs(p1, v1)} that stand {_dir(d1)} "
                   f"some other distinct {_bare(p2, v2)} must be {op} {n}."),
+            subqa={
+                f"How many objects that are {_adj(p1, v1)} are in the image that stand {_dir(d1)} some other {_bare(p2, v2)}?":
+                    f"c {count_op} {n}",
+                f"State True or False: There exists an object that is {_adj(p1, v1)} in the image?":"= True",
+            }
         )
     
     if variant in ("2prop_exact", "2prop_atleast",
@@ -888,11 +1251,17 @@ def _c8(variant: str, a: dict) -> dict[str, str]:
         p1, v1, p2, v2, n = _g(a, "P1'", "V1'", "P2'", "V2'","N'")
         op = ("exactly" if "exact" in variant
               else "at least" if "atleast" in variant else "at most")
+        count_op = ("=" if "exact" in variant
+                    else ">=" if "atleast" in variant else "<=")
         return dict(
             short=f"There {'is' if n=='1' else 'are'} {op} {n} {_n_obj(n)} that {'is' if n=='1' else 'are'} both {_adj(p1, v1)} and {_adj(p2, v2)}.",
             medium=f"The scene must contain {op} {n} {_n_obj(n)} that {'is' if n=='1' else 'are'} both {_adj(p1, v1)} and {_adj(p2, v2)}.",
             long=(f"The following cardinality constraint is to be satisfied by the scene generated: The count of objects that are {_adj(p1, v1)} and {_adj(p2, v2)} simultaneously in the scene must reach "
                   f"{op} {n}."),
+            subqa={
+                f"How many objects that are both {_adj(p1, v1)} and {_adj(p2, v2)} are in the image?":
+                    f"{count_op} {n}",
+                }    
         )
        
     if variant in ("2prop_exact_neg", "2prop_atleast_neg",
@@ -905,6 +1274,10 @@ def _c8(variant: str, a: dict) -> dict[str, str]:
             medium=f"The scene must contain {op} {n} {_n_obj(n)} that {'is' if n=='1' else 'are'} both {_adj(p1, v1)} and {_not_adj(p2, v2)}.",
             long=(f"The following cardinality constraint is to be satisfied by the scene generated: The count of objects that are {_adj(p1, v1)} and {_not_adj(p2, v2)} simultaneously in the scene must reach "
                   f"{op} {n}."),
+            subqa={
+                f"How many objects that are both {_adj(p1, v1)} and {_not_adj(p2, v2)} are in the image?":
+                    f"{count_op} {n}",
+                }    
         )
 
     return None
@@ -925,6 +1298,17 @@ def _c9(variant: str, a: dict) -> dict[str, str]:
                 f"The scene enforces a balance: the cardinality of objects that are {_adj(p1, v1)} must exactly match the cardinality of objects that are "
                 f"{_adj(p2, v2)}."),
 
+            subqa = {
+                 f"How many {_obj(p1, v1)} objects are in the image?":
+                    "c > 0",
+
+                f"How many {_obj(p2, v2)} objects are in the image?":
+                    " = c",
+
+                f"State True or False: The number of {_obj(p1, v1)} is not equal to the "
+                f"number of {_obj(p2, v2)}?":"False",
+
+            }
         )
 
 
@@ -943,6 +1327,15 @@ def _c9(variant: str, a: dict) -> dict[str, str]:
                   f"The scene balances two groups: the first group is the collection of objects that are not "
                   f"{_adj(p1, v1)} but  {_adj(p2, v2)}, and the second group is the collection of objects that are not "
                   f"{_adj(p3, v3)} but {_adj(p4, v4)}. It is not possible that the size of the first group is not equal to the size of the second group."),
+            
+            subqa = {
+                 f"How many objects that are ({_not_adj(p1, v1)} but are {_adj(p2, v2)}) exists in the image?":
+                    "c > 0",
+
+                f"How many objects that are ({_not_adj(p3, v3)} but are {_adj(p4, v4)}) exists in the image?":
+                    " = c",
+                }
+        
         )
     
 
@@ -961,6 +1354,13 @@ def _c9(variant: str, a: dict) -> dict[str, str]:
                 f"The scene requires equal cardinality between two groups: the first group being the collection of objects that are both "
                 f"{_adj(p1, v1)} and {_adj(p2, v2)}, and the second group being the collection of objects that are both "
                 f"{_adj(p3, v3)} and {_adj(p4, v4)}. It is not possible that the size of the first group is not equal to the size of the second group."),
+            subqa = {
+                 f"How many objects that are ({_adj(p1, v1)} and {_adj(p2, v2)}) exists in the image?":
+                    "c > 0",
+
+                f"How many objects that are ({_adj(p3, v3)} and {_adj(p4, v4)}) exists in the image?":
+                    " = c",
+                }
         )
 
     return None

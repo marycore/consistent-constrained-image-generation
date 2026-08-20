@@ -1,14 +1,14 @@
 #!/bin/bash
-#SBATCH -D /users/sbsh670/CCIG_Eval/ccig-evaluation/src/clipscore   # Working directory
-#SBATCH --job-name clip-clevr-training                      # Job name
+#SBATCH -D /users/sbsh670/CCIG_Eval/ccig-evaluation   # Working directory
+#SBATCH --job-name perception_accuracy                      # Job name
 #SBATCH --partition=gpu-a100                       # gpu-a100 Select the correct partition.
 #SBATCH --nodes=1                                  # Run on 1 nodes (each node has 48 cores)
 #SBATCH --ntasks-per-node=1                        # Run one task
 #SBATCH --cpus-per-task=4                          # Use 4 cores, most of the procesing happens on the GPU
 #SBATCH --mem=24GB                                 # Expected amount CPU RAM needed (Not GPU Memory)
-#SBATCH --time=24:00:00                            # Expected amount of time to run Time limit hrs:min:sec
-#SBATCH -e /users/sbsh670/data/ccig-models/clip-clevr/trainFS_/%x_%j.e                         # Standard output and error log [%j is replaced with the jobid]
-#SBATCH -o /users/sbsh670/data/ccig-models/clip-clevr/trainFS_/%x_%j.o                         # [%x with the job name], make sure 'results' folder exists.
+#SBATCH --time=02:30:00                            # Expected amount of time to run Time limit hrs:min:sec
+#SBATCH -e /users/sbsh670/data/ccig-models/clip-clevr/perception_acc_MV_14_Hung/%x_%j.e                         # Standard output and error log [%j is replaced with the jobid]
+#SBATCH -o /users/sbsh670/data/ccig-models/clip-clevr/perception_acc_MV_14_Hung/%x_%j.o                         # [%x with the job name], make sure 'results' folder exists.
 #SBATCH --gres=gpu:1                               # Use one gpu or 2
 #Enable modules command
 source /opt/flight/etc/setup.sh
@@ -38,6 +38,4 @@ unset __conda_setup
 conda init bash
 conda activate clevr-poc
 #Run your script.
-python clip_clevr_pretraining.py --image_dir /users/sbsh670/data/clevr/CLEVR_v1.0/image_generative_model_training/images/train --clip_train /users/sbsh670/data/ccig_finetune/clip_train_clevr_20k.json --clip_val /users/sbsh670/data/ccig_finetune/clip_val_clevr_20k.json --checkpoint /users/sbsh670/data/ccig-models/clip-clevr
-
-#python clip_clevr_pretraining.py --image_dir /users/sbsh670/data/clevr/CLEVR_v1.0/image_generative_model_training/images/train --clip_train /users/sbsh670/data/ccig_finetune/clip_train_clevr_20k.json --clip_val /users/sbsh670/data/ccig_finetune/clip_val_clevr_20k.json --checkpoint openai/clip-vit-large-patch14
+python -m src.perception.perception_accuracy
