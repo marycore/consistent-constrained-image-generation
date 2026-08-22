@@ -71,6 +71,11 @@ def build_record(
 
     instantiated_rule = apply_assignment(rule_text, assignment)
     texts = verbalize(stem, assignment)
+    # verbalize() returns {"short", "medium", "long", "subqa"} -- subqa is a
+    # dict[str, str] (question -> expected answer), not a str, so it can't live
+    # inside "prompts" (typed dict[str, str] by ccig-evaluation's PromptRecord).
+    # It gets its own top-level field instead; see build_combo_record below.
+    subqa = texts.pop("subqa", {})
 
     return {
         "id": record_id,
@@ -78,6 +83,7 @@ def build_record(
         "complexity_class": cls,
         "constraint_family": family,
         "prompts": texts,
+        "subqa": subqa,
         "instantiated_rule": instantiated_rule,
         "asp_template_file": template_path.name,
         "status": status,
@@ -93,29 +99,42 @@ def build_combo_record(
     record_id: str,
     n_objects: int = 4,
     domain: str = "clevr",
+    subqas: list[dict[str, str]] | None = None,
 ) -> dict:
-    
+
     name_files = []
     for p in template_pth:
         name_files.append(p.name)
-    
+
     families = []
     for p in template_pth:
         stem = p.stem
         family = stem.split("_", 1)[1] if "_" in stem else ""
         families.append(family)
     if not(isinstance(cls[0], int)):
-        complexity_classes = cls    
+        complexity_classes = cls
     else:
-        complexity_classes = [f"C{c}" for c in cls] 
+        complexity_classes = [f"C{c}" for c in cls]
 
-    
+    # Merge each constraint's subqa dict into one, prefixing questions with
+    # "Constraint N: " when there's more than one constraint -- same convention
+    # already used for the concatenated prompt text below -- so identical
+    # questions from different constraints don't collide as duplicate keys.
+    subqa: dict[str, str] = {}
+    if subqas:
+        multi = len(subqas) > 1
+        for i, sq in enumerate(subqas, start=1):
+            for question, answer in (sq or {}).items():
+                key = f"Constraint {i}: {question}" if multi else question
+                subqa[key] = answer
+
     return {
         "id": record_id,
         "domain": domain,
         "complexity_class": complexity_classes,
         "constraint_family": families,
         "prompts": prompts,
+        "subqa": subqa,
         "instantiated_rule": instantiated_rules,
         "asp_template_file": name_files,
         "status": status,
@@ -197,12 +216,13 @@ def run(
                 
                 asgns = []
                 prompts = {'short': '', 'medium': '', 'long': ''}
+                subqas = []
                 instantiated_rules = []
                 background = background_asp(domain, n_objects)
                 full_program = background
                 cons = 0
                 for tpl_path in selected_templates:
-                    cons = cons+1 
+                    cons = cons+1
                     stem = tpl_path.stem
                     _, rule_text = load_template(tpl_path)
                     asgn = sample_assignment(domain, rule_text, rng)
@@ -211,6 +231,7 @@ def run(
                     prompts['short'] = prompts['short'] + ' Constraint ' + str(cons) + ':' + text['short'] + '\n'
                     prompts['medium'] = prompts['medium'] + ' Constraint ' + str(cons) + ':' + text['medium'] + '\n'
                     prompts['long'] = prompts['long'] + ' Constraint ' + str(cons) + ':' + text['long'] + '\n'
+                    subqas.append(text.get('subqa', {}))
                     asgns.append(asgn)
                     instantiated_rules.append(instantiated_rule)
                     full_program = full_program + instantiated_rule + "\n"
@@ -244,7 +265,7 @@ def run(
                     total_count+=1
 
                 
-                record = build_combo_record(classes, selected_templates, prompts, instantiated_rules, status, record_id, n_objects, domain)
+                record = build_combo_record(classes, selected_templates, prompts, instantiated_rules, status, record_id, n_objects, domain, subqas=subqas)
                 line = json.dumps(record) + "\n"
 
                 if status == "SAT":
@@ -323,8 +344,15 @@ def run(
 
                 total_count += 1
 
-                record = build_combo_record([cls], [tpl_path], text, [instantiated_rule], status, record_id, n_objects, domain)
-                
+                # `text` is verbalize()'s full {"short","medium","long","subqa"} dict --
+                # split subqa out into its own list so it lands in the record's top-level
+                # "subqa" field instead of inside "prompts" (see build_combo_record).
+                prompts_only = {k: text[k] for k in ("short", "medium", "long")}
+                record = build_combo_record(
+                    [cls], [tpl_path], prompts_only, [instantiated_rule], status, record_id,
+                    n_objects, domain, subqas=[text.get("subqa", {})],
+                )
+
                 line = json.dumps(record) + "\n"
 
                 if status == "SAT":

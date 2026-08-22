@@ -9,7 +9,8 @@ for the sibling pipeline that captions existing images instead.
 
 1. **Load** — read an ASP template (`.txt`) from `constraint_templates/`
 2. **Instantiate** — randomly assign primed placeholders (`P1'`, `V1'`, `D1'`, `N'`, …) respecting `!=` constraints in the rule
-3. **Verbalize** — produce short, medium, and long NL descriptions for the constraint
+3. **Verbalize** — produce short, medium, and long NL descriptions for the constraint, plus a `subqa`
+   dict (question → expected answer) used by `ccig-evaluation`'s `soft-tifa` method
 4. **Solve** — run clingo on the full ASP program (background + instantiated rule), record SAT/UNSAT and grounded models
 5. **Write** — append a JSON record to the output `.jsonl` file
 
@@ -19,7 +20,7 @@ for the sibling pipeline that captions existing images instead.
 |------|------|
 | `domain.py` | Property/value/direction domains (derives from `../common/domain_clevr.py`, excluding `material`); background ASP program generator |
 | `instantiate.py` | Template loading, placeholder extraction, valid assignment sampling |
-| `../common/verbalize.py` | NL verbalization for all 9 constraint classes (C1–C9) — shared with `finetune_dataset_gen`, which grounds it against real scenes instead of instantiating it randomly |
+| `../common/verbalize.py` | NL verbalization (short/medium/long + subqa) for all 9 constraint classes (C1–C9) — shared with `finetune_dataset_gen`, which grounds it against real scenes instead of instantiating it randomly |
 | `solve.py` | Clingo wrapper; scene formatter for grounded answer sets |
 | `run.py` | CLI entry point orchestrating the full pipeline; `--domain` (default `clevr`) tags each output record with which domain's vocabulary was used |
 
@@ -66,6 +67,11 @@ Each line in both files is one JSON record:
     "short": "A red object is in the scene.",
     "medium": "The scene contains at least one red object.",
     "long": "..."
+  },
+  "subqa": {
+    "Does the image contain at least one red object?": "yes",
+    "How many objects are red in the image?": "> 0",
+    "State True or False: No object is red?": "False"
   },
   "instantiated_rule": ":- #count { X : object(X), hasProperty(X, color, red)} = 0.",
   "asp_template_file": "C1_1prop.txt",

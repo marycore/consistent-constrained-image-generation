@@ -7,6 +7,7 @@ from src.common.io import match_images_to_prompts
 from src.judge.registry import JUDGE_REGISTRY
 from src.perception.attributes.registry import ATTRIBUTE_REGISTRY
 from src.perception.detectors.registry import DETECTOR_REGISTRY
+from src.soft_tifa.registry import VQA_REGISTRY
 
 
 def main() -> None:
@@ -16,7 +17,7 @@ def main() -> None:
     parser.add_argument("--images-dir", required=True, help="Folder of generated images from one model")
     parser.add_argument("--prompts-file", required=True, help="Path to ccig_eval_dataset_{SAT,UNSAT}.jsonl")
     parser.add_argument(
-        "--method", nargs="+", required=True, choices=["clipscore", "vlm-judge", "perception"]
+        "--method", nargs="+", required=True, choices=["clipscore", "vlm-judge", "perception", "soft-tifa"]
     )
     parser.add_argument("--domain", required=True, choices=["clevr", "coco"])
     parser.add_argument("--out-dir", default=None, help="Default: outputs/<images-dir-name>/")
@@ -27,6 +28,9 @@ def main() -> None:
 
     # vlm-judge
     parser.add_argument("--judge-backend", default="gpt-4o", choices=list(JUDGE_REGISTRY))
+
+    # soft-tifa
+    parser.add_argument("--vqa-backend", default="gpt-4o", choices=list(VQA_REGISTRY))
 
     # perception
     parser.add_argument("--detector", default="grounding-dino", choices=list(DETECTOR_REGISTRY))
@@ -66,6 +70,18 @@ def main() -> None:
             args.attribute_classifier,
             args.device,
             out_dir / "perception" / "results.json",
+        )
+
+    if "soft-tifa" in args.method:
+        from src.common.dataset_gen import load_domain
+        from src.soft_tifa.registry import build_vqa_backend
+        from src.soft_tifa.run import run_soft_tifa
+
+        run_soft_tifa(
+            items,
+            load_domain(args.domain),
+            build_vqa_backend(args.vqa_backend, device=args.device),
+            out_dir / "soft_tifa" / "results.json",
         )
 
 

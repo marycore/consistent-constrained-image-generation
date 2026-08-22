@@ -48,6 +48,9 @@ def load_prompt_records(prompts_file: str | Path) -> dict[str, PromptRecord]:
                 asp_template_file=rec["asp_template_file"],
                 status=rec["status"],
                 number_of_objects=rec["number_of_objects"],
+                # .get(): absent on datasets generated before the subqa field existed --
+                # those just can't be scored by --method soft-tifa (see its README).
+                subqa=rec.get("subqa", {}),
             )
     return records
 
