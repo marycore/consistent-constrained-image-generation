@@ -75,11 +75,34 @@ export GEMINI_API_KEY=...    # for gemini-2.0-flash, gemini-3-pro-image (or GOOG
 (no `python-dotenv` dependency), so `set -a && source .env && set +a` (or export manually)
 before running.
 
+## Eval dataset files
+
+`data/ccig_eval_dataset/` has 6 JSONL files (484 samples total), one per
+domain/complexity-class/status combination:
+
+| file                          | samples |
+|---------------------------------|---------|
+| `clevr_1_scenes_SAT.json`     | 355     |
+| `clevr_1_scenes_UNSAT.json`   | 22      |
+| `clevr_3_scenes_SAT.json`     | 25      |
+| `clevr_3_scenes_UNSAT.json`   | 17      |
+| `clevr_6_scenes_SAT.json`     | 25      |
+| `clevr_6_scenes_UNSAT.json`   | 40      |
+
 ## Run
 
 ```bash
-python -m src.run --model gpt-image-2 --dataset ../data/ccig_eval_dataset/clevr_3_scenes_SAT.json --limit 5
-python -m src.run --model gemini-3-pro-image --dataset ../data/ccig_eval_dataset/clevr_3_scenes_SAT.json --limit 5
+# single file, a few samples (smoke test / quality pilot)
+python -m src.run --model gpt-image-2 --dataset ../data/ccig_eval_dataset/clevr_3_scenes_SAT.json --prompt-field short --limit 5
+python -m src.run --model gemini-3-pro-image --dataset ../data/ccig_eval_dataset/clevr_3_scenes_SAT.json --prompt-field short --limit 5
+
+# single file, full run, one prompt field
+python -m src.run --model gpt-image-2 --dataset ../data/ccig_eval_dataset/clevr_6_scenes_UNSAT.json --prompt-field long
+
+# all 6 dataset files, one prompt field, for a given model
+for f in ../data/ccig_eval_dataset/*.json; do
+  python -m src.run --model gpt-image-2 --dataset "$f" --prompt-field short
+done
 
 # open-source model, base weights
 python -m src.run --model flux.1-schnell --limit 5
