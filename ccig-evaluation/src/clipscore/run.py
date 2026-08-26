@@ -28,13 +28,13 @@ def run_clipscore(items: list[MatchedItem], domain: str, checkpoint: str, out_pa
     for item in items:
         try:
             image = Image.open(item.image_path).convert("RGB")
-            inputs = processor(text=["A photo depicts " + item.prompt_text], images=image, return_tensors="pt", padding=True)
+            inputs = processor(text=["A photo depicts an image where: " + item.prompt_text], images=image, return_tensors="pt", padding=True)
             inputs = {k: v.to(device) for k, v in inputs.items()}
             with torch.no_grad():
                 out = model(**inputs)
             image_embed = out.image_embeds / out.image_embeds.norm(dim=-1, keepdim=True)
             text_embed = out.text_embeds / out.text_embeds.norm(dim=-1, keepdim=True)
-            
+            #768d embeddings
             cosine = (image_embed @ text_embed.T).item()
             clipscore = 2.5 * max(cosine, 0.0)
             results.append(
@@ -44,6 +44,7 @@ def run_clipscore(items: list[MatchedItem], domain: str, checkpoint: str, out_pa
                     prompt=item.prompt_text,
                     image_path=str(item.image_path),
                     clipscore=clipscore,
+                    cosine=cosine,
                     success=True,
                     error=None,
                 )
@@ -57,11 +58,13 @@ def run_clipscore(items: list[MatchedItem], domain: str, checkpoint: str, out_pa
                     prompt=item.prompt_text,
                     image_path=str(item.image_path),
                     clipscore=None,
+                    cosine=None,
                     success=False,
                     error=repr(e),
                 )
             )
             print(f"[fail] {item.id}: {e}")
+        
 
     write_json(
         out_path,
