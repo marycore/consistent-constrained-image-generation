@@ -54,9 +54,12 @@ def main() -> None:
     if "clipscore" in args.method:
         if not args.clip_checkpoint:
             parser.error("--clip-checkpoint is required for --method clipscore")
-        from src.clipscore.run import run_clipscore
+        #from src.clipscore.run import run_clipscore
+        from src.clipscore.run_L import run_clipscore
 
-        run_clipscore(items, args.domain, args.clip_checkpoint, out_dir / "clipscore" / "results.json")
+        #run_clipscore(items, args.domain, args.clip_checkpoint, out_dir / "clipscore" / "results.json")
+        run_clipscore(items, args.domain, args.clip_checkpoint, out_dir / "clipscore" / "results-L.json")
+
 
     if "vlm-judge" in args.method:
         from src.judge.registry import build_judge

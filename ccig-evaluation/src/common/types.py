@@ -39,11 +39,13 @@ class MatchedItem:
 
 @dataclass
 class ClipScoreResult:
+    clipmodel: str
     id: str
     prompt_field: str
     prompt: str
     image_path: str
     clipscore: float | None
+    cosine: float | None
     success: bool
     error: str | None
 
