@@ -16,44 +16,65 @@ def run_clipscore(items: list[MatchedItem], domain: str, checkpoint: str, out_pa
     """
     # Imported lazily so selecting `--method vlm-judge` / `--method perception` doesn't
     # force-load torch/transformers when clipscore isn't requested.
-    import torch
+    import torch, sys
     from PIL import Image
-    from transformers import CLIPModel, CLIPProcessor
-    
-    from transformers import AutoProcessor, AutoModel
+    #from transformers import AutoProcessor, AutoModel
+    sys.path.append("/users/sbsh670/Long-CLIP")
+    from model import longclip
+    checkpoint = "/users/sbsh670/Long-CLIP/checkpoints/longclip-L.pt"
 
-    #checkpoint "openai/clip-vit-large-patch14"
+    device = "cuda" if torch.cuda.is_available() else "cpu"
+
+    model, preprocess = longclip.load(checkpoint,device=device,)
+
+    model.eval()
+    
+    '''
+    checkpoint = "Ambarella/LongCLIP"
     device = "cuda" if torch.cuda.is_available() else "cpu"
     
+    processor = AutoProcessor.from_pretrained(checkpoint,trust_remote_code=True)
+
+    model = AutoModel.from_pretrained(checkpoint,trust_remote_code=True).to(device)
+
+    model.eval()
+    '''
     
-    model = CLIPModel.from_pretrained(checkpoint).to(device).eval()
-    processor = CLIPProcessor.from_pretrained(checkpoint)
-     
+    
     results: list[ClipScoreResult] = []
     len_77 = 0
     for item in items:
         try:
+            
             image = Image.open(item.image_path).convert("RGB")
-            #max_len = 248
-            inputs = processor(text=["A photo depicts an image where: " + item.prompt_text], images=image, return_tensors="pt", truncation= True, max_length=77, padding=True) #
-            inputs = {k: v.to(device) for k, v in inputs.items()}
-            # to study 
+            image_input = preprocess(image).unsqueeze(0).to(device)
             text = "A photo depicts an image where: " + item.prompt_text
-            full = processor.tokenizer(text, truncation=False, return_tensors="pt",)
-            truncated = processor.tokenizer(text, truncation=True, max_length=77, return_tensors="pt",) #
-            
-            if full.input_ids.shape[1] > 77:
-                len_77 = len_77+1
-                print("Len greater - hence truncated  than 248 for item:", item.id, len_77)
-               
-            
+            try:
+                text_input = longclip.tokenize([text]).to(device)
+
+            except RuntimeError as e:
+                if "too long for context length 248" in str(e):
+                    len_77 = len_77+1
+                    print('gretaer:',item.id, item.prompt_field, len_77)
+                    # Re-tokenize with truncation
+                    text_input = longclip.tokenize(
+                        [text], truncate=True).to(device)
+                else:
+                    raise
             with torch.no_grad():
-                out = model(**inputs)
-            image_embed = out.image_embeds / out.image_embeds.norm(dim=-1, keepdim=True)
-            text_embed = out.text_embeds / out.text_embeds.norm(dim=-1, keepdim=True)
-            #768d embeddings
-            cosine = (image_embed @ text_embed.T).item()
+                image_features = model.encode_image(image_input)
+                text_features = model.encode_text(text_input)
+
+        
+            image_features = image_features / image_features.norm(dim=-1,keepdim=True,)
+
+            text_features = text_features / text_features.norm(dim=-1,keepdim=True,)
+            cosine = (image_features @ text_features.T).item()
+
+            # Same scoring convention as your original code
             clipscore = 2.5 * max(cosine, 0.0)
+            
+            
             results.append(
                 ClipScoreResult(
                     clipmodel=checkpoint,
@@ -84,7 +105,7 @@ def run_clipscore(items: list[MatchedItem], domain: str, checkpoint: str, out_pa
             )
             print(f"[fail] {item.id}: {e}")
         
-
+        
     write_json(
         out_path,
         {

@@ -9,7 +9,10 @@ from src.perception.attributes.registry import ATTRIBUTE_REGISTRY
 from src.perception.detectors.registry import DETECTOR_REGISTRY
 from src.soft_tifa.registry import VQA_REGISTRY
 
-
+#Example - to get clipscore:
+'''
+python -m src.run --images-dir /users/sbsh670/data/ccig-generated-images/gpt-image-2-low/clevr_1_scenes_SAT --prompts-file /users/sbsh670/data/ccig_evalData/clevr_1_scenes_SAT.jsonl --method clipscore --domain clevr --out-dir /users/sbsh670/data/ccig-generated-images/gpt-image-2-low/clevr_1_scenes_SAT --clip-checkpoint openai/clip-vit-large-patch14 
+'''
 def main() -> None:
     parser = argparse.ArgumentParser(
         description="Evaluate generated images against the CCIG constraints/prompts that produced them."
@@ -40,6 +43,7 @@ def main() -> None:
     args = parser.parse_args()
 
     items = match_images_to_prompts(args.images_dir, args.prompts_file)
+    print(items[0])
     if args.limit is not None:
         items = items[: args.limit]
     if not items:
@@ -50,9 +54,12 @@ def main() -> None:
     if "clipscore" in args.method:
         if not args.clip_checkpoint:
             parser.error("--clip-checkpoint is required for --method clipscore")
-        from src.clipscore.run import run_clipscore
+        #from src.clipscore.run import run_clipscore
+        from src.clipscore.run_L import run_clipscore
 
-        run_clipscore(items, args.domain, args.clip_checkpoint, out_dir / "clipscore" / "results.json")
+        #run_clipscore(items, args.domain, args.clip_checkpoint, out_dir / "clipscore" / "results.json")
+        run_clipscore(items, args.domain, args.clip_checkpoint, out_dir / "clipscore" / "results-L.json")
+
 
     if "vlm-judge" in args.method:
         from src.judge.registry import build_judge

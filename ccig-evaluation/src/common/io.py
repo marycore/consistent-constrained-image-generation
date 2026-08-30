@@ -19,13 +19,12 @@ def discover_images(images_dir: str | Path) -> list[tuple[str, str, Path]]:
     any .png that doesn't match the naming convention.
     """
     images_dir = Path(images_dir)
-    found: list[tuple[str, str, Path]] = []
+    found: list[tuple[int, str, Path]] = []
     for path in sorted(images_dir.glob("*.png")):
-        m = _IMAGE_NAME_RE.match(path.name)
-        if not m:
-            print(f"[warn] skipping '{path.name}': does not match '{{id}}-{{short,medium,long}}.png'")
-            continue
-        found.append((m.group("id"), m.group("field"), path))
+        id_im = int (path.name.split('-')[0])
+        prompt = path.name.split('-')[1].split('.')[0]
+        found.append((id_im, prompt, path))
+        
     return found
 
 
@@ -61,13 +60,16 @@ def match_images_to_prompts(images_dir: str | Path, prompts_file: str | Path) ->
     (e.g. a generation run that failed on some prompts) should still be evaluable.
     """
     records = load_prompt_records(prompts_file)
+    
     matched: list[MatchedItem] = []
+    
     for image_id, prompt_field, path in discover_images(images_dir):
         record = records.get(image_id)
         if record is None:
             print(f"[warn] no prompt record for image id '{image_id}', skipping")
             continue
         matched.append(MatchedItem(id=image_id, prompt_field=prompt_field, image_path=path, record=record))
+    
     return matched
 
 

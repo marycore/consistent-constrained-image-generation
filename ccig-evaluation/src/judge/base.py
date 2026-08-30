@@ -11,7 +11,7 @@ from PIL import Image
 JUDGE_PROMPT_TEMPLATE = (
     "You are judging whether a generated image matches a text description.\n"
     'Description: "{prompt}"\n'
-    "Rate how well the image matches the description on a scale of 1 (not at all) to "
+    "Rate how well the image satisfies all the logical constraints in the description on a scale of 1 (not at all) to "
     "5 (perfect match). Respond in exactly this format:\n"
     "SCORE: <1-5>\n"
     "RATIONALE: <one sentence>"
