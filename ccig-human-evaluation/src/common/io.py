@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 import json
+import os
 import re
+import tempfile
 from pathlib import Path
 
 from .types import MatchedItem, PromptRecord
@@ -84,7 +86,28 @@ def match_images_to_prompts(images_dir: str | Path, prompts_file: str | Path) ->
 
 
 def write_json(path: str | Path, payload: dict) -> None:
+    """Write via a temp file + atomic os.replace, never directly into `path`.
+
+    A direct `open(path, "w")` truncates the file immediately and then streams
+    content into it over time -- if a second process does the same thing to the
+    same path around the same time (e.g. two `python -m src.app` instances both
+    pointed at the same batch), their writes can interleave mid-file and leave
+    behind invalid JSON that's silently corrupted, not just out of date. This
+    happened for real once already (see human-perception.json recovery in git
+    history). os.replace is atomic on the same filesystem, so any reader (or
+    another writer) only ever sees the fully-old or fully-new file -- concurrent
+    writers can still race on *which* version wins, but the file itself is never
+    torn."""
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
-    with path.open("w", encoding="utf-8") as f:
-        json.dump(payload, f, indent=2)
+    fd, tmp_name = tempfile.mkstemp(dir=path.parent, prefix=f".{path.name}.", suffix=".tmp")
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8") as f:
+            json.dump(payload, f, indent=2)
+        os.replace(tmp_name, path)
+    except BaseException:
+        try:
+            os.remove(tmp_name)
+        except OSError:
+            pass
+        raise
