@@ -71,6 +71,10 @@ class PerceptionResult:
     # number_of_objects) -- and are mirrored key-for-key in ccig-human-evaluation's
     # human-perception entries, so the two files are directly diffable field by field
     # without either one referring to the other's file path.
+    #
+    # No predicted_status/agrees_with_dataset/clingo_program here -- unlike
+    # ccig-evaluation's own perception pipeline, this one deliberately never runs the
+    # ASP/clingo constraint check; it only produces the detected scene_graph.
     id: str
     prompt_field: str
     image_path: str
@@ -78,10 +82,7 @@ class PerceptionResult:
     instantiated_rule: str
     status: str  # ground-truth "SAT" | "UNSAT", same meaning/name as PromptRecord.status
     number_of_objects: int | None  # count of objects in scene_graph (bounding boxes found); None if success=False
-    predicted_status: str | None
-    agrees_with_dataset: bool | None
     scene_graph: dict[str, Any] | None
-    clingo_program: str | None
     success: bool
     error: str | None
 

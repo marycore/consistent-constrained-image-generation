@@ -4,9 +4,9 @@ from .detectors.base import BBox
 
 # Transcribed from ccig-dataset-gen/src/eval_dataset_gen/asp_background/background.lp
 # (not imported -- it's a .lp file, not a Python symbol). This is the same fixed 2x2
-# grid adjacency clingo uses to derive left/right/front/behind between regions; kept
-# as a static Python lookup here since it's small and never needs a clingo call itself
-# -- clingo is reserved for the actual constraint-satisfaction check in perception/run.py.
+# grid adjacency ccig-dataset-gen's own clingo-based pipeline uses to derive
+# left/right/front/behind between regions; kept as a static Python lookup here since
+# it's small and this pipeline never calls clingo at all (see common/dataset_gen.py).
 _RIGHT_OF: dict[str, set[str]] = {
     "r0": {"r1", "r3"},  # r1, r3 are right of r0
     "r2": {"r1", "r3"},  # r1, r3 are right of r2

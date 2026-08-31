@@ -25,12 +25,14 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
+import secrets
 import sys
 import threading
 import time
 from pathlib import Path
 
-from flask import Flask, jsonify, request, send_file, send_from_directory
+from flask import Flask, Response, jsonify, request, send_file, send_from_directory
 
 _ROOT = Path(__file__).resolve().parents[1]
 if str(_ROOT) not in sys.path:
@@ -46,6 +48,31 @@ from src.perception.scene_graph import to_graph_dict  # noqa: E402
 from src.perception.types import DetectedObject  # noqa: E402
 
 app = Flask(__name__, static_folder=str(Path(__file__).parent / "static"), static_url_path="")
+
+# ---------------------------------------------------------------------------
+# Optional password gate. Off by default (plain local usage is unaffected) --
+# only turns on when CCIG_HUMAN_EVAL_PASSWORD is set in the environment, e.g.
+# right before exposing this server through a public tunnel (ngrok, cloudflared,
+# ...). The tunnel gives you HTTPS transport; it does nothing about access
+# control on its own, and this app has none otherwise -- every route (including
+# /api/setup, which reads arbitrary local file paths) would be reachable by
+# anyone with the URL.
+_AUTH_PASSWORD = os.environ.get("CCIG_HUMAN_EVAL_PASSWORD")
+
+
+@app.before_request
+def _require_auth():
+    if not _AUTH_PASSWORD:
+        return None
+    auth = request.authorization
+    if auth is None or not secrets.compare_digest(auth.password, _AUTH_PASSWORD):
+        return Response(
+            "Authentication required.",
+            401,
+            {"WWW-Authenticate": 'Basic realm="ccig-human-evaluation"'},
+        )
+    return None
+
 
 # ---------------------------------------------------------------------------
 # In-memory session state. One annotator, one browser tab, one images-dir at
@@ -520,6 +547,156 @@ def api_save_image(image_id: str, field: str):
 
 
 # ---------------------------------------------------------------------------
+# Browse page -- a second, independent UI (at /browse) for opening any
+# *_human-perception.json file directly from a dropdown (rather than via the
+# images_dir/prompts_file setup form above) and editing its entries. Deliberately
+# stateless -- no STATE involvement, every request is fully identified by
+# ?path=&id=&field= -- so it never interacts with or is affected by whatever batch
+# is (or isn't) configured on the main page. Shows only what the user asked for:
+# no prompt, no constraint, no automated-perception path or toggle, no dataset
+# status -- just the file picker, the image picker, and the same box/property
+# editor as the main page.
+# ---------------------------------------------------------------------------
+_DATA_ROOT = _ROOT.parent / "data"
+
+
+def _discover_human_perception_files() -> list[Path]:
+    perception_dir = _DATA_ROOT / "evaluation" / "perception"
+    if not perception_dir.is_dir():
+        return []
+    return sorted(perception_dir.glob("*/*_human-perception.json"))
+
+
+def _resolve_browse_path(raw: str) -> Path | None:
+    """Only ever accept a path that's literally one of the files
+    _discover_human_perception_files() just found on disk -- the query string is
+    untrusted client input, and this must never become an arbitrary-file
+    read/write endpoint."""
+    if not raw:
+        return None
+    try:
+        candidate = Path(raw).resolve()
+    except OSError:
+        return None
+    return candidate if candidate in _discover_human_perception_files() else None
+
+
+def _load_browse_file(path: Path) -> dict:
+    with path.open("r", encoding="utf-8") as f:
+        return json.load(f)
+
+
+def _find_browse_entry(data: dict, image_id: str, field: str) -> dict | None:
+    return next(
+        (a for a in data.get("annotations", []) if a["id"] == image_id and a["prompt_field"] == field),
+        None,
+    )
+
+
+@app.route("/api/browse/files", methods=["GET"])
+def api_browse_files():
+    out = []
+    for path in _discover_human_perception_files():
+        try:
+            count = len(_load_browse_file(path).get("annotations", []))
+        except (json.JSONDecodeError, OSError):
+            count = None
+        dataset_name = path.stem.removesuffix("_human-perception")
+        out.append({"path": str(path), "label": f"{path.parent.name} / {dataset_name}", "count": count})
+    return jsonify(out)
+
+
+@app.route("/api/browse/file", methods=["GET"])
+def api_browse_file():
+    path = _resolve_browse_path(request.args.get("path", ""))
+    if path is None:
+        return jsonify({"error": "unknown file"}), 404
+    data = _load_browse_file(path)
+    images = [
+        {
+            "id": a["id"],
+            "field": a["prompt_field"],
+            "number_of_objects": len(a.get("scene_graph", {}).get("objects", {})),
+            "reasonable_scene": a.get("reasonable_scene"),
+        }
+        for a in data.get("annotations", [])
+    ]
+    images.sort(key=lambda r: (int(r["id"]) if r["id"].isdigit() else r["id"], r["field"]))
+    domain = data.get("domain", "clevr")
+    domain_module = load_domain(domain)
+    vocab = {k: v for k, v in domain_module.PROPERTIES.items() if k != "size"}  # see _domain_vocab above
+    return jsonify({"domain": domain, "vocab": vocab, "images": images})
+
+
+@app.route("/api/browse/image", methods=["GET"])
+def api_browse_get_image():
+    path = _resolve_browse_path(request.args.get("path", ""))
+    if path is None:
+        return jsonify({"error": "unknown file"}), 404
+    entry = _find_browse_entry(_load_browse_file(path), request.args.get("id", ""), request.args.get("field", ""))
+    if entry is None:
+        return jsonify({"error": "unknown id/field"}), 404
+    w, h = _image_size(Path(entry["image_path"]))
+    return jsonify(
+        {
+            "image_width": w,
+            "image_height": h,
+            "reasonable_scene": entry.get("reasonable_scene"),
+            "scene_graph": entry["scene_graph"],
+        }
+    )
+
+
+@app.route("/api/browse/image/file", methods=["GET"])
+def api_browse_get_image_file():
+    path = _resolve_browse_path(request.args.get("path", ""))
+    if path is None:
+        return jsonify({"error": "unknown file"}), 404
+    entry = _find_browse_entry(_load_browse_file(path), request.args.get("id", ""), request.args.get("field", ""))
+    if entry is None:
+        return jsonify({"error": "unknown id/field"}), 404
+    return send_file(entry["image_path"])
+
+
+@app.route("/api/browse/image", methods=["POST"])
+def api_browse_save_image():
+    path = _resolve_browse_path(request.args.get("path", ""))
+    if path is None:
+        return jsonify({"error": "unknown file"}), 404
+
+    data = _load_browse_file(path)
+    entry = _find_browse_entry(data, request.args.get("id", ""), request.args.get("field", ""))
+    if entry is None:
+        return jsonify({"error": "unknown id/field"}), 404
+
+    body = request.get_json(force=True)
+    raw_objects = body.get("objects", [])
+    w, h = _image_size(Path(entry["image_path"]))
+
+    detected: list[DetectedObject] = []
+    for obj_id, obj in enumerate(raw_objects):
+        x0, y0, x1, y1 = obj["bbox"]
+        properties = {k2: v for k2, v in obj.get("properties", {}).items() if v and k2 != "size"}
+        bbox = BBox(x0=x0, y0=y0, x1=x1, y1=y1, label=properties.get("shape", ""), score=1.0)
+        cx, cy = bbox_center(bbox)
+        region = region_of(cx, cy, w, h)
+        detected.append(DetectedObject(obj_id=obj_id, bbox=bbox, properties=properties, region=region))
+
+    entry["scene_graph"] = to_graph_dict(detected)
+    entry["number_of_objects"] = len(detected)
+    entry["reasonable_scene"] = body.get("reasonable_scene")
+    entry["annotated_at"] = time.strftime("%Y-%m-%dT%H:%M:%S")
+
+    write_json(path, data)
+    return jsonify({"number_of_objects": entry["number_of_objects"], "reasonable_scene": entry["reasonable_scene"]})
+
+
+@app.route("/browse")
+def browse_page():
+    return send_from_directory(app.static_folder, "browse.html")
+
+
+# ---------------------------------------------------------------------------
 # Static frontend
 # ---------------------------------------------------------------------------
 @app.route("/")
@@ -533,6 +710,10 @@ def main() -> None:
     parser.add_argument("--port", type=int, default=5001)
     parser.add_argument("--debug", action="store_true")
     args = parser.parse_args()
+    if _AUTH_PASSWORD:
+        print("[auth] password protection is ON (CCIG_HUMAN_EVAL_PASSWORD is set)")
+    else:
+        print("[auth] password protection is OFF -- set CCIG_HUMAN_EVAL_PASSWORD before exposing this via a public tunnel")
     app.run(host=args.host, port=args.port, debug=args.debug)
 
 

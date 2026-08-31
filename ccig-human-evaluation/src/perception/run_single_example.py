@@ -50,8 +50,8 @@ def _flatten(value):
 def load_one_record(prompts_file: Path, image_id: str) -> PromptRecord:
     """Same job as common/io.py::load_prompt_records, but matches by str(id)
     (the file's id is an int) and flattens list-wrapped fields to plain strings
-    (the file wraps them in one-element lists) so the ASP program built later
-    is valid text, not a Python list repr."""
+    (the file wraps them in one-element lists) so instantiated_rule ends up as
+    plain text, not a Python list repr."""
     with prompts_file.open("r", encoding="utf-8") as f:
         for line in f:
             line = line.strip()

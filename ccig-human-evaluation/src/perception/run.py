@@ -3,14 +3,14 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from ..common.dataset_gen import load_domain, solve
+from ..common.dataset_gen import load_domain
 from ..common.io import write_json
 from ..common.types import MatchedItem, PerceptionResult
 from .attributes.registry import build_attribute_classifier
 from .crop import crop_and_neutralize
 from .detectors.registry import build_detector
 from .regions import bbox_center, region_of
-from .scene_graph import build_scene_facts, to_graph_dict
+from .scene_graph import to_graph_dict
 from .types import DetectedObject
 
 
@@ -137,13 +137,6 @@ def run_perception(
                 _ensure_models()
                 image = Image.open(item.image_path).convert("RGB")
                 objects = _perceive_scene(image, domain, domain_module, detector, classifiers)
-                facts = build_scene_facts(objects)
-
-                # instantiated_rule uses free ASP variables (X, Y, ...) bound over object(X),
-                # not literal object ids -- it applies unchanged no matter how perception
-                # numbered the detected objects here.
-                program = f"{facts}\n{item.record.instantiated_rule}"
-                predicted_status, _ = solve(program, n_models=1, time_limit=10)
 
                 results.append(
                     PerceptionResult(
@@ -154,15 +147,12 @@ def run_perception(
                         instantiated_rule=item.record.instantiated_rule,
                         status=item.record.status,
                         number_of_objects=len(objects),
-                        predicted_status=predicted_status,
-                        agrees_with_dataset=predicted_status == item.record.status,
                         scene_graph=to_graph_dict(objects),
-                        clingo_program=program,
                         success=True,
                         error=None,
                     ).to_json()
                 )
-                print(f"[ok]   {item.id}: predicted={predicted_status} dataset={item.record.status}")
+                print(f"[ok]   {item.id}: {len(objects)} object(s) detected")
             except Exception as e:  # noqa: BLE001 -- one bad image must not abort the whole batch
                 results.append(
                     PerceptionResult(
@@ -173,10 +163,7 @@ def run_perception(
                         instantiated_rule=item.record.instantiated_rule,
                         status=item.record.status,
                         number_of_objects=None,
-                        predicted_status=None,
-                        agrees_with_dataset=None,
                         scene_graph=None,
-                        clingo_program=None,
                         success=False,
                         error=repr(e),
                     ).to_json()
