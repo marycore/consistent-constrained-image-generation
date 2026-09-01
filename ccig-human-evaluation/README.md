@@ -27,7 +27,9 @@ pip install torch "transformers>=4.46" accelerate scipy
 python -m src.app --port 5001
 ```
 
-Open `http://localhost:5001` and fill in the setup form:
+`http://localhost:5001` lands on the [browse page](#browse-page) — for the
+original images_dir/prompts_file-driven flow (which also runs perception),
+open `http://localhost:5001/setup` and fill in the form:
 
 | Field | Example |
 |---|---|
@@ -48,8 +50,8 @@ dir (`<model>` = the folder right after `generated_images`) and the prompts
 file (`<dataset>` = its filename stem):
 
 ```
-data/evaluation/perception/<model>/<dataset>_auto-perception.json
-data/evaluation/perception/<model>/<dataset>_human-perception.json
+data/evaluation/<model>/<dataset>_auto-perception.json
+data/evaluation/<model>/<dataset>_human-perception.json
 ```
 
 Both share the same entry shape (one object per image, `results`/
@@ -73,22 +75,28 @@ guess unless you clear it (or click "Mark scene as empty").
 
 ## Browse page
 
-`http://localhost:5001/browse` is a second, independent page for opening any
-`*_human-perception.json` file directly, without going through the setup
-form: three dropdowns in order -- **Model**, **Dataset**, **Image**. Model and
-dataset are both discovered by scanning `data/evaluation/` recursively for
-every `*_human-perception.json` file, however deep it sits (`evaluation/
-<model>/<dataset>_human-perception.json` and `evaluation/perception/<model>/
-<dataset>_human-perception.json` both work — the "model" is always just
-whatever folder directly contains the file, so a manually-uploaded Cloud
-Storage bucket doesn't need to match the local layout exactly). Picking a
-model filters the dataset dropdown to that model's files; picking a dataset
-populates the image dropdown; picking an image opens the same box/property
-editor as the main page. No prompt, no constraint, no automated-perception
-comparison, no file paths shown anywhere — just the model, the dataset, the
-image, and the annotation. It edits the same `human-perception.json` files
-described above (nothing separate to keep in sync), and doesn't require or
-touch a configured batch on the main page.
+`http://localhost:5001/browse` (also the landing page at `/` — see below) is a
+second, independent page for opening any `*_human-perception.json` file
+directly, without going through the setup form: three dropdowns in one row --
+**Model**, **Dataset**, **Image**.
+- **Model** lists every folder directly under `data/evaluation/`.
+- **Dataset** (once a model's picked) lists every `*_human-perception.json`
+  file directly inside that model's folder.
+- **Image** (once a dataset's picked) lists that file's images; picking one
+  opens the same box/property editor as the main page.
+
+No prompt, no constraint, no automated-perception comparison, no file paths
+shown anywhere — just the model, the dataset, the image, and the annotation.
+The image itself is always located as `data/generated_images/<model>/
+<dataset>/<id>-<field>.png` from the model/dataset you picked — never from
+the `image_path` stored inside the JSON entry, which is whatever path the
+machine that originally ran perception happened to have (e.g. a local
+absolute path that doesn't exist inside a Cloud Run deployment's mounted
+`/srv/data`). It edits the same `human-perception.json` files described
+above (nothing separate to keep in sync), and doesn't require or touch a
+configured batch on the main page.
+
+The original setup-form page still exists, at `/setup`.
 
 ## Password protection
 
@@ -105,23 +113,10 @@ HTTP Basic Auth with that password (any username) -- your browser will prompt
 for it once and remember it for the session. Leaving the variable unset keeps
 the server exactly as before, no prompt, nothing changed.
 
-## Deploying to Cloud Run (remote annotators)
+## Deploying somewhere other than your own machine
 
-`deploy.sh` builds a self-contained image (annotation only — no torch/
-transformers, no ASP/clingo) and deploys it to Cloud Run, with your `data/`
-folder uploaded once to a Cloud Storage bucket and mounted into the container
-so reads/writes work the same as local files:
-
-```bash
-gcloud auth login   # once, if not already
-CCIG_HUMAN_EVAL_PASSWORD='choose-a-real-password' ./deploy.sh
-```
-
-See the comments at the top of `deploy.sh` for the project/region/bucket
-defaults and how to override them. It prints a public `https://*.run.app` URL
-when done — share that and the password with your annotators. In the deployed
-app's setup form, paths live under `/srv/data/...` (see `deploy.sh`'s final
-output for exact examples) rather than wherever `data/` sits on your machine.
+See **[README-GCP.md](README-GCP.md)** for deploying this to Google Cloud Run
+(`deploy.sh`, `Dockerfile`) so remote annotators can use it over the internet.
 
 ## Not yet implemented
 

@@ -9,8 +9,8 @@ browser. Output locations are derived, not chosen by hand, from the nearest
 component right after "generated_images") and dataset name (prompts_file's
 stem):
 
-    <data>/evaluation/perception/<model>/<dataset>_auto-perception.json
-    <data>/evaluation/perception/<model>/<dataset>_human-perception.json
+    <data>/evaluation/<model>/<dataset>_auto-perception.json
+    <data>/evaluation/<model>/<dataset>_human-perception.json
 
 Both are single combined files (one entry per image, keyed by id/prompt_field),
 not one file per image. Every edit autosaves into <dataset>_human-perception.json
@@ -32,7 +32,7 @@ import threading
 import time
 from pathlib import Path
 
-from flask import Flask, Response, jsonify, request, send_file, send_from_directory
+from flask import Flask, Response, jsonify, redirect, request, send_file, send_from_directory
 
 _ROOT = Path(__file__).resolve().parents[1]
 if str(_ROOT) not in sys.path:
@@ -88,7 +88,7 @@ STATE: dict = {
     "device": None,
     "model_name": None,  # path component right after "generated_images", e.g. "gpt-image-2-low"
     "dataset_name": None,  # prompts_file's stem, e.g. "clevr_1_scenes_SAT"
-    "perception_dir": None,  # <data>/evaluation/perception/<model>/ -- holds both json files below
+    "perception_dir": None,  # <data>/evaluation/<model>/ -- holds both json files below
     "items_by_key": {},  # (id, field) -> MatchedItem
     "automated_by_key": {},  # (id, field) -> PerceptionResult dict (from <dataset>_auto-perception.json)
     "image_size_cache": {},  # str(path) -> (w, h)
@@ -282,7 +282,7 @@ def api_setup():
 
     model_name = _model_name_from_images_dir(images_dir)
     dataset_name = prompts_file.stem
-    perception_dir = data_root / "evaluation" / "perception" / model_name
+    perception_dir = data_root / "evaluation" / model_name
     perception_dir.mkdir(parents=True, exist_ok=True)
 
     STATE.update(
@@ -547,45 +547,69 @@ def api_save_image(image_id: str, field: str):
 
 
 # ---------------------------------------------------------------------------
-# Browse page -- a second, independent UI (at /browse) for opening any
-# *_human-perception.json file directly from a dropdown (rather than via the
-# images_dir/prompts_file setup form above) and editing its entries. Deliberately
-# stateless -- no STATE involvement, every request is fully identified by
-# ?path=&id=&field= -- so it never interacts with or is affected by whatever batch
-# is (or isn't) configured on the main page. Shows only what the user asked for:
-# no prompt, no constraint, no automated-perception path or toggle, no dataset
-# status -- just the file picker, the image picker, and the same box/property
-# editor as the main page.
+# Browse page -- a second, independent UI (at /browse, and the landing page once
+# a password is set) for opening any *_human-perception.json file directly from
+# a chain of dropdowns (rather than via the images_dir/prompts_file setup form
+# above) and editing its entries. Deliberately stateless -- no STATE involvement,
+# every request is fully identified by its query params -- so it never interacts
+# with or is affected by whatever batch is (or isn't) configured on the main page.
+# Shows only what the user asked for: no prompt, no constraint, no
+# automated-perception path or toggle, no dataset status -- just Model / Dataset /
+# Image, and the same box/property editor as the main page.
+#
+# Layout on disk, model and dataset both literal folder/file names, not derived
+# from anything stored inside a JSON entry:
+#   <data>/evaluation/<model>/<dataset>_human-perception.json
+#   <data>/generated_images/<model>/<dataset>/<id>-<field>.png
+# Deliberately does NOT trust each entry's own "image_path" field to find the
+# image file -- that path was written by whatever machine originally ran
+# perception/saved the annotation, and won't exist as-is in a different
+# environment (e.g. a local absolute path baked into a JSON that's since been
+# uploaded to a Cloud Run deployment, where the mounted data root is different).
+# The image path is always recomputed fresh from the selected model/dataset/id/
+# field instead.
 # ---------------------------------------------------------------------------
 _DATA_ROOT = _ROOT.parent / "data"
 
 
-def _discover_human_perception_files() -> list[Path]:
-    """Recursive, not a fixed-depth glob -- local runs have historically kept these
-    under evaluation/perception/<model>/, but a manually-uploaded Cloud Storage
-    bucket may have them one level shallower at evaluation/<model>/ (whatever
-    intermediate folders exist, if any). Matching at any depth under evaluation/
-    means both layouts work without reorganizing anything, and the "model" a file
-    belongs to (see api_browse_files) is always just its own immediate parent
-    folder name, correct either way."""
+def _discover_browse_models() -> list[str]:
     evaluation_dir = _DATA_ROOT / "evaluation"
     if not evaluation_dir.is_dir():
         return []
-    return sorted(evaluation_dir.glob("**/*_human-perception.json"))
+    return sorted(p.name for p in evaluation_dir.iterdir() if p.is_dir())
+
+
+def _discover_browse_datasets(model: str) -> list[Path]:
+    """Every *_human-perception.json directly inside evaluation/<model>/ -- not
+    recursive, model must be one of _discover_browse_models()'s own results (checked
+    by the caller before this is trusted for anything)."""
+    if model not in _discover_browse_models():
+        return []
+    return sorted((_DATA_ROOT / "evaluation" / model).glob("*_human-perception.json"))
 
 
 def _resolve_browse_path(raw: str) -> Path | None:
     """Only ever accept a path that's literally one of the files
-    _discover_human_perception_files() just found on disk -- the query string is
-    untrusted client input, and this must never become an arbitrary-file
-    read/write endpoint."""
+    _discover_browse_datasets() would find for its own parent folder's name as the
+    model -- the query string is untrusted client input, and this must never become
+    an arbitrary-file read/write endpoint."""
     if not raw:
         return None
     try:
         candidate = Path(raw).resolve()
     except OSError:
         return None
-    return candidate if candidate in _discover_human_perception_files() else None
+    return candidate if candidate in _discover_browse_datasets(candidate.parent.name) else None
+
+
+def _browse_image_path(path: Path, image_id: str, field: str) -> Path:
+    """The model/dataset a human-perception.json belongs to are just its own
+    location (parent folder name / filename minus suffix) -- from there the image
+    file's path is recomputed fresh, per the module docstring above, not read from
+    the entry's own stored (possibly foreign-environment) image_path field."""
+    model = path.parent.name
+    dataset = path.stem.removesuffix("_human-perception")
+    return _DATA_ROOT / "generated_images" / model / dataset / f"{image_id}-{field}.png"
 
 
 def _load_browse_file(path: Path) -> dict:
@@ -600,27 +624,21 @@ def _find_browse_entry(data: dict, image_id: str, field: str) -> dict | None:
     )
 
 
-@app.route("/api/browse/files", methods=["GET"])
-def api_browse_files():
-    # "model" is deliberately just the file's own immediate parent folder name --
-    # correct whether that folder sits at evaluation/<model>/ or one level deeper at
-    # evaluation/perception/<model>/ (see _discover_human_perception_files). The
-    # client groups these into a model dropdown, then a dataset dropdown within it.
+@app.route("/api/browse/models", methods=["GET"])
+def api_browse_models():
+    return jsonify(_discover_browse_models())
+
+
+@app.route("/api/browse/datasets", methods=["GET"])
+def api_browse_datasets():
+    model = request.args.get("model", "")
     out = []
-    for path in _discover_human_perception_files():
+    for path in _discover_browse_datasets(model):
         try:
             count = len(_load_browse_file(path).get("annotations", []))
         except (json.JSONDecodeError, OSError):
             count = None
-        dataset_name = path.stem.removesuffix("_human-perception")
-        out.append(
-            {
-                "path": str(path),
-                "model": path.parent.name,
-                "dataset": dataset_name,
-                "count": count,
-            }
-        )
+        out.append({"path": str(path), "dataset": path.stem.removesuffix("_human-perception"), "count": count})
     return jsonify(out)
 
 
@@ -651,10 +669,11 @@ def api_browse_get_image():
     path = _resolve_browse_path(request.args.get("path", ""))
     if path is None:
         return jsonify({"error": "unknown file"}), 404
-    entry = _find_browse_entry(_load_browse_file(path), request.args.get("id", ""), request.args.get("field", ""))
+    image_id, field = request.args.get("id", ""), request.args.get("field", "")
+    entry = _find_browse_entry(_load_browse_file(path), image_id, field)
     if entry is None:
         return jsonify({"error": "unknown id/field"}), 404
-    w, h = _image_size(Path(entry["image_path"]))
+    w, h = _image_size(_browse_image_path(path, image_id, field))
     return jsonify(
         {
             "image_width": w,
@@ -670,10 +689,10 @@ def api_browse_get_image_file():
     path = _resolve_browse_path(request.args.get("path", ""))
     if path is None:
         return jsonify({"error": "unknown file"}), 404
-    entry = _find_browse_entry(_load_browse_file(path), request.args.get("id", ""), request.args.get("field", ""))
-    if entry is None:
+    image_id, field = request.args.get("id", ""), request.args.get("field", "")
+    if _find_browse_entry(_load_browse_file(path), image_id, field) is None:
         return jsonify({"error": "unknown id/field"}), 404
-    return send_file(entry["image_path"])
+    return send_file(_browse_image_path(path, image_id, field))
 
 
 @app.route("/api/browse/image", methods=["POST"])
@@ -681,15 +700,16 @@ def api_browse_save_image():
     path = _resolve_browse_path(request.args.get("path", ""))
     if path is None:
         return jsonify({"error": "unknown file"}), 404
+    image_id, field = request.args.get("id", ""), request.args.get("field", "")
 
     data = _load_browse_file(path)
-    entry = _find_browse_entry(data, request.args.get("id", ""), request.args.get("field", ""))
+    entry = _find_browse_entry(data, image_id, field)
     if entry is None:
         return jsonify({"error": "unknown id/field"}), 404
 
     body = request.get_json(force=True)
     raw_objects = body.get("objects", [])
-    w, h = _image_size(Path(entry["image_path"]))
+    w, h = _image_size(_browse_image_path(path, image_id, field))
 
     detected: list[DetectedObject] = []
     for obj_id, obj in enumerate(raw_objects):
@@ -717,9 +737,19 @@ def browse_page():
 # ---------------------------------------------------------------------------
 # Static frontend
 # ---------------------------------------------------------------------------
+@app.route("/setup")
+def setup_page():
+    """The original images_dir/prompts_file-driven page -- still here, just no
+    longer the landing page (see index() below)."""
+    return send_from_directory(app.static_folder, "index.html")
+
+
 @app.route("/")
 def index():
-    return send_from_directory(app.static_folder, "index.html")
+    # /browse is the landing page -- lands there straight after the password
+    # prompt (when CCIG_HUMAN_EVAL_PASSWORD is set) since that's the page actually
+    # used day to day. The original setup-form page is still reachable at /setup.
+    return redirect("/browse")
 
 
 def main() -> None:

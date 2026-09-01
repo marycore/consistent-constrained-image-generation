@@ -15,7 +15,6 @@ const el = (id) => document.getElementById(id);
 const state = {
   vocab: {},
   images: [], // [{id, field, number_of_objects, reasonable_scene}]
-  allFiles: [], // raw /api/browse/files response: [{path, model, dataset, count}]
   currentModel: "",
   currentFile: "", // selected human-perception.json path
   currentKey: null, // {id, field}
@@ -31,15 +30,15 @@ let drag = null; // {mode: "new"|"move"|"resize", ...}
 let saveTimer = null;
 
 // ---------------------------------------------------------------------
-// Model -> dataset -> image picker. Model and dataset are both derived from
-// /api/browse/files (one fetch, filtered/grouped client-side) rather than two
-// separate endpoints -- the full list is small enough that a second round trip
-// per model selection isn't worth it.
+// Model -> dataset -> image picker. Model = a literal folder name under
+// data/evaluation/; dataset = a literal *_human-perception.json filename inside
+// that folder (see app.py's _discover_browse_models/_discover_browse_datasets) --
+// two separate round trips, one per dropdown level, rather than one big fetch
+// grouped client-side, since a deployment could have many models/datasets.
 // ---------------------------------------------------------------------
-async function loadFileList() {
-  const res = await fetch("/api/browse/files");
-  state.allFiles = await res.json();
-  const models = [...new Set(state.allFiles.map((f) => f.model))].sort();
+async function loadModelList() {
+  const res = await fetch("/api/browse/models");
+  const models = await res.json();
   const sel = el("model-select");
   sel.innerHTML = '<option value="">-- choose a model --</option>';
   for (const m of models) {
@@ -50,7 +49,7 @@ async function loadFileList() {
   }
 }
 
-el("model-select").addEventListener("change", (e) => {
+el("model-select").addEventListener("change", async (e) => {
   state.currentModel = e.target.value;
   state.currentFile = "";
   state.currentKey = null;
@@ -67,8 +66,10 @@ el("model-select").addEventListener("change", (e) => {
     fileSel.disabled = true;
     return;
   }
+  const res = await fetch(`/api/browse/datasets?model=${encodeURIComponent(state.currentModel)}`);
+  const datasets = await res.json();
   fileSel.innerHTML = '<option value="">-- choose a dataset --</option>';
-  for (const f of state.allFiles.filter((f) => f.model === state.currentModel)) {
+  for (const f of datasets) {
     const opt = document.createElement("option");
     opt.value = f.path;
     opt.textContent = f.count === null ? `${f.dataset}  [unreadable]` : `${f.dataset}  (${f.count} images)`;
@@ -520,4 +521,4 @@ function setSaveIndicator(status) {
 }
 
 // ---------------------------------------------------------------------
-loadFileList();
+loadModelList();

@@ -4,9 +4,6 @@
    ever being touched. */
 
 #picker-panel {
-  display: flex;
-  flex-direction: column;
-  gap: 0.9rem;
   border: 1px solid var(--border-soft);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-sm);
@@ -15,8 +12,15 @@
   margin-bottom: 1.25rem;
 }
 
+.picker-row {
+  display: flex;
+  gap: 1.4rem;
+}
+
 .picker-label {
   display: block;
+  flex: 1;
+  min-width: 0;
   font-size: 0.85rem;
   font-weight: 500;
 }
@@ -32,6 +36,8 @@
   color: inherit;
 }
 .picker-label select:disabled { opacity: 0.5; cursor: not-allowed; }
+
+#picker-error:not(:empty) { margin-top: 0.75rem; }
 
 #workspace-panel {
   border: 1px solid var(--border-soft);
