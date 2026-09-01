@@ -7,7 +7,7 @@ from io import BytesIO
 from PIL import Image
 
 from ..base import VLMJudge, JudgeVerdict, JUDGE_PROMPT_TEMPLATE, parse_judge_response
-#api_key = 'API_KEY'
+api_key = os.getenv("OPENAI_API_KEY")
 os.environ["OPENAI_API_KEY"] = api_key
 
 class GPT4oJudge(VLMJudge):

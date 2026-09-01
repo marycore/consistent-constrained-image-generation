@@ -41,9 +41,8 @@ def main() -> None:
     parser.add_argument("--device", default=None, help="'cuda' or 'cpu'; default: auto-detect")
 
     args = parser.parse_args()
-
+    
     items = match_images_to_prompts(args.images_dir, args.prompts_file)
-    print(items[0])
     if args.limit is not None:
         items = items[: args.limit]
     if not items:

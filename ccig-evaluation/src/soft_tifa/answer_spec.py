@@ -67,7 +67,6 @@ AnswerSpec = YesNoSpec | TrueFalseSpec | CountSpec | OpenValueSpec
 
 def parse_answer(raw: str) -> AnswerSpec:
     s = raw.strip()
-
     if s.lower() in _YES_NO:
         return YesNoSpec(expected=s.lower())
     if s in _TRUE_FALSE:
@@ -77,7 +76,10 @@ def parse_answer(raw: str) -> AnswerSpec:
     if m:
         rhs_raw = m.group("rhs")
         rhs: int | str = int(rhs_raw) if rhs_raw.isdigit() else rhs_raw
-        return CountSpec(binds_symbol=m.group("lhs"), op=m.group("op"), rhs=rhs)
+        lhs = m.group("lhs")
+        if lhs is None:
+            lhs = "a"
+        return CountSpec(binds_symbol=lhs, op=m.group("op"), rhs=rhs)
 
     m = _BARE_SYMBOL_RE.match(s)
     if m:

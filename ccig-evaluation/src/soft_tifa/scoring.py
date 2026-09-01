@@ -53,7 +53,6 @@ def score_subqa(
 
     for question, raw_answer in subqa.items():
         spec = parse_answer(raw_answer)
-
         if isinstance(spec, YesNoSpec):
             dist = backend.answer_distribution(image, question, _YES_NO_CANDIDATES)
             score = dist.get("Yes" if spec.expected == "yes" else "No", 0.0)
@@ -70,10 +69,8 @@ def score_subqa(
             candidates = [str(k) for k in range(max_count + 1)]
             dist = backend.answer_distribution(image, question, candidates)
             count_dist = {int(k): v for k, v in dist.items()}
-
             if spec.binds_symbol:
                 symbol_values[spec.binds_symbol] = max(count_dist, key=count_dist.get)
-
             if spec.op is None:
                 # Anchor question ("How many objects are in the image?": "n") -- no
                 # expected answer of its own, just defines a symbol for later use.
@@ -90,7 +87,7 @@ def score_subqa(
                     )
                     continue
                 rhs = symbol_values[rhs]
-
+                
             score = sum(p for k, p in count_dist.items() if compare(k, spec.op, rhs))
             results.append(SubQAScore(question, raw_answer, "count_comparison", dist, score, False))
             continue
@@ -99,6 +96,7 @@ def score_subqa(
         candidates = _open_value_candidates(spec.expected, domain_module)
         dist = backend.answer_distribution(image, question, candidates)
         score = dist.get(spec.expected, 0.0)
+        print('Open:', score, dist, candidates )
         results.append(SubQAScore(question, raw_answer, "open_value", dist, score, False))
 
     return results
