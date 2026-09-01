@@ -29,6 +29,27 @@ It prints a public `https://*.run.app` URL when done — share that and the
 password with your annotators (see the main README's Password protection
 section for how that gate works).
 
+## Managing the service
+
+```bash
+# block all access (keeps everything else -- config, revision, data)
+gcloud run services update ccig-human-eval --project=ccig-498516 --region=us-east4 --no-allow-unauthenticated
+
+# re-allow public access
+gcloud run services update ccig-human-eval --project=ccig-498516 --region=us-east4 --allow-unauthenticated
+
+# delete the service entirely (bucket + image untouched, redeploy with ./deploy.sh)
+gcloud run services delete ccig-human-eval --project=ccig-498516 --region=us-east4
+
+# check status
+gcloud run services describe ccig-human-eval --project=ccig-498516 --region=us-east4
+```
+
+Cost note: the service already scales to zero when idle (no `--min-instances`
+set), so it costs nothing while unused either way -- blocking access above is
+for reachability, not billing. The only ongoing cost is the bucket's storage
+(~$0.02/GB/month), which persists regardless of the service's state.
+
 ## Data layout the app expects in the bucket
 
 The whole bucket is mounted at `/srv/data` inside the container, so the
