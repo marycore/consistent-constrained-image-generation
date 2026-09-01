@@ -13,11 +13,14 @@
   </header>
 
   <section id="picker-panel">
-    <label class="picker-label">Human-perception file
-      <select id="file-select"><option value="">-- choose a file --</option></select>
+    <label class="picker-label">Model
+      <select id="model-select"><option value="">-- choose a model --</option></select>
+    </label>
+    <label class="picker-label">Dataset
+      <select id="file-select" disabled><option value="">-- choose a model first --</option></select>
     </label>
     <label class="picker-label">Image
-      <select id="image-select" disabled><option value="">-- choose a file first --</option></select>
+      <select id="image-select" disabled><option value="">-- choose a dataset first --</option></select>
     </label>
     <div id="picker-error" class="error"></div>
   </section>

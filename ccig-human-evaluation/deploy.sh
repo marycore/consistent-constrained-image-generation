@@ -60,8 +60,18 @@ gcloud services enable run.googleapis.com cloudbuild.googleapis.com storage.goog
 echo "==> Creating bucket (skips if it already exists)..."
 gsutil mb -p "$PROJECT" -l "$REGION" "gs://$BUCKET" 2>/dev/null || echo "    (bucket already exists, continuing)"
 
-echo "==> Syncing data/ to gs://$BUCKET/data (uploads all ~5.5GB the first time; only changes after that)..."
-gsutil -m rsync -r data/ "gs://$BUCKET/data"
+if [ -d "data" ]; then
+  echo "==> Syncing data/ to gs://$BUCKET (uploads all ~5.5GB the first time; only changes after that)..."
+  # To the bucket ROOT, not gs://$BUCKET/data -- the Cloud Run deploy below mounts the
+  # whole bucket at /srv/data, so the bucket's root must directly mirror what's inside
+  # your local data/ folder (gs://$BUCKET/generated_images/..., not
+  # gs://$BUCKET/data/generated_images/...), or the app looks for files one level too deep.
+  gsutil -m rsync -r data/ "gs://$BUCKET"
+else
+  echo "==> No local data/ directory here (e.g. running from a fresh clone that never had"
+  echo "    data/ pushed to it) -- skipping upload, assuming it's already in the bucket"
+  echo "    (uploaded separately, from wherever data/ actually lives)."
+fi
 
 echo "==> Deploying to Cloud Run..."
 gcloud run deploy "$SERVICE_NAME" \
@@ -82,4 +92,4 @@ echo
 echo "==> Done. In the deployed app's setup form, paths live under /srv/data/, e.g.:"
 echo "      Images dir:   /srv/data/generated_images/<model>/<dataset>"
 echo "      Prompts file: /srv/data/ccig_eval_dataset/<dataset>.jsonl"
-echo "    /browse auto-discovers files under /srv/data/evaluation/perception/*/ -- nothing to configure there."
+echo "    /browse auto-discovers files anywhere under /srv/data/evaluation/ -- nothing to configure there."

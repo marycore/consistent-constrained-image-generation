@@ -15,6 +15,8 @@ const el = (id) => document.getElementById(id);
 const state = {
   vocab: {},
   images: [], // [{id, field, number_of_objects, reasonable_scene}]
+  allFiles: [], // raw /api/browse/files response: [{path, model, dataset, count}]
+  currentModel: "",
   currentFile: "", // selected human-perception.json path
   currentKey: null, // {id, field}
   natural: { w: 1, h: 1 },
@@ -29,20 +31,51 @@ let drag = null; // {mode: "new"|"move"|"resize", ...}
 let saveTimer = null;
 
 // ---------------------------------------------------------------------
-// File picker
+// Model -> dataset -> image picker. Model and dataset are both derived from
+// /api/browse/files (one fetch, filtered/grouped client-side) rather than two
+// separate endpoints -- the full list is small enough that a second round trip
+// per model selection isn't worth it.
 // ---------------------------------------------------------------------
 async function loadFileList() {
   const res = await fetch("/api/browse/files");
-  const files = await res.json();
-  const sel = el("file-select");
-  sel.innerHTML = '<option value="">-- choose a file --</option>';
-  for (const f of files) {
+  state.allFiles = await res.json();
+  const models = [...new Set(state.allFiles.map((f) => f.model))].sort();
+  const sel = el("model-select");
+  sel.innerHTML = '<option value="">-- choose a model --</option>';
+  for (const m of models) {
     const opt = document.createElement("option");
-    opt.value = f.path;
-    opt.textContent = f.count === null ? `${f.label}  [unreadable]` : `${f.label}  (${f.count} images)`;
+    opt.value = m;
+    opt.textContent = m;
     sel.appendChild(opt);
   }
 }
+
+el("model-select").addEventListener("change", (e) => {
+  state.currentModel = e.target.value;
+  state.currentFile = "";
+  state.currentKey = null;
+  el("picker-error").textContent = "";
+  el("workspace-panel").classList.add("hidden");
+
+  const fileSel = el("file-select");
+  const imageSel = el("image-select");
+  imageSel.innerHTML = '<option value="">-- choose a dataset first --</option>';
+  imageSel.disabled = true;
+
+  if (!state.currentModel) {
+    fileSel.innerHTML = '<option value="">-- choose a model first --</option>';
+    fileSel.disabled = true;
+    return;
+  }
+  fileSel.innerHTML = '<option value="">-- choose a dataset --</option>';
+  for (const f of state.allFiles.filter((f) => f.model === state.currentModel)) {
+    const opt = document.createElement("option");
+    opt.value = f.path;
+    opt.textContent = f.count === null ? `${f.dataset}  [unreadable]` : `${f.dataset}  (${f.count} images)`;
+    fileSel.appendChild(opt);
+  }
+  fileSel.disabled = false;
+});
 
 el("file-select").addEventListener("change", async (e) => {
   const path = e.target.value;
@@ -52,7 +85,7 @@ el("file-select").addEventListener("change", async (e) => {
   el("workspace-panel").classList.add("hidden");
   const imageSel = el("image-select");
   if (!path) {
-    imageSel.innerHTML = '<option value="">-- choose a file first --</option>';
+    imageSel.innerHTML = '<option value="">-- choose a dataset first --</option>';
     imageSel.disabled = true;
     return;
   }

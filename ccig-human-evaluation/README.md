@@ -75,13 +75,20 @@ guess unless you clear it (or click "Mark scene as empty").
 
 `http://localhost:5001/browse` is a second, independent page for opening any
 `*_human-perception.json` file directly, without going through the setup
-form: a dropdown lists every one found under `data/evaluation/perception/*/`,
-picking one populates a second dropdown of its images, and picking an image
-opens the same box/property editor as the main page. No prompt, no
-constraint, no automated-perception comparison, no file paths shown anywhere
-— just the file, the image, and the annotation. It edits the same
-`human-perception.json` files described above (nothing separate to keep in
-sync), and doesn't require or touch a configured batch on the main page.
+form: three dropdowns in order -- **Model**, **Dataset**, **Image**. Model and
+dataset are both discovered by scanning `data/evaluation/` recursively for
+every `*_human-perception.json` file, however deep it sits (`evaluation/
+<model>/<dataset>_human-perception.json` and `evaluation/perception/<model>/
+<dataset>_human-perception.json` both work — the "model" is always just
+whatever folder directly contains the file, so a manually-uploaded Cloud
+Storage bucket doesn't need to match the local layout exactly). Picking a
+model filters the dataset dropdown to that model's files; picking a dataset
+populates the image dropdown; picking an image opens the same box/property
+editor as the main page. No prompt, no constraint, no automated-perception
+comparison, no file paths shown anywhere — just the model, the dataset, the
+image, and the annotation. It edits the same `human-perception.json` files
+described above (nothing separate to keep in sync), and doesn't require or
+touch a configured batch on the main page.
 
 ## Password protection
 

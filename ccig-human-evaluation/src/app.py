@@ -561,10 +561,17 @@ _DATA_ROOT = _ROOT.parent / "data"
 
 
 def _discover_human_perception_files() -> list[Path]:
-    perception_dir = _DATA_ROOT / "evaluation" / "perception"
-    if not perception_dir.is_dir():
+    """Recursive, not a fixed-depth glob -- local runs have historically kept these
+    under evaluation/perception/<model>/, but a manually-uploaded Cloud Storage
+    bucket may have them one level shallower at evaluation/<model>/ (whatever
+    intermediate folders exist, if any). Matching at any depth under evaluation/
+    means both layouts work without reorganizing anything, and the "model" a file
+    belongs to (see api_browse_files) is always just its own immediate parent
+    folder name, correct either way."""
+    evaluation_dir = _DATA_ROOT / "evaluation"
+    if not evaluation_dir.is_dir():
         return []
-    return sorted(perception_dir.glob("*/*_human-perception.json"))
+    return sorted(evaluation_dir.glob("**/*_human-perception.json"))
 
 
 def _resolve_browse_path(raw: str) -> Path | None:
@@ -595,6 +602,10 @@ def _find_browse_entry(data: dict, image_id: str, field: str) -> dict | None:
 
 @app.route("/api/browse/files", methods=["GET"])
 def api_browse_files():
+    # "model" is deliberately just the file's own immediate parent folder name --
+    # correct whether that folder sits at evaluation/<model>/ or one level deeper at
+    # evaluation/perception/<model>/ (see _discover_human_perception_files). The
+    # client groups these into a model dropdown, then a dataset dropdown within it.
     out = []
     for path in _discover_human_perception_files():
         try:
@@ -602,7 +613,14 @@ def api_browse_files():
         except (json.JSONDecodeError, OSError):
             count = None
         dataset_name = path.stem.removesuffix("_human-perception")
-        out.append({"path": str(path), "label": f"{path.parent.name} / {dataset_name}", "count": count})
+        out.append(
+            {
+                "path": str(path),
+                "model": path.parent.name,
+                "dataset": dataset_name,
+                "count": count,
+            }
+        )
     return jsonify(out)
 
 
