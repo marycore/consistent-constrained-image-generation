@@ -26,18 +26,18 @@ def pairwise_relations(objects: list[DetectedObject]) -> list[tuple[int, int, st
     relations: list[tuple[int, int, str]] = []
     for obj1 in objects:
         id_a = obj1.obj_id
-        c1_x, c1_y = bbox_centre(obj1.bbox)
+        c1_x, c1_y = bbox_center(obj1.bbox)
         for obj2 in objects:
             id_b = obj2.obj_id
             if id_a == id_b:
                 continue
-            c2_x, c2_y = bbox_centre(obj2.bbox)
+            c2_x, c2_y = bbox_center(obj2.bbox)
             if c1_x<c2_x:
-                relations.append(id_a, id_b, "left")
-                relations.append(id_b, id_a, "right")
+                relations.append((id_a, id_b, "left"))
+                relations.append((id_b, id_a, "right"))
             if c1_y<c2_y:
-                relations.append(id_a, id_b, "behind")
-                relations.append(id_b, id_a, "front")
+                relations.append((id_a, id_b, "behind"))
+                relations.append((id_b, id_a, "front"))
     return relations
     
 

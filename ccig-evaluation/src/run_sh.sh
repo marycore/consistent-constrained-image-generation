@@ -6,7 +6,7 @@
 #SBATCH --ntasks-per-node=1                        # Run one task
 #SBATCH --cpus-per-task=4                          # Use 4 cores, most of the procesing happens on the GPU
 #SBATCH --mem=24GB                                 # Expected amount CPU RAM needed (Not GPU Memory)
-#SBATCH --time=06:30:00                          # Expected amount of time to run Time limit hrs:min:sec
+#SBATCH --time=01:30:00                          # Expected amount of time to run Time limit hrs:min:sec
 #SBATCH -e /users/sbsh670/data/ccig-models/clip-clevr/Clipscore_/%x_%j.e                         # Standard output and error log [%j is replaced with the jobid]
 #SBATCH -o /users/sbsh670/data/ccig-models/clip-clevr/Clipscore_/%x_%j.o                         # [%x with the job name], make sure 'results' folder exists.
 #SBATCH --gres=gpu:1                               # Use one gpu or 2
@@ -38,7 +38,9 @@ unset __conda_setup
 conda init bash
 conda activate clevr-poc
 #Run your script.
-python -m src.run --images-dir /users/sbsh670/data/ccig-generated-images/gpt-image-2-low/clevr_1_scenes_SAT --prompts-file /users/sbsh670/data/ccig_evalData/clevr_1_scenes_SAT.jsonl --method soft-tifa --domain clevr --out-dir /users/sbsh670/data/ccig-generated-images/gpt-image-2-low/clevr_1_scenes_SAT --vqa-backend gpt-4o 
+python -m src.run --images-dir /users/sbsh670/data/ccig-generated-images/gpt-image-2-low/clevr_6_scenes_UNSAT --prompts-file /users/sbsh670/data/ccig_evalData/clevr_6_scenes_UNSAT.jsonl --method perception --domain clevr --out-dir /users/sbsh670/data/ccig-generated-images/gpt-image-2-low/clevr_6_scenes_UNSAT --detector grounding-dino --attribute-classifier clip-zero-shot 
+
+#python -m src.run --images-dir /users/sbsh670/data/ccig-generated-images/gpt-image-2-low/clevr_1_scenes_SAT --prompts-file /users/sbsh670/data/ccig_evalData/clevr_1_scenes_SAT.jsonl --method soft-tifa --domain clevr --out-dir /users/sbsh670/data/ccig-generated-images/gpt-image-2-low/clevr_1_scenes_SAT --vqa-backend gpt-4o  
 #python -m src.run --images-dir /users/sbsh670/data/ccig-generated-images/gpt-image-2-low/clevr_1_scenes_SAT --prompts-file /users/sbsh670/data/ccig_evalData/clevr_1_scenes_SAT.jsonl --method vlm-judge --domain clevr --out-dir /users/sbsh670/data/ccig-generated-images/gpt-image-2-low/clevr_1_scenes_SAT --judge-backend gpt-4o 
 #python -m src.run --images-dir /users/sbsh670/data/ccig-generated-images/gpt-image-2-low/clevr_1_scenes_SAT --prompts-file /users/sbsh670/data/ccig_evalData/clevr_1_scenes_SAT.jsonl --method clipscore --domain clevr --out-dir /users/sbsh670/data/ccig-generated-images/gpt-image-2-low/clevr_1_scenes_SAT --clip-checkpoint /users/sbsh670/Long-CLIP/checkpoints/longclip-L.pt
 #python -m src.run --images-dir /users/sbsh670/data/ccig-generated-images/gpt-image-2-low/clevr_1_scenes_SAT --prompts-file /users/sbsh670/data/ccig_evalData/clevr_1_scenes_SAT.jsonl --method clipscore --domain clevr --out-dir /users/sbsh670/data/ccig-generated-images/gpt-image-2-low/clevr_1_scenes_SAT --clip-checkpoint openai/clip-vit-large-patch14

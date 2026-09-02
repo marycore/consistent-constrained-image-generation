@@ -6,7 +6,7 @@ from ..common.dataset_gen import load_domain, solve
 from ..common.io import write_json
 from ..common.types import MatchedItem, PerceptionResult
 from .attributes.registry import build_attribute_classifier
-from .crop import crop_and_neutralize
+from .crop import crop_and_neutralize, make_object_views
 from .detectors.registry import build_detector
 from .regions import bbox_center, region_of
 from .scene_graph import build_scene_facts, to_graph_dict
@@ -21,7 +21,7 @@ def _build_property_classifiers(domain_module, domain: str, attribute_classifier
     constraints reference despite the sibling pipeline's ASP generator excluding it
     from its own choice rules)."""
     if domain == "clevr":
-        properties = ["shape", "color", "material", "size"]
+        properties = ["shape", "color", "material"]
     else:  # coco: category comes from the detector label itself, only color is classified
         properties = ["color"]
     return {
@@ -66,12 +66,7 @@ def _classify_object_properties(
         #   "a blue cube"
         #   "a green cube"
         #   ...
-        predicted_color, _ = classifiers["color"].classify_ensemble(
-            [
-                views["tight"],
-                views["medium"],
-                views["wide"],
-            ]
+        predicted_color, _ = classifiers["color"].classify_ensemble([views["tight"],views["medium"],views["wide"],],
             context=predicted_shape,
         )
         properties["color"] = predicted_color
@@ -87,13 +82,13 @@ def _classify_object_properties(
         properties["material"] = predicted_material
 
         # Size: use medium/wide views.
-        predicted_size, _ = classifiers["size"].classify_ensemble(
-            [
-                views["medium"],
-                views["wide"],
-            ]
-        )
-        properties["size"] = predicted_size
+        #predicted_size, _ = classifiers["size"].classify_ensemble(
+        #    [
+        #        views["medium"],
+        #        views["wide"],
+        #    ]
+        #)
+        #properties["size"] = predicted_size
 
     else:
         # Non-CLEVR: only color is classified here.
@@ -177,15 +172,15 @@ def run_perception(
     for item in items:
         try:
             image = Image.open(item.image_path).convert("RGB")
+            print('Processing:', item.id, flush=True)
             objects = _perceive_scene(image, domain, domain_module, detector, classifiers)
             facts = build_scene_facts(objects)
-
             # instantiated_rule uses free ASP variables (X, Y, ...) bound over object(X),
             # not literal object ids -- it applies unchanged no matter how perception
             # numbered the detected objects here.
-            program = f"{facts}\n{item.record.instantiated_rule}"
-            predicted_status, _ = solve(program, n_models=1, time_limit=10)
+            program = f"{facts}\n" + "\n".join(item.record.instantiated_rule)
 
+            predicted_status, _ = solve(program, n_models=1, time_limit=10)
             results.append(
                 PerceptionResult(
                     id=item.id,
