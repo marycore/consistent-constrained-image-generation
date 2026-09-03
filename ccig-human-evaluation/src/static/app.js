@@ -18,6 +18,7 @@ const state = {
   readOnly: false, // true whenever the *displayed* source (state's "source", not viewPreference) is "automated"
   defaultReasonableScene: true, // set once on the setup form, before any image is loaded
   reasonableScene: true, // this image's current value -- data.reasonable_scene if saved before, else the default above
+  reasonableSceneRecorded: false, // has that value actually been saved, or is it just the in-memory default
 };
 
 let drag = null; // {mode: "new"|"move"|"resize", ...}
@@ -192,7 +193,15 @@ async function fetchImageMeta(id, field) {
   // null/undefined means this image's human entry has never recorded this (either no
   // human entry yet, or it was auto-seeded from automated, which has no such field) --
   // fall back to the session default until an actual save writes a real value.
+  // reasonableSceneRecorded tracks whether that's *actually happened* yet, separately
+  // from the in-memory default: without it, the toggle would show "Yes" as already
+  // selected the moment an image loads (since the default is true), even though
+  // nothing's been saved -- easy to mistake for "already recorded" and skip past,
+  // which is exactly how true silently never made it into human-perception.json
+  // while false always did (clicking "No" changes the value and triggers a save;
+  // leaving the seemingly-already-selected "Yes" alone triggers nothing).
   state.reasonableScene = data.reasonable_scene ?? state.defaultReasonableScene;
+  state.reasonableSceneRecorded = data.reasonable_scene !== null && data.reasonable_scene !== undefined;
   renderReasonableToggle();
 
   return data;
@@ -200,13 +209,14 @@ async function fetchImageMeta(id, field) {
 
 // A reusable Yes/No toggle for human-only true/false judgment calls (currently just
 // reasonable_scene, kept generic in case another one is added later).
-function makeBoolToggle(yesId, noId, getValue, setValue) {
+function makeBoolToggle(yesId, noId, getValue, setValue, getRecorded, setRecorded) {
   function render() {
     const yesBtn = el(yesId);
     const noBtn = el(noId);
     const value = getValue();
-    yesBtn.classList.toggle("active", value === true);
-    noBtn.classList.toggle("active", value === false);
+    const recorded = getRecorded();
+    yesBtn.classList.toggle("active", recorded && value === true);
+    noBtn.classList.toggle("active", recorded && value === false);
     yesBtn.disabled = state.readOnly;
     noBtn.disabled = state.readOnly;
   }
@@ -214,6 +224,7 @@ function makeBoolToggle(yesId, noId, getValue, setValue) {
     btn.addEventListener("click", () => {
       if (state.readOnly) return;
       setValue(btn.dataset.value === "true");
+      setRecorded(true);
       render();
       scheduleSave();
     });
@@ -223,7 +234,8 @@ function makeBoolToggle(yesId, noId, getValue, setValue) {
 
 const renderReasonableToggle = makeBoolToggle(
   "reasonable-yes", "reasonable-no",
-  () => state.reasonableScene, (v) => { state.reasonableScene = v; }
+  () => state.reasonableScene, (v) => { state.reasonableScene = v; },
+  () => state.reasonableSceneRecorded, (v) => { state.reasonableSceneRecorded = v; }
 );
 
 // "source" (what actually got displayed) can differ from state.viewPreference when
@@ -553,8 +565,16 @@ function renderEditor() {
     const select = document.createElement("select");
     const blank = document.createElement("option");
     blank.value = "";
-    blank.textContent = "–";
+    blank.textContent = "– (not set)";
     select.appendChild(blank);
+    // Distinct from the blank/unset placeholder above -- this is a real, saved
+    // value ("this property was deliberately observed as absent/unclear"), not
+    // "nothing chosen yet". select.value is a non-empty string either way, so the
+    // change handler below already stores it like any other vocab value.
+    const none = document.createElement("option");
+    none.value = "Unknown";
+    none.textContent = "Unknown";
+    select.appendChild(none);
     for (const v of state.vocab[p]) {
       const opt = document.createElement("option");
       opt.value = v;

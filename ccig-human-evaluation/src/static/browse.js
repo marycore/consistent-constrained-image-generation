@@ -24,6 +24,7 @@ const state = {
   selected: -1,
   img: new Image(),
   reasonableScene: true,
+  reasonableSceneRecorded: false, // has that value actually been saved, or is it just the in-memory default
 };
 
 let drag = null; // {mode: "new"|"move"|"resize", ...}
@@ -139,7 +140,14 @@ async function loadImage(id, field) {
   }
   el("picker-error").textContent = "";
 
+  // reasonableSceneRecorded tracks whether a value has actually been saved, separately
+  // from the in-memory default -- without it the toggle would show "Yes" as already
+  // selected the moment an image loads (default is true), even though nothing's been
+  // saved, which is how true was silently never making it into human-perception.json
+  // while false always did (clicking "No" changes the value and saves; leaving the
+  // seemingly-already-selected "Yes" alone triggers nothing).
   state.reasonableScene = data.reasonable_scene ?? true;
+  state.reasonableSceneRecorded = data.reasonable_scene !== null && data.reasonable_scene !== undefined;
   renderReasonableToggle();
 
   state.natural = { w: data.image_width, h: data.image_height };
@@ -161,13 +169,14 @@ async function loadImage(id, field) {
 function renderReasonableToggle() {
   const yesBtn = el("reasonable-yes");
   const noBtn = el("reasonable-no");
-  yesBtn.classList.toggle("active", state.reasonableScene === true);
-  noBtn.classList.toggle("active", state.reasonableScene === false);
+  yesBtn.classList.toggle("active", state.reasonableSceneRecorded && state.reasonableScene === true);
+  noBtn.classList.toggle("active", state.reasonableSceneRecorded && state.reasonableScene === false);
 }
 
 for (const btn of [el("reasonable-yes"), el("reasonable-no")]) {
   btn.addEventListener("click", () => {
     state.reasonableScene = btn.dataset.value === "true";
+    state.reasonableSceneRecorded = true;
     renderReasonableToggle();
     scheduleSave();
   });
@@ -425,8 +434,16 @@ function renderEditor() {
     const select = document.createElement("select");
     const blank = document.createElement("option");
     blank.value = "";
-    blank.textContent = "–";
+    blank.textContent = "– (not set)";
     select.appendChild(blank);
+    // Distinct from the blank/unset placeholder above -- this is a real, saved
+    // value ("this property was deliberately observed as absent/unclear"), not
+    // "nothing chosen yet". select.value is a non-empty string either way, so the
+    // change handler below already stores it like any other vocab value.
+    const none = document.createElement("option");
+    none.value = "Unknown";
+    none.textContent = "Unknown";
+    select.appendChild(none);
     for (const v of state.vocab[p]) {
       const opt = document.createElement("option");
       opt.value = v;
@@ -501,6 +518,10 @@ async function saveNow() {
   if (res.ok) {
     const data = await res.json();
     setSaveIndicator("saved");
+    // Whatever reasonable_scene held (an explicit choice or still just the in-memory
+    // default) is genuinely on disk now -- reflect that in the toggle.
+    state.reasonableSceneRecorded = true;
+    renderReasonableToggle();
     const im = state.images.find((x) => x.id === id && x.field === field);
     if (im) {
       im.number_of_objects = data.number_of_objects;
