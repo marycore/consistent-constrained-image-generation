@@ -5,6 +5,14 @@ from pathlib import Path
 from ..common.io import write_json
 from ..common.types import ClipScoreResult, MatchedItem
 
+_REPO_ROOT = Path(__file__).resolve().parents[3]
+_COMMON_DIR = _REPO_ROOT / "ccig-image-generation" / "src" / "common"
+import sys
+sys.path.insert(0, str(_COMMON_DIR))
+
+from scene_setup import scene_setup_text, scene_unsat_text
+import json
+
 
 def run_clipscore(items: list[MatchedItem], domain: str, checkpoint: str, out_path: str | Path) -> None:
     """Compute CLIPScore (CLIP image-text embedding cosine similarity) for each
@@ -25,30 +33,38 @@ def run_clipscore(items: list[MatchedItem], domain: str, checkpoint: str, out_pa
 
     device = "cuda" if torch.cuda.is_available() else "cpu"
 
+    results: list[ClipScoreResult] = []
+    #find error in generated from manifest - no image generated cases
+    with open(manifest, "r") as f:
+        manifest = [json.loads(line) for line in f if line.strip()]
+    for item in manifest:
+        if item["error"] is not None:
+            print('No image generated:', item['id'])
+            results.append(
+                    ClipScoreResult(
+                    clipmodel=checkpoint,
+                    id=item['id'],
+                    prompt_field=item['prompt_field'],
+                    prompt=item['prompt'],
+                    image_path=str(item['image_path']),
+                    clipscore=0,
+                    cosine=-1,
+                    success=False,
+                    error='No image generated',))
     model, preprocess = longclip.load(checkpoint,device=device,)
 
     model.eval()
     
-    '''
-    checkpoint = "Ambarella/LongCLIP"
-    device = "cuda" if torch.cuda.is_available() else "cpu"
-    
-    processor = AutoProcessor.from_pretrained(checkpoint,trust_remote_code=True)
-
-    model = AutoModel.from_pretrained(checkpoint,trust_remote_code=True).to(device)
-
-    model.eval()
-    '''
-    
-    
-    results: list[ClipScoreResult] = []
     len_77 = 0
     for item in items:
         try:
             
             image = Image.open(item.image_path).convert("RGB")
             image_input = preprocess(image).unsqueeze(0).to(device)
-            text = "A photo depicts an image where: " + item.prompt_text
+            # to study 
+            setup_text = scene_setup_text(item.record.number_of_objects, item.record.domain, with_background=is_closed_model)
+            unsat_text = scene_unsat_text(item.record.domain, with_unsat=is_closed_model)
+            text = "A photo depicts an image where: " + setup_text+ item.prompt_text + unsat_text
             try:
                 text_input = longclip.tokenize([text]).to(device)
 
