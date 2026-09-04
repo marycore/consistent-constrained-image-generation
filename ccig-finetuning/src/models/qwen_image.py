@@ -4,6 +4,7 @@ from typing import Any
 
 import torch
 from diffusers import QwenImagePipeline
+from diffusers.training_utils import compute_density_for_timestep_sampling, compute_loss_weighting_for_sd3
 
 from ._diffusers_common import DiffusersLoraTrainer
 
@@ -14,6 +15,18 @@ class QwenImageTrainer(DiffusersLoraTrainer):
     # "handle guidance" block for the reference behavior this mirrors. The exact tuned
     # value for LoRA training isn't verified end-to-end here -- adjust if needed.
     guidance_scale: float = 1.0
+
+    # SD3-paper flow-matching timestep density + loss-weighting scheme, matching the
+    # FlyMyAI Qwen-Image LoRA trainer's train.py verbatim (confirmed by reading its actual
+    # compute_density_for_timestep_sampling/compute_loss_weighting_for_sd3 calls, not
+    # assumed): https://github.com/FlyMyAI/flymyai-lora-trainer. "none" means
+    # compute_density_for_timestep_sampling samples timesteps uniformly (not logit-normal)
+    # and compute_loss_weighting_for_sd3 returns all-ones (no weighting, equivalent to
+    # plain MSE)
+    timestep_weighting_scheme: str = "none"
+    logit_mean: float = 0.0
+    logit_std: float = 1.0
+    mode_scale: float = 1.29
 
     name = "qwen-image"
     hf_repo = "Qwen/Qwen-Image"
@@ -32,8 +45,26 @@ class QwenImageTrainer(DiffusersLoraTrainer):
         # of frozen Qwen-Image weights at the same time.
         def _encode():
             with torch.no_grad():
-                latents = pipe.vae.encode(pixel_values).latent_dist.sample()
-                latents = latents * pipe.vae.config.scaling_factor
+                # AutoencoderKLQwenImage is a *video* VAE (see its temperal_downsample
+                # config / QwenImageEncoder3d) reused for stills as 1-frame videos -- its
+                # encoder hard-requires a 5D (B, C, T, H, W) input (confirmed: it slices
+                # x[:, :, :1, :, :] internally, which raises on a 4D tensor). Insert a
+                # size-1 temporal axis before encoding, then drop it right after --
+                # everything below this line already assumes plain (B, C, H, W), and a
+                # size-1 axis never reorders memory, so squeezing it back out here is
+                # exactly equivalent to the reference's unsqueeze+permute dance.
+                latents = pipe.vae.encode(pixel_values.unsqueeze(2)).latent_dist.sample()
+                latents = latents.squeeze(2)
+                # AutoencoderKLQwenImage has no scalar `scaling_factor` -- it normalizes
+                # per-channel via latents_mean/latents_std instead.
+                latents_mean = (
+                    torch.tensor(pipe.vae.config.latents_mean, device=device, dtype=dtype)
+                    .view(1, -1, 1, 1)
+                )
+                latents_std = 1.0 / torch.tensor(
+                    pipe.vae.config.latents_std, device=device, dtype=dtype
+                ).view(1, -1, 1, 1)
+                latents = (latents - latents_mean) * latents_std
                 bsz, num_channels, lat_h, lat_w = latents.shape
 
                 # Use QwenImagePipeline's own `_pack_latents` (same 2x2 patch packing as
@@ -46,15 +77,29 @@ class QwenImageTrainer(DiffusersLoraTrainer):
                 # counts (post-padding-mask) for the text sequence.
                 img_shapes = [[(1, lat_h // 2, lat_w // 2)]] * bsz
 
-                timesteps = torch.randint(
-                    0, pipe.scheduler.config.num_train_timesteps, (bsz,), device=device
+                # Sample timesteps via compute_density_for_timestep_sampling (uniform, given
+                # weighting_scheme="none"), then look sigma up from the scheduler's own
+                # schedule (pipe.scheduler.sigmas[indices]) instead of a naive uniform
+                # torch.randint + timesteps/num_train_timesteps approximation -- the sigma
+                # value comes from the scheduler's actual schedule this way, so it stays
+                # correct even if that schedule isn't perfectly linear.
+                u = compute_density_for_timestep_sampling(
+                    weighting_scheme=self.timestep_weighting_scheme,
+                    batch_size=bsz,
+                    logit_mean=self.logit_mean,
+                    logit_std=self.logit_std,
+                    mode_scale=self.mode_scale,
+                    device=device,
                 )
-                sigma = (
-                    (timesteps.float() / pipe.scheduler.config.num_train_timesteps)
-                    .view(-1, 1, 1)
-                    .to(device=device, dtype=dtype)
-                )
+                indices = (u * pipe.scheduler.config.num_train_timesteps).long()
+                timesteps = pipe.scheduler.timesteps[indices].to(device=device)
+                sigma = pipe.scheduler.sigmas.to(device=device, dtype=dtype)[indices].view(-1, 1, 1)
                 noisy_packed = sigma * packed_noise + (1.0 - sigma) * packed_latents
+
+
+                weighting = compute_loss_weighting_for_sd3(
+                    weighting_scheme=self.timestep_weighting_scheme, sigmas=sigma
+                )
 
                 prompt_embeds, prompt_embeds_mask = pipe.encode_prompt(
                     prompt=texts, device=device, num_images_per_prompt=1, max_sequence_length=1024
@@ -67,17 +112,18 @@ class QwenImageTrainer(DiffusersLoraTrainer):
 
             return (
                 noisy_packed, packed_noise, packed_latents, img_shapes, timesteps,
-                prompt_embeds, prompt_embeds_mask, txt_seq_lens, guidance,
+                prompt_embeds, prompt_embeds_mask, txt_seq_lens, guidance, weighting,
             )
 
         (
             noisy_packed, packed_noise, packed_latents, img_shapes, timesteps,
-            prompt_embeds, prompt_embeds_mask, txt_seq_lens, guidance,
+            prompt_embeds, prompt_embeds_mask, txt_seq_lens, guidance, weighting,
         ) = self._run_frozen_on_cuda(pipe, _encode)
+
 
         model_pred = transformer(
             hidden_states=noisy_packed,
-            timestep=timesteps,
+            timestep=timesteps.float() / 1000,
             guidance=guidance,
             encoder_hidden_states_mask=prompt_embeds_mask,
             encoder_hidden_states=prompt_embeds,
@@ -86,4 +132,10 @@ class QwenImageTrainer(DiffusersLoraTrainer):
             return_dict=True,
         ).sample
         flow_target = packed_noise - packed_latents
-        return torch.nn.functional.mse_loss(model_pred.float(), flow_target.float())
+        loss = torch.mean(
+            (weighting.float() * (model_pred.float() - flow_target.float()) ** 2).reshape(
+                model_pred.shape[0], -1
+            ),
+            dim=1,
+        )
+        return loss.mean()
