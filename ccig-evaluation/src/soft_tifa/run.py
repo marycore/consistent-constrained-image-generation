@@ -8,6 +8,8 @@ from ..common.types import MatchedItem, SoftTifaResult
 from .base import VQABackend
 from .scoring import score_subqa
 
+import json
+
 # Cardinality constraints in this dataset only ever target N' in {1, 2, 3} (see
 # ccig-dataset-gen/src/eval_dataset_gen/domain.py: COUNTS), and scenes have 3-9
 # objects -- this just needs to comfortably cover both with room for the model to
@@ -30,34 +32,47 @@ def _aggregate(scores: list[float]) -> tuple[float | None, float | None]:
 
 
 def run_soft_tifa(
-    items: list[MatchedItem], domain_module, backend: VQABackend, out_path: str | Path
+    items: list[MatchedItem], domain_module, backend: VQABackend, out_path: str | Path, manifest:str|Path, is_closed_model:bool, sat:bool,
 ) -> None:
     from PIL import Image
 
     results: list[SoftTifaResult] = []
-    n_missing_subqa = 0
-
+    with open(manifest, "r") as f:
+        manifest = [json.loads(line) for line in f if line.strip()]
+    for item in manifest:
+        if item["error"] is not None:
+            print('No image generated:', item['id'])
+            results.append(
+                    SoftTifaResult(
+                    id=item['id'],
+                    prompt_field=item['prompt_field'],
+                    image_path=str(item['image_path']),
+                    score_am=0,
+                    score_gm=0,
+                    subquestions=None,
+                    success=False,
+                    error='No image generated',
+                ))
+    
     for item in items:
         subqa = item.record.subqa
-        if not subqa:
-            # Dataset generated before the subqa field existed (or a template with no
-            # subqa yet) -- not evaluable by this method, but not fatal to the run.
-            n_missing_subqa += 1
-            results.append(
-                SoftTifaResult(
-                    id=item.id,
-                    prompt_field=item.prompt_field,
-                    image_path=str(item.image_path),
-                    score_am=None,
-                    score_gm=None,
-                    subquestions=[],
-                    success=False,
-                    error="record has no subqa (regenerate the dataset with the current verbalize.py)",
-                )
-            )
-            print(f"[skip] {item.id}: no subqa on this record")
-            continue
-
+        #Add generic subqa 
+        if sat:
+            subqa['Is there any shape other than cube, sphere, cylinder?'] = 'no'
+            subqa['Are all objects having one of the following colors: gray, red, blue, green, brown, purple, cyan, yellow'] = 'yes'
+            subqa['State True or False: All objects are either metal or rubber.'] = 'True'
+            subqa['Is the image an empty scene with white background?'] = 'no'
+            subqa['How many objects are in the scene?'] = 'n ='+str(item.record.number_of_objects) 
+        else:
+            subqa = {}
+            subqa['Is the image an empty scene with white background?']: 'yes'
+            subqa['State True or False: There is some object in the image that is either metal or rubber']: 'False'
+            subqa['State True or False: There is no cube in the image']: 'True'
+            subqa['State True or False: There is a sphere in the image']: 'False'
+            subqa['State True or False: There is a cylinder in the image']: 'False'
+            subqa['How many objects are in the scene?'] = 'n ='+str(0)
+            
+            
         try:
             image = Image.open(item.image_path).convert("RGB")
             max_count = max(item.record.number_of_objects + _COUNT_HEADROOM, _MIN_MAX_COUNT)
@@ -93,12 +108,7 @@ def run_soft_tifa(
             )
             print(f"[fail] {item.id}: {e}")
 
-    if n_missing_subqa:
-        print(
-            f"[warn] {n_missing_subqa}/{len(items)} records had no subqa field and were skipped -- "
-            "regenerate ccig_eval_dataset_{SAT,UNSAT}.jsonl with the current eval_dataset_gen/run.py "
-            "to get one."
-        )
+    
 
     scored = [r for r in results if r.score_am is not None]
     dataset_am = sum(r.score_am for r in scored) / len(scored) if scored else None

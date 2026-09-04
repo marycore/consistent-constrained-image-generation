@@ -9,9 +9,10 @@ from .attributes.registry import build_attribute_classifier
 from .crop import crop_and_neutralize, make_object_views
 from .detectors.registry import build_detector
 from .regions import bbox_center, region_of
-from .scene_graph import build_scene_facts, to_graph_dict
+from .scene_graph import build_scene, build_scene_facts, to_graph_dict
 from .types import DetectedObject
-
+import json
+import numpy as np
 
 def _build_property_classifiers(domain_module, domain: str, attribute_classifier: str, device: str | None) -> dict:
     """One classifier instance per property, built once per run (not per object --
@@ -152,7 +153,12 @@ def _perceive_scene(
 
     return objects
 
+def is_empty_white_image(image, threshold=245, fraction=0.99):
+    arr = np.asarray(image.convert("RGB"))
 
+    white = np.all(arr >= threshold, axis=2)
+
+    return white.mean() >= fraction
 
 def run_perception(
     items: list[MatchedItem],
@@ -161,6 +167,7 @@ def run_perception(
     attribute_classifier: str,
     device: str | None,
     out_path: str | Path,
+    manifest:str|Path, 
 ) -> None:
     from PIL import Image
 
@@ -169,11 +176,99 @@ def run_perception(
     classifiers = _build_property_classifiers(domain_module, domain, attribute_classifier, device)
 
     results: list[PerceptionResult] = []
+    with open(manifest, "r") as f:
+        manifest = [json.loads(line) for line in f if line.strip()]
+    for item in manifest:
+        if item["error"] is not None:
+            print('No image generated:', item['id'])
+            results.append(
+                    PerceptionResult(
+                    id=item['id'],
+                    prompt_field=item['prompt_field'],
+                    image_path=str(item['image_path']),
+                    instantiated_rule=None,
+                    dataset_status=None,
+                    score = 0,
+                    objects = None,
+                    scene_graph=None,
+                    clingo_program=None,
+                    success=False,
+                    error='No image generated',
+                ))
+
     for item in items:
         try:
             image = Image.open(item.image_path).convert("RGB")
             print('Processing:', item.id, flush=True)
+            if is_empty_white_image(image):
+                print('white image generated:', item.id)
+                if item.record.status == 'SAT':
+                    results.append(
+                    PerceptionResult(
+                    id=item.id,
+                    prompt_field=item.prompt_field,
+                    image_path=str(item.image_path),
+                    instantiated_rule=item.record.instantiated_rule,
+                    dataset_status=item.record.status,
+                    score = 0,
+                    objects = None,
+                    scene_graph= None,
+                    clingo_program=None,
+                    success=True,
+                    error='white image but SAT',
+                ))
+                else:#UNSAT
+                    results.append(
+                    PerceptionResult(
+                    id=item.id,
+                    prompt_field=item.prompt_field,
+                    image_path=str(item.image_path),
+                    instantiated_rule=item.record.instantiated_rule,
+                    dataset_status=item.record.status,
+                    score = 1,
+                    objects = None,
+                    scene_graph= None,
+                    clingo_program=None,
+                    success=True,
+                    error='white image and UNSAT',
+                ))
+                continue
+            
             objects = _perceive_scene(image, domain, domain_module, detector, classifiers)
+            if (len(objects) != item.record.number_of_objects):
+                print('Number of objects do not match')
+                if item.record.status == 'SAT':
+                    results.append(
+                    PerceptionResult(
+                    id=item.id,
+                    prompt_field=item.prompt_field,
+                    image_path=str(item.image_path),
+                    instantiated_rule=item.record.instantiated_rule,
+                    dataset_status=item.record.status,
+                    score = 0,
+                    objects = objects,
+                    scene_graph= None,
+                    clingo_program=None,
+                    success=True,
+                    error='number of objects not satisfied', ))
+                    
+                else:
+                    results.append(
+                    PerceptionResult(
+                    id=item.id,
+                    prompt_field=item.prompt_field,
+                    image_path=str(item.image_path),
+                    instantiated_rule=item.record.instantiated_rule,
+                    dataset_status=item.record.status,
+                    score = 0,
+                    objects = objects,
+                    scene_graph= None,
+                    clingo_program=None,
+                    success=True,
+                    error='not a white image', ))
+                continue
+               
+
             facts = build_scene_facts(objects)
             # instantiated_rule uses free ASP variables (X, Y, ...) bound over object(X),
             # not literal object ids -- it applies unchanged no matter how perception
@@ -181,6 +276,10 @@ def run_perception(
             program = f"{facts}\n" + "\n".join(item.record.instantiated_rule)
 
             predicted_status, _ = solve(program, n_models=1, time_limit=10)
+            if predicted_status == item.record.status:
+                score = 1
+            else:
+                score = 0
             results.append(
                 PerceptionResult(
                     id=item.id,
@@ -188,8 +287,8 @@ def run_perception(
                     image_path=str(item.image_path),
                     instantiated_rule=item.record.instantiated_rule,
                     dataset_status=item.record.status,
-                    predicted_status=predicted_status,
-                    agrees_with_dataset=predicted_status == item.record.status,
+                    score = score,
+                    objects = objects,
                     scene_graph=to_graph_dict(objects),
                     clingo_program=program,
                     success=True,
@@ -205,8 +304,8 @@ def run_perception(
                     image_path=str(item.image_path),
                     instantiated_rule=item.record.instantiated_rule,
                     dataset_status=item.record.status,
-                    predicted_status=None,
-                    agrees_with_dataset=None,
+                    score = None,
+                    objects = None,
                     scene_graph=None,
                     clingo_program=None,
                     success=False,
@@ -214,7 +313,7 @@ def run_perception(
                 )
             )
             print(f"[fail] {item.id}: {e}")
-
+        
     write_json(
         out_path,
         {

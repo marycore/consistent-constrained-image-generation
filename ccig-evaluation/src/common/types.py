@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+
+
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
 from typing import Any
@@ -76,8 +78,8 @@ class PerceptionResult:
     image_path: str
     instantiated_rule: str
     dataset_status: str
-    predicted_status: str | None
-    agrees_with_dataset: bool | None
+    score:int
+    objects: list|None
     scene_graph: dict[str, Any] | None
     clingo_program: str | None
     success: bool

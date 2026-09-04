@@ -25,6 +25,8 @@ def main() -> None:
     parser.add_argument("--domain", required=True, choices=["clevr", "coco"])
     parser.add_argument("--out-dir", default=None, help="Default: outputs/<images-dir-name>/")
     parser.add_argument("--limit", type=int, default=None)
+    parser.add_argument("--manifest", default=None, help="path to manifest file from generation")
+    parser.add_argument("--is_closed_model",action="store_true",)
 
     # clipscore
     parser.add_argument("--clip-checkpoint", help="CLIP checkpoint path/repo pretrained on --domain")
@@ -34,12 +36,13 @@ def main() -> None:
 
     # soft-tifa
     parser.add_argument("--vqa-backend", default="gpt-4o", choices=list(VQA_REGISTRY))
+    parser.add_argument("--sat",action="store_true",)
 
     # perception
     parser.add_argument("--detector", default="grounding-dino", choices=list(DETECTOR_REGISTRY))
     parser.add_argument("--attribute-classifier", default="clip-zero-shot", choices=list(ATTRIBUTE_REGISTRY))
     parser.add_argument("--device", default=None, help="'cuda' or 'cpu'; default: auto-detect")
-
+    
     args = parser.parse_args()
     
     items = match_images_to_prompts(args.images_dir, args.prompts_file)
@@ -56,15 +59,15 @@ def main() -> None:
         #from src.clipscore.run import run_clipscore
         from src.clipscore.run_L import run_clipscore
 
-        #run_clipscore(items, args.domain, args.clip_checkpoint, out_dir / "clipscore" / "results.json")
-        run_clipscore(items, args.domain, args.clip_checkpoint, out_dir / "clipscore" / "results-L.json")
+        #run_clipscore(items, args.domain, args.clip_checkpoint, out_dir / "clipscore" / "results-gen.json", args.manifest, args.is_closed_model)
+        run_clipscore(items, args.domain, args.clip_checkpoint, out_dir / "clipscore" / "results-L-gen.json", args.manifest, args.is_closed_model)
 
 
     if "vlm-judge" in args.method:
         from src.judge.registry import build_judge
         from src.judge.run import run_judge
 
-        run_judge(items, build_judge(args.judge_backend, device=args.device), out_dir / "vlm_judge" / "results.json")
+        run_judge(items, build_judge(args.judge_backend, device=args.device), out_dir / "vlm_judge" / "results-gen.json", args.manifest, args.is_closed_model,)
 
     if "perception" in args.method:
         from src.perception.run import run_perception
@@ -75,7 +78,7 @@ def main() -> None:
             args.detector,
             args.attribute_classifier,
             args.device,
-            out_dir / "perception" / "results.json",
+            out_dir / "perception" / "results-gen.json", args.manifest,
         )
 
     if "soft-tifa" in args.method:
@@ -87,7 +90,7 @@ def main() -> None:
             items,
             load_domain(args.domain),
             build_vqa_backend(args.vqa_backend, device=args.device),
-            out_dir / "soft_tifa" / "results.json",
+            out_dir / "soft_tifa" / "results-gen.json", args.manifest, args.is_closed_model, args.sat,
         )
 
 
