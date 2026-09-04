@@ -3,9 +3,20 @@ from __future__ import annotations
 from typing import Any, ClassVar
 
 import torch
-from PIL import Image
+from PIL import Image, ImageOps
 
 from .base import OpenImageModel
+
+# Delivered image size. ccig-finetuning's LoRA checkpoints are trained on 1024x688
+# (CLEVR's native 3:2 ratio, scaled to fit a 1024 long side, undistorted) -- see
+# TrainConfig.resolution_width/resolution_height. Generation below runs the pipeline
+# at that same shape (matching what the model actually learned), then pads the result
+# up to a delivered DELIVERED_SIZE x DELIVERED_SIZE square, since downstream tooling
+# expects square 1024x1024 files. The pad only happens to the already-generated image;
+# the model itself never sees or produces blank padding.
+DELIVERED_SIZE = 1024
+GENERATION_WIDTH = 1024
+GENERATION_HEIGHT = 688
 
 
 class DiffusersImageModel(OpenImageModel):
@@ -35,4 +46,15 @@ class DiffusersImageModel(OpenImageModel):
             self._pipe.transformer = PeftModel.from_pretrained(self._pipe.transformer, checkpoint)
 
     def generate(self, prompt: str) -> Image.Image:
-        return self._pipe(prompt=prompt, **self._call_kwargs).images[0]
+        # height/width match ccig-finetuning's training resolution (GENERATION_WIDTH x
+        # GENERATION_HEIGHT) so the LoRA generates in the geometry it actually learned,
+        # instead of falling back to this pipeline's own (square) default.
+        image = self._pipe(
+            prompt=prompt, height=GENERATION_HEIGHT, width=GENERATION_WIDTH, **self._call_kwargs
+        ).images[0]
+        # Pad the undistorted 1024x688 result up to a delivered 1024x1024 square --
+        # downstream tooling expects square files, but the model itself never trains on
+        # or generates blank padding (see the module docstring above).
+        return ImageOps.pad(
+            image, (DELIVERED_SIZE, DELIVERED_SIZE), color=(255, 255, 255), centering=(0.5, 0.5)
+        )

@@ -92,7 +92,12 @@ class QwenImageTrainer(DiffusersLoraTrainer):
                     device=device,
                 )
                 indices = (u * pipe.scheduler.config.num_train_timesteps).long()
-                timesteps = pipe.scheduler.timesteps[indices].to(device=device)
+                # pipe.scheduler.timesteps lives on CPU by default (schedulers aren't
+                # moved to GPU by from_pretrained) -- index with a CPU copy of `indices`
+                # (itself built on `device`, since compute_density_for_timestep_sampling
+                # was called with device=device), then move the *result* to `device`.
+                # Indexing directly with a CUDA index tensor into a CPU tensor raises.
+                timesteps = pipe.scheduler.timesteps[indices.cpu()].to(device=device)
                 sigma = pipe.scheduler.sigmas.to(device=device, dtype=dtype)[indices].view(-1, 1, 1)
                 noisy_packed = sigma * packed_noise + (1.0 - sigma) * packed_latents
 
@@ -101,10 +106,20 @@ class QwenImageTrainer(DiffusersLoraTrainer):
                     weighting_scheme=self.timestep_weighting_scheme, sigmas=sigma
                 )
 
+                # pipe.encode_prompt returns prompt_embeds_mask=None when every prompt in
+                # the batch needed no padding (all-ones mask) -- confirmed by reading this
+                # installed diffusers version's encode_prompt source, which explicitly
+                # collapses an all-ones mask to None. That's the normal case for
+                # batch_size=1 (nothing else in the batch to pad against). None is a
+                # valid value here, not a bug to route around: the reference pipeline's
+                # own __call__ passes prompt_embeds_mask straight through to
+                # encoder_hidden_states_mask unchanged, None included. This installed
+                # version's QwenImageTransformer2DModel.forward also has no txt_seq_lens
+                # parameter at all anymore (confirmed via inspect.signature) -- it was
+                # part of an older diffusers release this file was first written against.
                 prompt_embeds, prompt_embeds_mask = pipe.encode_prompt(
                     prompt=texts, device=device, num_images_per_prompt=1, max_sequence_length=1024
                 )
-                txt_seq_lens = prompt_embeds_mask.sum(dim=1).tolist()
 
                 guidance = None
                 if transformer.config.guidance_embeds:
@@ -112,14 +127,13 @@ class QwenImageTrainer(DiffusersLoraTrainer):
 
             return (
                 noisy_packed, packed_noise, packed_latents, img_shapes, timesteps,
-                prompt_embeds, prompt_embeds_mask, txt_seq_lens, guidance, weighting,
+                prompt_embeds, prompt_embeds_mask, guidance, weighting,
             )
 
         (
             noisy_packed, packed_noise, packed_latents, img_shapes, timesteps,
-            prompt_embeds, prompt_embeds_mask, txt_seq_lens, guidance, weighting,
+            prompt_embeds, prompt_embeds_mask, guidance, weighting,
         ) = self._run_frozen_on_cuda(pipe, _encode)
-
 
         model_pred = transformer(
             hidden_states=noisy_packed,
@@ -128,7 +142,6 @@ class QwenImageTrainer(DiffusersLoraTrainer):
             encoder_hidden_states_mask=prompt_embeds_mask,
             encoder_hidden_states=prompt_embeds,
             img_shapes=img_shapes,
-            txt_seq_lens=txt_seq_lens,
             return_dict=True,
         ).sample
         flow_target = packed_noise - packed_latents

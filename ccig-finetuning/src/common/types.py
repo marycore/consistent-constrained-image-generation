@@ -17,7 +17,16 @@ class TrainConfig:
     images_dir: str
     output_dir: str
     run_name: str = "run1"
-    resolution: int = 1024
+    # CLEVR's native images are 480x320 (3:2 aspect ratio). Training at a plain square
+    # resolution (the old `resolution: int` field) force-resized every image, stretching
+    # the scene. These two fields instead resize to the native ratio scaled up so the
+    # long side is 1024 and the short side is a multiple of 16 (required by the VAE's
+    # downsampling + transformer patching) -- 1024x688 -- so training sees undistorted
+    # images. ccig-image-generation generates at this same shape (matching what the LoRA
+    # actually learned) and pads the result up to a delivered 1024x1024 file afterward;
+    # see its open/postprocess.py.
+    resolution_width: int = 1024
+    resolution_height: int = 688
     learning_rate: float = 1e-4
     lora_rank: int = 16
     lora_alpha: int = 16

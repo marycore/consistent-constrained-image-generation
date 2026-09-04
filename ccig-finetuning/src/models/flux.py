@@ -84,7 +84,12 @@ class FluxBaseTrainer(DiffusersLoraTrainer):
                     device=device,
                 )
                 indices = (u * pipe.scheduler.config.num_train_timesteps).long()
-                timesteps = pipe.scheduler.timesteps[indices].to(device=device)
+                # pipe.scheduler.timesteps lives on CPU by default (schedulers aren't
+                # moved to GPU by from_pretrained) -- index with a CPU copy of `indices`
+                # (itself built on `device`, since compute_density_for_timestep_sampling
+                # was called with device=device), then move the *result* to `device`.
+                # Indexing directly with a CUDA index tensor into a CPU tensor raises.
+                timesteps = pipe.scheduler.timesteps[indices.cpu()].to(device=device)
                 sigma = pipe.scheduler.sigmas.to(device=device, dtype=dtype)[indices].view(-1, 1, 1)
                 noisy_packed = sigma * packed_noise + (1.0 - sigma) * packed_latents
 

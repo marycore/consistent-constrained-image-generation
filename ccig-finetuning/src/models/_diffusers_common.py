@@ -18,9 +18,10 @@ from .base import LoraTrainer
 
 
 class _ImagePromptDataset(Dataset):
-    def __init__(self, dataset_path: str, images_dir: str, resolution: int) -> None:
+    def __init__(self, dataset_path: str, images_dir: str, width: int, height: int) -> None:
         self.examples = list(load_examples(dataset_path, images_dir))
-        self.resolution = resolution
+        self.width = width
+        self.height = height
 
     def __len__(self) -> int:
         return len(self.examples)
@@ -28,8 +29,11 @@ class _ImagePromptDataset(Dataset):
     def __getitem__(self, idx: int) -> dict:
         ex = self.examples[idx]
 
-        # Open the image, convert to RGB, and resize to the target resolution.
-        image = Image.open(ex.image_path).convert("RGB").resize((self.resolution, self.resolution))
+        # Open the image, convert to RGB, and resize to (width, height). CLEVR's images
+        # are already 3:2 (480x320), matching this dataset's target ratio (e.g.
+        # 1024x688), so this is a plain undistorted resize -- not a stretch to a
+        # mismatched ratio, and not a letterbox pad.
+        image = Image.open(ex.image_path).convert("RGB").resize((self.width, self.height))
 
         # Convert to [-1, 1] float32 tensor in CHW order, as expected by the VAE encoder.
         pixel_values = torch.from_numpy(np.array(image)).permute(2, 0, 1).float() / 127.5 - 1.0
@@ -122,7 +126,9 @@ class DiffusersLoraTrainer(LoraTrainer):
             module.requires_grad_(False)
 
         # Dataset, dataloader, and optimizer setup.
-        dataset = _ImagePromptDataset(config.dataset_path, config.images_dir, config.resolution)
+        dataset = _ImagePromptDataset(
+            config.dataset_path, config.images_dir, config.resolution_width, config.resolution_height
+        )
         loader = DataLoader(dataset, batch_size=config.batch_size, shuffle=True)
         optimizer = torch.optim.AdamW(
             (p for p in transformer.parameters() if p.requires_grad), lr=config.learning_rate
@@ -133,7 +139,9 @@ class DiffusersLoraTrainer(LoraTrainer):
         # how well the model fits the current training batch.
         eval_loader = None
         if config.eval_dataset_path:
-            eval_dataset = _ImagePromptDataset(config.eval_dataset_path, config.images_dir, config.resolution)
+            eval_dataset = _ImagePromptDataset(
+                config.eval_dataset_path, config.images_dir, config.resolution_width, config.resolution_height
+            )
             eval_loader = DataLoader(eval_dataset, batch_size=config.batch_size, shuffle=False)
 
         # max_steps=None means either epochs*steps_per_epoch (if epochs is set) or one full
@@ -162,7 +170,17 @@ class DiffusersLoraTrainer(LoraTrainer):
         # tqdm gives a live progress bar with steps/sec and estimated time remaining, which
         # reads cleanly through `tee` into a log file (as start_tmux.sh redirects to), same as
         # the download progress bars already seen from huggingface_hub/diffusers.
-        last_ckpt_dir: Path | None = None
+        #
+        # Checkpoint retention: only ONE checkpoint is ever kept on disk, but which one is
+        # decided by eval loss, not recency -- best_ckpt_dir/best_eval_loss track the best
+        # checkpoint seen so far, and a newly-saved checkpoint is discarded immediately
+        # (instead of replacing the kept one) if its eval loss is worse. Without this, a
+        # model that peaks mid-training and then overfits/drifts on later steps would have
+        # its best checkpoint silently deleted in favor of a worse, merely-more-recent one.
+        # When no eval_dataset_path is configured there's no metric to compare against, so
+        # this falls back to the old keep-only-latest behavior.
+        best_ckpt_dir: Path | None = None
+        best_eval_loss: float | None = None
         last_eval_loss: float | None = None
         step = 0
         with tqdm(total=max_steps, initial=0, desc=f"[{self.name}]", unit="step") as pbar:
@@ -175,7 +193,12 @@ class DiffusersLoraTrainer(LoraTrainer):
                 optimizer.step()
                 step += 1
 
-                if eval_loader is not None and (step % config.eval_every == 0 or step == max_steps):
+                is_ckpt_step = step % config.checkpoint_every == 0 or step == max_steps
+                # Also (re-)compute eval loss at every checkpoint step, even if it doesn't
+                # land on an eval_every boundary -- the retention decision below needs a
+                # loss value that actually corresponds to *this* checkpoint's weights, not
+                # a possibly-stale one from a few steps earlier.
+                if eval_loader is not None and (step % config.eval_every == 0 or is_ckpt_step):
                     last_eval_loss = self._compute_eval_loss(pipe, transformer, eval_loader)
                     print(
                         f"[{self.name}] step {step}/{max_steps} "
@@ -187,10 +210,29 @@ class DiffusersLoraTrainer(LoraTrainer):
                     postfix["eval_loss"] = f"{last_eval_loss:.4f}"
                 pbar.set_postfix(**postfix)
                 pbar.update(1)
-                if step % config.checkpoint_every == 0 or step == max_steps:
-                    last_ckpt_dir = self._save_checkpoint(transformer, config, step, last_ckpt_dir)
 
-        return last_ckpt_dir
+                if is_ckpt_step:
+                    ckpt_dir = self._save_checkpoint(transformer, config, step)
+                    if eval_loader is None:
+                        # No eval configured -- nothing to compare against, keep only the latest.
+                        if best_ckpt_dir is not None and best_ckpt_dir != ckpt_dir:
+                            shutil.rmtree(best_ckpt_dir, ignore_errors=True)
+                        best_ckpt_dir = ckpt_dir
+                    elif best_eval_loss is None or last_eval_loss <= best_eval_loss:
+                        if best_ckpt_dir is not None and best_ckpt_dir != ckpt_dir:
+                            shutil.rmtree(best_ckpt_dir, ignore_errors=True)
+                        best_ckpt_dir = ckpt_dir
+                        best_eval_loss = last_eval_loss
+                        print(f"[{self.name}] step {step}: new best checkpoint (eval_loss={last_eval_loss:.4f}) -> {ckpt_dir}")
+                    else:
+                        # Worse than the checkpoint already kept -- discard this one immediately.
+                        shutil.rmtree(ckpt_dir, ignore_errors=True)
+                        print(
+                            f"[{self.name}] step {step}: checkpoint discarded "
+                            f"(eval_loss={last_eval_loss:.4f} > best {best_eval_loss:.4f} at {best_ckpt_dir})"
+                        )
+
+        return best_ckpt_dir
 
     def _compute_eval_loss(self, pipe: Any, transformer: Any, eval_loader: DataLoader) -> float:
         # Same _training_step loss computation as training, just under no_grad (no autograd
@@ -210,17 +252,13 @@ class DiffusersLoraTrainer(LoraTrainer):
         transformer.train()
         return total_loss / max(n, 1)
 
-    def _save_checkpoint(
-        self, transformer: Any, config: TrainConfig, step: int, previous_ckpt_dir: Path | None
-    ) -> Path:
+    def _save_checkpoint(self, transformer: Any, config: TrainConfig, step: int) -> Path:
         # Save the LoRA weights in a directory that ccig-image-generation can load with its
-        # `--checkpoint` flag, then delete the previous checkpoint -- only the latest is kept
-        # on disk at any time, rather than accumulating one per save.
+        # `--checkpoint` flag. Whether this checkpoint or a previously-saved one is kept
+        # around afterward is decided by the caller (train()), based on eval loss.
         ckpt_dir = config.checkpoint_dir_for_step(step)
         ckpt_dir.mkdir(parents=True, exist_ok=True)
         transformer.save_pretrained(str(ckpt_dir))
-        if previous_ckpt_dir is not None and previous_ckpt_dir != ckpt_dir:
-            shutil.rmtree(previous_ckpt_dir, ignore_errors=True)
         print(f"[{self.name}] saved checkpoint at step {step} -> {ckpt_dir}")
         return ckpt_dir
 
