@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import shutil
 from pathlib import Path
 from typing import Any, Callable, ClassVar
@@ -179,8 +180,29 @@ class DiffusersLoraTrainer(LoraTrainer):
         # its best checkpoint silently deleted in favor of a worse, merely-more-recent one.
         # When no eval_dataset_path is configured there's no metric to compare against, so
         # this falls back to the old keep-only-latest behavior.
+        #
+        # This state also needs to survive ACROSS separate runs (e.g. batch1's process
+        # exiting, then batch2 starting fresh via --init-ckpt) -- otherwise a batch whose
+        # own steps all happen to be worse than an earlier batch's best would still keep
+        # its own (worse) checkpoint, silently regressing what's on disk. best_state.json,
+        # written next to the checkpoints in output_dir, is how that carries over: it's
+        # read here to seed best_ckpt_dir/best_eval_loss instead of starting fresh at None.
+        best_state_path = Path(config.output_dir) / "best_state.json"
         best_ckpt_dir: Path | None = None
         best_eval_loss: float | None = None
+        if best_state_path.exists():
+            try:
+                prior_best = json.loads(best_state_path.read_text(encoding="utf-8"))
+                prior_ckpt_dir = Path(prior_best["checkpoint_dir"])
+                if prior_ckpt_dir.exists():
+                    best_ckpt_dir = prior_ckpt_dir
+                    best_eval_loss = prior_best["eval_loss"]
+                    print(
+                        f"[{self.name}] seeding checkpoint retention from a previous run: "
+                        f"best so far is {best_ckpt_dir} (eval_loss={best_eval_loss:.4f})"
+                    )
+            except (json.JSONDecodeError, KeyError, OSError):
+                pass  # Corrupt or unreadable state file -- fall back to starting fresh.
         last_eval_loss: float | None = None
         step = 0
         with tqdm(total=max_steps, initial=0, desc=f"[{self.name}]", unit="step") as pbar:
@@ -223,9 +245,15 @@ class DiffusersLoraTrainer(LoraTrainer):
                             shutil.rmtree(best_ckpt_dir, ignore_errors=True)
                         best_ckpt_dir = ckpt_dir
                         best_eval_loss = last_eval_loss
+                        best_state_path.write_text(
+                            json.dumps({"checkpoint_dir": str(best_ckpt_dir), "eval_loss": best_eval_loss}),
+                            encoding="utf-8",
+                        )
                         print(f"[{self.name}] step {step}: new best checkpoint (eval_loss={last_eval_loss:.4f}) -> {ckpt_dir}")
                     else:
-                        # Worse than the checkpoint already kept -- discard this one immediately.
+                        # Worse than the checkpoint already kept (whether from this run or a
+                        # previous one) -- discard this one immediately; best_state.json is
+                        # left untouched, still pointing at the real best.
                         shutil.rmtree(ckpt_dir, ignore_errors=True)
                         print(
                             f"[{self.name}] step {step}: checkpoint discarded "
