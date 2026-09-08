@@ -20,7 +20,7 @@ def main() -> None:
     parser.add_argument("--images-dir", required=True, help="Folder of generated images from one model")
     parser.add_argument("--prompts-file", required=True, help="Path to ccig_eval_dataset_{SAT,UNSAT}.jsonl")
     parser.add_argument(
-        "--method", nargs="+", required=True, choices=["clipscore", "vlm-judge", "perception", "soft-tifa"]
+        "--method", nargs="+", required=True, choices=["clipscore", "vlm-judge", "perception", "soft-tifa", "human-eval"]
     )
     parser.add_argument("--domain", required=True, choices=["clevr", "coco"])
     parser.add_argument("--out-dir", default=None, help="Default: outputs/<images-dir-name>/")
@@ -42,6 +42,9 @@ def main() -> None:
     parser.add_argument("--detector", default="grounding-dino", choices=list(DETECTOR_REGISTRY))
     parser.add_argument("--attribute-classifier", default="clip-zero-shot", choices=list(ATTRIBUTE_REGISTRY))
     parser.add_argument("--device", default=None, help="'cuda' or 'cpu'; default: auto-detect")
+    
+    #human_eval
+    parser.add_argument("--annotation_file", default=None, help="path to human annotated file")
     
     args = parser.parse_args()
     
@@ -91,6 +94,16 @@ def main() -> None:
             load_domain(args.domain),
             build_vqa_backend(args.vqa_backend, device=args.device),
             out_dir / "soft_tifa" / "results-gen.json", args.manifest, args.is_closed_model, args.sat,
+        )
+    if "human-eval" in args.method:
+        from src.common.dataset_gen import load_domain
+        from src.human_evaluation.run import run_human_eval
+
+        run_human_eval(
+            items,
+            args.domain,
+            args.annotation_file,
+            out_dir / "human_eval" / "results-gen.json", args.manifest,
         )
 
 

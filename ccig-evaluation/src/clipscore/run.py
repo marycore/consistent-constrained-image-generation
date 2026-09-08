@@ -111,7 +111,7 @@ def run_clipscore(items: list[MatchedItem], domain: str, checkpoint: str, out_pa
                 )
             )
             print(f"[fail] {item.id}: {e}")
-        break
+        
 
     write_json(
         out_path,

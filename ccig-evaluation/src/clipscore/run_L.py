@@ -14,7 +14,7 @@ from scene_setup import scene_setup_text, scene_unsat_text
 import json
 
 
-def run_clipscore(items: list[MatchedItem], domain: str, checkpoint: str, out_path: str | Path) -> None:
+def run_clipscore(items: list[MatchedItem], domain: str, checkpoint: str, out_path: str | Path, manifest:str|Path, is_closed_model:bool ) -> None:
     """Compute CLIPScore (CLIP image-text embedding cosine similarity) for each
     generated image against the prompt that generated it.
 
