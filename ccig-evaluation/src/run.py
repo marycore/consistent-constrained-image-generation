@@ -17,10 +17,10 @@ def main() -> None:
     parser = argparse.ArgumentParser(
         description="Evaluate generated images against the CCIG constraints/prompts that produced them."
     )
-    parser.add_argument("--images-dir", required=True, help="Folder of generated images from one model")
+    parser.add_argument("--images-dir",  help="Folder of generated images from one model")
     parser.add_argument("--prompts-file", required=True, help="Path to ccig_eval_dataset_{SAT,UNSAT}.jsonl")
     parser.add_argument(
-        "--method", nargs="+", required=True, choices=["clipscore", "vlm-judge", "perception", "soft-tifa", "human-eval"]
+        "--method", nargs="+", required = True, choices=["clipscore", "vlm-judge", "perception", "soft-tifa", "human-eval", "analysis"]
     )
     parser.add_argument("--domain", required=True, choices=["clevr", "coco"])
     parser.add_argument("--out-dir", default=None, help="Default: outputs/<images-dir-name>/")
@@ -46,8 +46,19 @@ def main() -> None:
     #human_eval
     parser.add_argument("--annotation_file", default=None, help="path to human annotated file")
     
-    args = parser.parse_args()
+    #analysis
+    parser.add_argument("--vlm_judge_results", default=None, help="path to vlm_judge evaluation json")
+    parser.add_argument("--perception_results", default=None, help="path to perception evaluation json")
+    parser.add_argument("--soft_tifa_results", default=None, help="path to soft-tifa evaluation json")
+    parser.add_argument("--clipscore_results", default=None, help="path to clipscore evaluation json")
+    parser.add_argument("--human_results", default=None, help="path to human evaluation json")
+    parser.add_argument("--analysis_out", default=None, help="path where analysis outputs have to be saved")
+    parser.add_argument("--combo", type = int, default=0, help="whether combination ds or not")
     
+
+    
+    args = parser.parse_args()
+    print('args:', args.combo)
     items = match_images_to_prompts(args.images_dir, args.prompts_file)
     if args.limit is not None:
         items = items[: args.limit]
@@ -55,7 +66,7 @@ def main() -> None:
         parser.error("No images matched to prompt records -- nothing to evaluate.")
 
     out_dir = Path(args.out_dir) if args.out_dir else Path("outputs") / Path(args.images_dir).name
-
+    
     if "clipscore" in args.method:
         if not args.clip_checkpoint:
             parser.error("--clip-checkpoint is required for --method clipscore")
@@ -104,6 +115,35 @@ def main() -> None:
             args.domain,
             args.annotation_file,
             out_dir / "human_eval" / "results-gen.json", args.manifest,
+        )
+    if "analysis" in args.method and args.combo == 0:
+        from src.common.dataset_gen import load_domain
+        from src.analysis_plots import run_analysis
+
+        run_analysis(
+            args.prompts_file,
+            args.domain,
+            args.clipscore_results,
+            args.vlm_judge_results,
+            args.soft_tifa_results,
+            args.perception_results,
+            args.human_results,
+            Path(args.analysis_out) /"analysis.json", 
+        )
+    
+    if "analysis" in args.method and args.combo == 1:
+        from src.common.dataset_gen import load_domain
+        from src.analysis_combo import run_analysis
+
+        run_analysis(
+            args.prompts_file,
+            args.domain,
+            args.clipscore_results,
+            args.vlm_judge_results,
+            args.soft_tifa_results,
+            args.perception_results,
+            args.human_results,
+            Path(args.analysis_out) /"analysis.json", 
         )
 
 
