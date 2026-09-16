@@ -130,6 +130,40 @@ that expose one, e.g. `gpt-image-2-low`) and `<dataset>` is the stem of `--datas
   `id`, `model`, `prompt`, `prompt_field`, `scene_generation_setup`, `image_path`, `success`,
   `error`, `variant`
 
+## Repairing a manifest (retry missing/errored rows)
+
+A `run.py` pass can leave gaps in the manifest -- rows with `error` set (a transient API
+failure, rate limit, depleted credits, ...) or missing entirely (the process died partway
+through). `src/repair_manifest.py` fills those in without regenerating everything:
+
+```bash
+python -m src.repair_manifest --model gemini-3-pro-image \
+  --dataset ../data/ccig_eval_dataset/clevr_1_scenes_SAT.json \
+  --prompt-field long
+```
+
+For every `(id, prompt_field)` pair expected for that dataset (every dataset id crossed with
+`--prompt-field`, or -- if `--prompt-field` is omitted -- whatever fields already appear in the
+existing manifest), it:
+- leaves a good row (`success: true`, `error: null`) untouched, printing `[exists]`;
+- if the manifest row is missing/errored but the image is already on disk (e.g. an earlier
+  manifest write got clobbered, not generation never happening), recovers it from the file
+  without calling the API again, printing `[recovered]`;
+- otherwise retries generation exactly once, printing `[fixed]` or `[still-failing]` depending
+  on the outcome;
+- rewrites `manifest.jsonl` after **every** row it touches, not once at the end -- a crash,
+  Ctrl-C, or API outage partway through an interrupted run never loses already-completed
+  retries, and the file on disk always reflects true current state. This also collapses any
+  stray duplicate rows left over from earlier partial/rerun manifests down to one row per
+  id+field, and carries through rows for any `prompt_field` not passed to this call untouched
+  (it will never be the reason another field's rows disappear).
+
+Same `--out`/`--checkpoint` flags as `run.py`; the output folder is resolved with the exact same
+`<model>[-<variant>]/<dataset>/` convention, so make sure `--model`/`--checkpoint` match the
+original run or this will look at (or create) the wrong folder. Also callable directly as a
+function -- `from src.repair_manifest import repair_manifest` -- if you want to script repairs
+across several dataset files.
+
 ## Adding a model
 
 - **Closed (API-based)**: add a class in `src/closed/<provider>.py` implementing
