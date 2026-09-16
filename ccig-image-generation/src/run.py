@@ -28,6 +28,11 @@ def main() -> None:
     parser.add_argument("--out", default="../data/generated_images")
     parser.add_argument("--limit", type=int, default=None)
     parser.add_argument(
+        "--start-id", type=int, default=None,
+        help="Only process prompts with id >= this value -- e.g. to resume a run that failed "
+        "partway through (check the manifest for the last successful id).",
+    )
+    parser.add_argument(
         "--shuffle", action="store_true",
         help="Shuffle prompts before applying --limit, for a random subset instead of the first N",
     )
@@ -66,6 +71,8 @@ def main() -> None:
     manifest_path = out_dir / "manifest.jsonl"
 
     prompts = list(load_prompts(args.dataset, args.prompt_field))
+    if args.start_id is not None:
+        prompts = [p for p in prompts if int(p.id) >= args.start_id]
     if args.shuffle:
         random.Random(args.seed).shuffle(prompts)
 
