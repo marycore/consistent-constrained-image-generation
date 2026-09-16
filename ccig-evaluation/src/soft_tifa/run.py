@@ -64,6 +64,7 @@ def run_soft_tifa(
             subqa['Is the image an empty scene with white background?'] = 'no'
             subqa['How many objects are in the scene?'] = 'n ='+str(item.record.number_of_objects) 
         else:
+            print('UNSAT')
             subqa = {}
             subqa['Is the image an empty scene with white background?']: 'yes'
             subqa['State True or False: There is some object in the image that is either metal or rubber']: 'False'

@@ -119,3 +119,26 @@ class SoftTifaResult:
 
     def to_json(self) -> dict[str, Any]:
         return asdict(self)
+
+@dataclass
+class HumanResult:
+    id: str
+    prompt_field: str
+    image_path: str
+    instantiated_rule: str
+    predicted_status:str
+    dataset_status: str
+    score:int
+    objects: list|None
+    pred_number_of_objects:int
+    actual_number_of_objects:int
+    scene_graph: dict[str, Any] | None
+    clingo_program: str | None
+    success: bool
+    error: str | None
+
+    def to_json(self) -> dict[str, Any]:
+        return asdict(self)
+
+
+

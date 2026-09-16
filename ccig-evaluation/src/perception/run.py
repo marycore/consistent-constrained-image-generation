@@ -233,6 +233,21 @@ def run_perception(
                     error='white image and UNSAT',
                 ))
                 continue
+            if item.record.status == 'UNSAT':
+                results.append(
+                    PerceptionResult(
+                    id=item.id,
+                    prompt_field=item.prompt_field,
+                    image_path=str(item.image_path),
+                    instantiated_rule=item.record.instantiated_rule,
+                    dataset_status=item.record.status,
+                    score = 0,
+                    objects = None,
+                    scene_graph= None,
+                    clingo_program=None,
+                    success=True,
+                    error='not a white image', ))
+                continue
             
             objects = _perceive_scene(image, domain, domain_module, detector, classifiers)
             if (len(objects) != item.record.number_of_objects):
@@ -252,20 +267,7 @@ def run_perception(
                     success=True,
                     error='number of objects not satisfied', ))
                     
-                else:
-                    results.append(
-                    PerceptionResult(
-                    id=item.id,
-                    prompt_field=item.prompt_field,
-                    image_path=str(item.image_path),
-                    instantiated_rule=item.record.instantiated_rule,
-                    dataset_status=item.record.status,
-                    score = 0,
-                    objects = objects,
-                    scene_graph= None,
-                    clingo_program=None,
-                    success=True,
-                    error='not a white image', ))
+                
                 continue
                
 
